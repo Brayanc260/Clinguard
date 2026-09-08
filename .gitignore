@@ -1,0 +1,24 @@
+# ── Maven ──
+target/
+
+# ── NetBeans ──
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+build/
+
+# ── IDEs varios (por si tu compañero usa otro) ──
+.idea/
+*.iml
+.vscode/
+
+# ── Sistema operativo ──
+Thumbs.db
+.DS_Store
+
+# ── Logs ──
+*.log
+
+# ── Variables de entorno / secretos (por si algún día separas el JWT secret) ──
+.env
