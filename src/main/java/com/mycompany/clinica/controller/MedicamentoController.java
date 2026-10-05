@@ -25,6 +25,15 @@ public class MedicamentoController {
         return ResponseEntity.ok(medRepo.findAll());
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<org.springframework.data.domain.Page<Medicamento>> getAllPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(medRepo.findAll(
+            org.springframework.data.domain.PageRequest.of(page, size,
+                org.springframework.data.domain.Sort.by("nombre").ascending())));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Medicamento> getById(@PathVariable String id) {
         return medRepo.findById(id)

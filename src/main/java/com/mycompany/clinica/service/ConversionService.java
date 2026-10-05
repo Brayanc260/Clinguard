@@ -89,7 +89,19 @@ public class ConversionService {
         return registroRepo.findByUsuarioNombreOrderByFechaHoraDesc(usuarioNombre);
     }
 
+    public org.springframework.data.domain.Page<RegistroConversion> obtenerHistorialPaginado(
+            String usuarioNombre, int page, int size) {
+        return registroRepo.findByUsuarioNombreOrderByFechaHoraDesc(
+            usuarioNombre, org.springframework.data.domain.PageRequest.of(page, size));
+    }
+
     public List<RegistroConversion> obtenerTodoElHistorial() {
         return registroRepo.findAll();
+    }
+
+    public org.springframework.data.domain.Page<RegistroConversion> obtenerTodoElHistorialPaginado(
+            int page, int size) {
+        return registroRepo.findAllByOrderByFechaHoraDesc(
+            org.springframework.data.domain.PageRequest.of(page, size));
     }
 }

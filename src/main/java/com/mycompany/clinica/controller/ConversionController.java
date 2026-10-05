@@ -49,9 +49,27 @@ public class ConversionController {
         return ResponseEntity.ok(conversionService.obtenerHistorial(username));
     }
 
+    @GetMapping("/historial/paged")
+    public ResponseEntity<org.springframework.data.domain.Page<RegistroConversion>> historialPropioPaged(
+            @AuthenticationPrincipal UserDetails user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        String username = (user != null) ? user.getUsername() : "Usuario_Local";
+        return ResponseEntity.ok(conversionService.obtenerHistorialPaginado(username, page, size));
+    }
+
     @GetMapping("/historial/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<RegistroConversion>> historialCompleto() {
         return ResponseEntity.ok(conversionService.obtenerTodoElHistorial());
+    }
+
+    @GetMapping("/historial/all/paged")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<org.springframework.data.domain.Page<RegistroConversion>> historialCompletoPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(conversionService.obtenerTodoElHistorialPaginado(page, size));
     }
 }

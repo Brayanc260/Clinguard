@@ -33,6 +33,7 @@ public class Usuario implements UserDetails {
     public Rol getRol() { return rol; }
     public void setRol(Rol rol) { this.rol = rol; }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @Override public String getPassword() { return this.password; }
     @Override public String getUsername() { return this.nombreUsuario; }
     @Override public Collection<? extends GrantedAuthority> getAuthorities() {

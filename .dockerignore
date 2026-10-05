@@ -1,0 +1,12 @@
+# ── Evitar copiar archivos innecesarios a la imagen Docker ──
+target/
+*.log
+.git
+.gitignore
+.idea/
+.vscode/
+nbproject/
+*.md
+ProyectoClinica.pdf
+split.ps1
+split.py
