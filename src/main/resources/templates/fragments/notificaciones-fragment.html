@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+
+<!-- NOTIFICACIONES — MENÚ LATERAL -->
+<a th:fragment="menu"
+   th:href="@{/notificaciones}"
+   class="nb">
+
+    <i class="bx bx-bell"
+       aria-hidden="true"></i>
+
+    <span>Notificaciones</span>
+
+    <span class="notif-count"
+          th:if="${noLeidas != null and noLeidas > 0}"
+          th:text="${noLeidas > 99 ? '99+' : noLeidas}">
+    </span>
+
+</a>
+
+
+<!-- =========================================
+     NOTIFICACIONES — CAMPANA SUPERIOR
+     ========================================= -->
+
+<a th:fragment="campana"
+   th:href="@{/notificaciones}"
+   class="notif-header-btn"
+   title="Ver notificaciones"
+   aria-label="Ver notificaciones">
+
+    <i class='bx bx-bell'></i>
+
+    <span class="notif-header-dot"
+          th:if="${noLeidas != null and noLeidas > 0}">
+    </span>
+
+</a>
+
+</body>
+</html>

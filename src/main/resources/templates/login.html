@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard — Acceso</title>
+
+    <!-- CSS GENERAL -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- CSS DEL LOGIN -->
+    <link rel="stylesheet"
+          th:href="@{/css/login.css}">
+
+    <!-- ICONOS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- TEMA -->
+    <script th:src="@{/js/theme.js}"></script>
+</head>
+
+<body data-page="login">
+
+    <!-- =====================================================
+         PANTALLA DE AUTENTICACIÓN
+         ===================================================== -->
+
+    <div id="login-screen">
+
+        <div class="auth-box">
+
+            <!-- =================================================
+                 MARCA
+                 ================================================= -->
+
+            <div class="auth-brand">
+
+                <h2 class="auth-title">
+                    ClinGuard
+                    <span class="brand-dot">•</span>
+                </h2>
+
+                <p class="auth-subtitle">
+                    Clinical Decision Support System
+                </p>
+
+            </div>
+
+            <!-- =================================================
+                 CONTROLES DE PESTAÑAS
+                 ================================================= -->
+
+            <input type="radio"
+                   name="auth-tab"
+                   id="auth-login"
+                   class="auth-tab-radio"
+                   th:checked="${param.tab == null or param.tab[0] != 'registro'}">
+
+            <input type="radio"
+                   name="auth-tab"
+                   id="auth-registro"
+                   class="auth-tab-radio"
+                   th:checked="${param.tab != null and param.tab[0] == 'registro'}">
+
+            <!-- =================================================
+                 PESTAÑAS
+                 ================================================= -->
+
+            <div class="auth-tabs">
+
+                <label for="auth-login"
+                       class="tab tab-login">
+                    Iniciar sesión
+                </label>
+
+                <label for="auth-registro"
+                       class="tab tab-registro">
+                    Registrar cuenta
+                </label>
+
+            </div>
+
+            <!-- =================================================
+                 PANELES
+                 ================================================= -->
+
+            <div class="auth-panels">
+
+                <!-- =============================================
+                     INICIO DE SESIÓN
+                     ============================================= -->
+
+                <div class="auth-panel panel-login">
+
+                    <!-- ERROR DE LOGIN -->
+                    <div class="error-banner"
+                         role="alert"
+                         th:if="${param.error != null and param.error[0] == 'true'}">
+
+                        <i class="bx bx-error-circle"
+                           aria-hidden="true"></i>
+
+                        <span>
+                            No se pudo iniciar sesión.
+                            Verifica tus credenciales.
+                        </span>
+
+                    </div>
+
+                    <!-- LOGOUT CORRECTO -->
+                    <div class="ok-banner"
+                         role="status"
+                         th:if="${param.logout != null and param.logout[0] == 'true'}">
+
+                        <i class="bx bx-check-circle"
+                           aria-hidden="true"></i>
+
+                        <span>
+                            Sesión cerrada correctamente.
+                        </span>
+
+                    </div>
+
+                    <!-- REGISTRO CORRECTO -->
+                    <div class="ok-banner"
+                         role="status"
+                         th:if="${param.registro != null and param.registro[0] == 'true'}">
+
+                        <i class="bx bx-check-circle"
+                           aria-hidden="true"></i>
+
+                        <span>
+                            Cuenta creada correctamente.
+                            Ya puedes iniciar sesión.
+                        </span>
+
+                    </div>
+
+                    <!-- SESIÓN EXPIRADA -->
+                    <div class="error-banner"
+                         role="alert"
+                         th:if="${param.expired != null and param.expired[0] == 'true'}">
+
+                        <i class="bx bx-time-five"
+                           aria-hidden="true"></i>
+
+                        <span>
+                            Tu sesión ha expirado.
+                            Inicia sesión nuevamente
+                            para continuar.
+                        </span>
+
+                    </div>
+
+                    <!-- FORMULARIO LOGIN -->
+                    <form th:action="@{/login}"
+                          method="post">
+
+                        <!-- USUARIO -->
+                        <div class="input-group">
+
+                            <label for="username-login">
+                                Nombre de usuario
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <i class="bx bx-user"
+                                   aria-hidden="true"></i>
+
+                                <input id="username-login"
+                                       name="username"
+                                       type="text"
+                                       placeholder="Nombre de usuario"
+                                       autocomplete="username"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CONTRASEÑA -->
+                        <div class="input-group">
+
+                            <label for="password-login">
+                                Contraseña
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <i class="bx bx-lock-alt"
+                                   aria-hidden="true"></i>
+
+                                <input id="password-login"
+                                       name="password"
+                                       type="password"
+                                       placeholder="••••••••"
+                                       autocomplete="current-password"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- TOKEN CSRF -->
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <!-- BOTÓN LOGIN -->
+                        <button class="btn-primary auth-submit"
+                                type="submit">
+
+                            Ingresar al sistema
+
+                            <i class="bx bx-right-arrow-alt"
+                               aria-hidden="true"></i>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <!-- =============================================
+                     REGISTRO PÚBLICO
+                     ============================================= -->
+
+                <div class="auth-panel panel-registro">
+
+                    <!-- ERROR DE REGISTRO -->
+                    <div class="error-banner"
+                         role="alert"
+                         th:if="${errorRegistro != null}">
+
+                        <i class="bx bx-error-circle"
+                           aria-hidden="true"></i>
+
+                        <span th:text="${errorRegistro}">
+                            Error al registrar la cuenta.
+                        </span>
+
+                    </div>
+
+                    <!-- FORMULARIO DE REGISTRO -->
+                    <form th:action="@{/registro}"
+                          method="post">
+
+                        <!-- NOMBRE -->
+                        <div class="input-group">
+
+                            <label for="nombre">
+                                Nombre completo
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <i class="bx bx-id-card"
+                                   aria-hidden="true"></i>
+
+                                <input id="nombre"
+                                       name="nombre"
+                                       type="text"
+                                       placeholder="Ej: Carlos García"
+                                       autocomplete="name"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- USUARIO -->
+                        <div class="input-group">
+
+                            <label for="username-registro">
+                                Nombre de usuario
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <i class="bx bx-user"
+                                   aria-hidden="true"></i>
+
+                                <input id="username-registro"
+                                       name="username"
+                                       type="text"
+                                       placeholder="Ej: carlos123"
+                                       autocomplete="username"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CORREO -->
+                        <div class="input-group">
+
+                            <label for="correo">
+                                Correo electrónico
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <i class="bx bx-envelope"
+                                   aria-hidden="true"></i>
+
+                                <input id="correo"
+                                       name="correo"
+                                       type="email"
+                                       placeholder="usuario@correo.com"
+                                       autocomplete="email"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CONTRASEÑA -->
+                        <div class="input-group">
+
+                            <label for="password-registro">
+                                Contraseña
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <i class="bx bx-lock-alt"
+                                   aria-hidden="true"></i>
+
+                                <input id="password-registro"
+                                       name="password"
+                                       type="password"
+                                       placeholder="••••••••"
+                                       minlength="8"
+                                       autocomplete="new-password"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CONFIRMAR CONTRASEÑA -->
+                        <div class="input-group">
+
+                            <label for="confirmar-password">
+                                Confirmar contraseña
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <i class="bx bx-lock"
+                                   aria-hidden="true"></i>
+
+                                <input id="confirmar-password"
+                                       name="confirmar_password"
+                                       type="password"
+                                       placeholder="••••••••"
+                                       minlength="8"
+                                       autocomplete="new-password"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <!-- =====================================
+                             ROL DE ACCESO
+                             REGISTRO PÚBLICO
+                             ===================================== -->
+
+                        <div class="input-group">
+
+                            <label for="rol-registro">
+                                Rol de acceso
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <i class="bx bx-shield"
+                                   aria-hidden="true"></i>
+
+                                <select id="rol-registro"
+                                        aria-describedby="rol-ayuda"
+                                        disabled>
+
+                                    <option value="USUARIO"
+                                            selected>
+                                        Usuario
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- ROL ENVIADO AL BACKEND -->
+                            <input type="hidden"
+                                   name="rol"
+                                   value="USUARIO">
+
+                            <small id="rol-ayuda"
+                                   class="field-help">
+
+                                El registro público permite
+                                crear cuentas de usuario.
+                                Las cuentas del personal
+                                de ClinGuard son gestionadas
+                                por un administrador.
+
+                            </small>
+
+                        </div>
+
+                        <!-- TOKEN CSRF -->
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <!-- BOTÓN REGISTRO -->
+                        <button class="btn-primary auth-submit"
+                                type="submit">
+
+                            Crear cuenta
+
+                            <i class="bx bx-user-plus"
+                               aria-hidden="true"></i>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

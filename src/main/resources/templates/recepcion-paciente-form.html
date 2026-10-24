@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${modoEdicion} ? 'ClinGuard | Editar paciente' : 'ClinGuard | Nuevo paciente'">
+        ClinGuard | Formulario de paciente
+    </title>
+
+    <!-- ESTILOS -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- BOXICONS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- TEMA -->
+    <script th:src="@{/js/theme.js}"></script>
+
+    <!-- Contador global de notificaciones de Recepción -->
+    <style>
+      body .cg-recep-notif-badge {
+        margin-left: auto;
+        min-width: 23px;
+        height: 22px;
+        padding: 2px 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #fff;
+        background: #006d7c;
+        border: 1px solid #50c3cb;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+    </style>
+</head>
+
+<body data-page="recepcion-pacientes">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside id="sidebar">
+
+        <div class="sb-brand">
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-oscuro">
+
+            </div>
+        </div>
+
+        <nav class="sb-nav"
+             aria-label="Navegación de recepción">
+
+            <a class="nb"
+               th:href="@{/recepcionista/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb active"
+               th:href="@{/recepcion/pacientes}"
+               aria-current="page">
+                <i class="bx bx-group"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/citas}">
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/agenda}">
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+            </a>
+
+            <!-- ANÁLISIS -->
+            <a class="nb"
+               th:href="@{/recepcion/analisis}">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/notificaciones}">
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+                <span class="cg-recep-notif-badge"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas > 99 ? '99+' : noLeidas}"
+                      th:attr="aria-label=|${noLeidas} notificaciones sin leer|">0</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/reportes}">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/perfil}">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- PERFIL INFERIOR -->
+        <!-- PERFIL UNIFICADO DEL RECEPCIONISTA -->
+        <div class="sb-bottom recep-sidebar-footer">
+            <div class="sb-user recep-user-card">
+                <div class="avatar recep-user-avatar" aria-hidden="true">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="u-info recep-user-info">
+                    <div class="u-nm" th:text="${#authentication.name}">Usuario</div>
+                    <div class="u-rl">Recepcionista</div>
+                </div>
+            </div>
+            <form class="sb-logout-form" th:action="@{/logout}" method="post">
+                <button class="logout-link recep-logout-button" type="submit">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <header>
+            <div class="h-title"
+                 th:text="${modoEdicion} ? 'Editar paciente' : 'Nuevo paciente'">
+                Nuevo paciente
+            </div>
+        </header>
+
+        <main class="main-inner">
+
+            <div class="page active">
+
+                <!-- MENSAJES -->
+                <div th:if="${error}"
+                     class="rp-alert rp-alert-error"
+                     role="alert"
+                     th:text="${error}">
+                </div>
+
+                <!-- =================================================
+                     PRESENTACIÓN DEL FORMULARIO
+                     ================================================= -->
+
+                <section class="card rp-header-card">
+
+                    <div>
+
+                        <h2 th:text="${modoEdicion} ? 'Actualizar paciente' : 'Registrar paciente'">
+                            Registrar paciente
+                        </h2>
+
+                        <p>
+                            Completa la información administrativa
+                            del paciente. Los campos marcados
+                            con * son obligatorios.
+                        </p>
+
+                    </div>
+
+                    <a th:href="@{/recepcion/pacientes}"
+                       class="rp-btn rp-btn-outline">
+
+                        <i class="bx bx-arrow-back"></i>
+                        Volver al listado
+
+                    </a>
+
+                </section>
+
+                <!-- =================================================
+                     FORMULARIO
+                     ================================================= -->
+
+                <section class="card rp-form-card">
+
+                    <form method="post"
+                          th:object="${paciente}"
+                          th:action="${modoEdicion} ? @{/recepcion/pacientes/actualizar/{id}(id=${paciente.id})} : @{/recepcion/pacientes/guardar}">
+
+                        <div class="rp-alert rp-alert-error" role="alert"
+                             th:if="${#fields.hasErrors('*')}">
+                            <i class="bx bx-error-circle" aria-hidden="true"></i>
+                            Revisa los campos señalados antes de guardar.
+                        </div>
+
+                        <!-- CSRF -->
+                        <input type="hidden"
+                               th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <!-- =========================================
+                             IDENTIFICACIÓN
+                             ========================================= -->
+
+                        <div class="rp-form-section">
+
+                            <div class="rp-form-section-title">
+                                <i class="bx bx-id-card"></i>
+                                <h3>Identificación del paciente</h3>
+                            </div>
+
+                            <div class="rp-form-grid">
+
+                                <!-- TIPO DOCUMENTO -->
+                                <div class="rp-field">
+
+                                    <label for="tipoDocumento">
+                                        Tipo de documento *
+                                    </label>
+
+                                    <select id="tipoDocumento"
+                                            th:field="*{tipoDocumento}"
+                                            required>
+
+                                        <option value="">
+                                            Selecciona un documento
+                                        </option>
+
+                                        <option value="CC">
+                                            Cédula de ciudadanía
+                                        </option>
+
+                                        <option value="TI">
+                                            Tarjeta de identidad
+                                        </option>
+
+                                        <option value="RC">
+                                            Registro civil
+                                        </option>
+
+                                        <option value="CE">
+                                            Cédula de extranjería
+                                        </option>
+
+                                        <option value="PA">
+                                            Pasaporte
+                                        </option>
+
+                                        <option value="PPT">
+                                            Permiso por Protección Temporal
+                                        </option>
+
+                                    </select>
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('tipoDocumento')}"
+                                           th:errors="*{tipoDocumento}"></small>
+
+                                </div>
+
+                                <!-- NÚMERO DOCUMENTO -->
+                                <div class="rp-field">
+
+                                    <label for="documento">
+                                        Número de documento *
+                                    </label>
+
+                                    <input type="text"
+                                           id="documento"
+                                           th:field="*{documento}"
+                                           placeholder="Número de identificación"
+                                           maxlength="30"
+                                           required>
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('documento')}"
+                                           th:errors="*{documento}"></small>
+
+                                </div>
+
+                                <!-- NOMBRES -->
+                                <div class="rp-field">
+
+                                    <label for="nombres">
+                                        Nombres *
+                                    </label>
+
+                                    <input type="text"
+                                           id="nombres"
+                                           th:field="*{nombres}"
+                                           placeholder="Nombres del paciente"
+                                           maxlength="100"
+                                           required>
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('nombres')}"
+                                           th:errors="*{nombres}"></small>
+
+                                </div>
+
+                                <!-- APELLIDOS -->
+                                <div class="rp-field">
+
+                                    <label for="apellidos">
+                                        Apellidos *
+                                    </label>
+
+                                    <input type="text"
+                                           id="apellidos"
+                                           th:field="*{apellidos}"
+                                           placeholder="Apellidos del paciente"
+                                           maxlength="100"
+                                           required>
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('apellidos')}"
+                                           th:errors="*{apellidos}"></small>
+
+                                </div>
+
+                                <!-- FECHA DE NACIMIENTO -->
+                                <div class="rp-field">
+
+                                    <label for="fechaNacimiento">
+                                        Fecha de nacimiento *
+                                    </label>
+
+                                    <input type="date"
+                                           id="fechaNacimiento"
+                                           th:field="*{fechaNacimiento}"
+                                           required>
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('fechaNacimiento')}"
+                                           th:errors="*{fechaNacimiento}"></small>
+
+                                </div>
+
+                                <!-- SEXO -->
+                                <div class="rp-field">
+
+                                    <label for="sexo">
+                                        Sexo
+                                    </label>
+
+                                    <select id="sexo"
+                                            th:field="*{sexo}">
+
+                                        <option value="">
+                                            Selecciona una opción
+                                        </option>
+
+                                        <option value="Masculino">
+                                            Masculino
+                                        </option>
+
+                                        <option value="Femenino">
+                                            Femenino
+                                        </option>
+
+                                        <option value="Otro">
+                                            Otro
+                                        </option>
+
+                                    </select>
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('sexo')}"
+                                           th:errors="*{sexo}"></small>
+
+                                </div>
+
+                                <!-- TIPO DE SANGRE (OPCIONAL) -->
+                                <div class="rp-field">
+                                    <label for="tipoSangre">Tipo de sangre</label>
+                                    <select id="tipoSangre" th:field="*{tipoSangre}">
+                                        <option value="">No especificado</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('tipoSangre')}"
+                                           th:errors="*{tipoSangre}"></small>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- =========================================
+                              CONTACTO Y ASEGURAMIENTO
+                             ========================================= -->
+
+                        <div class="rp-form-section">
+
+                            <div class="rp-form-section-title">
+
+                                <i class="bx bx-phone"></i>
+                                <h3>Contacto y aseguramiento</h3>
+
+                            </div>
+
+                            <div class="rp-form-grid">
+
+                                <!-- EPS -->
+                                <div class="rp-field">
+
+                                    <label for="eps">
+                                        EPS
+                                    </label>
+
+                                    <input type="text"
+                                           id="eps"
+                                           th:field="*{eps}"
+                                           placeholder="Entidad de salud"
+                                           maxlength="120">
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('eps')}"
+                                           th:errors="*{eps}"></small>
+
+                                </div>
+
+                                <!-- TELÉFONO -->
+                                <div class="rp-field">
+
+                                    <label for="telefono">
+                                        Teléfono
+                                    </label>
+
+                                    <input type="tel"
+                                           id="telefono"
+                                           th:field="*{telefono}"
+                                           placeholder="Número de contacto"
+                                           maxlength="20">
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('telefono')}"
+                                           th:errors="*{telefono}"></small>
+
+                                </div>
+
+                                <!-- CORREO -->
+                                <div class="rp-field">
+
+                                    <label for="correo">
+                                        Correo electrónico
+                                    </label>
+
+                                    <input type="email"
+                                           id="correo"
+                                           th:field="*{correo}"
+                                           placeholder="correo@ejemplo.com"
+                                           maxlength="150">
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('correo')}"
+                                           th:errors="*{correo}"></small>
+
+                                </div>
+
+                                <!-- DIRECCIÓN -->
+                                <div class="rp-field">
+
+                                    <label for="direccion">
+                                        Dirección
+                                    </label>
+
+                                    <input type="text"
+                                           id="direccion"
+                                           th:field="*{direccion}"
+                                           placeholder="Dirección de residencia"
+                                           maxlength="200">
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('direccion')}"
+                                           th:errors="*{direccion}"></small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- =========================================
+                             CONTACTO DE EMERGENCIA
+                             ========================================= -->
+
+                        <div class="rp-form-section">
+
+                            <div class="rp-form-section-title">
+
+                                <i class="bx bx-shield-quarter"></i>
+                                <h3>Contacto de emergencia</h3>
+
+                            </div>
+
+                            <div class="rp-form-grid">
+
+                                <!-- NOMBRE DEL CONTACTO -->
+                                <div class="rp-field">
+
+                                    <label for="contactoEmergencia">
+                                        Nombre del contacto
+                                    </label>
+
+                                    <input type="text"
+                                           id="contactoEmergencia"
+                                           th:field="*{contactoEmergencia}"
+                                           placeholder="Nombre del familiar o responsable"
+                                           maxlength="120">
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('contactoEmergencia')}"
+                                           th:errors="*{contactoEmergencia}"></small>
+
+                                </div>
+
+                                <!-- TELÉFONO DE EMERGENCIA -->
+                                <div class="rp-field">
+
+                                    <label for="telefonoEmergencia">
+                                        Teléfono de emergencia
+                                    </label>
+
+                                    <input type="tel"
+                                           id="telefonoEmergencia"
+                                           th:field="*{telefonoEmergencia}"
+                                           placeholder="Teléfono del contacto"
+                                           maxlength="20">
+
+                                    <small class="rp-field-error" role="alert"
+                                           th:if="${#fields.hasErrors('telefonoEmergencia')}"
+                                           th:errors="*{telefonoEmergencia}"></small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                         <!-- ESTADO DEL PACIENTE (solo en edición) -->
+                         <div class="rp-form-section" th:if="${modoEdicion}">
+                             <div class="rp-form-section-title">
+                                 <i class="bx bx-toggle-right" aria-hidden="true"></i>
+                                 <h3>Estado del paciente</h3>
+                             </div>
+                             <div class="rp-form-grid">
+                                 <div class="rp-field">
+                                     <label for="activo">Estado del registro</label>
+                                     <select id="activo" th:field="*{activo}" required>
+                                         <option th:value="true">Activo</option>
+                                         <option th:value="false">Inactivo</option>
+                                     </select>
+                                     <small>El estado se actualiza al guardar los cambios.</small>
+                                 </div>
+                             </div>
+                         </div>
+
+                        <!-- =========================================
+                             ACCIONES DEL FORMULARIO
+                             ========================================= -->
+
+                        <div class="rp-form-actions">
+
+                            <a th:href="@{/recepcion/pacientes}"
+                               class="rp-btn rp-btn-outline">
+
+                                <i class="bx bx-x"></i>
+                                Cancelar
+
+                            </a>
+
+                            <button type="submit"
+                                    class="rp-btn rp-btn-primary">
+
+                                <i class="bx bx-save"></i>
+
+                                <span th:text="${modoEdicion} ? 'Guardar cambios' : 'Registrar paciente'">
+                                    Registrar paciente
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

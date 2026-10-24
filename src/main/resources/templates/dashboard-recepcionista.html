@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinGuard | Panel de Recepción</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <script th:src="@{/js/theme.js}"></script>
+
+    <!-- Contador global de notificaciones de Recepción -->
+    <style>
+      body .cg-recep-notif-badge {
+        margin-left: auto;
+        min-width: 23px;
+        height: 22px;
+        padding: 2px 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #fff;
+        background: #006d7c;
+        border: 1px solid #50c3cb;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+    </style>
+</head>
+
+<body data-page="dashboard" class="dashboard-recepcion">
+    <aside id="sidebar">
+
+        <!-- LOGO -->
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+
+            </div>
+
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+            <!-- DASHBOARD -->
+            <a class="nb active" th:href="@{/recepcionista/dashboard}" aria-current="page">
+
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+
+            </a>
+
+            <!-- PACIENTES -->
+            <a class="nb" th:href="@{/recepcion/pacientes}">
+
+                <i class="bx bx-user"></i>
+                <span>Pacientes</span>
+
+            </a>
+
+            <!-- CITAS -->
+            <a class="nb" th:href="@{/recepcion/citas}">
+
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+
+            </a>
+
+            <!-- AGENDA -->
+            <a class="nb" th:href="@{/recepcion/agenda}">
+
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+
+            </a>
+
+            <!-- ANÁLISIS -->
+            <a class="nb" th:href="@{/recepcion/analisis}">
+
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+
+            </a>
+
+            <!-- NOTIFICACIONES -->
+            <a class="nb" th:href="@{/recepcion/notificaciones}">
+
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+                <span class="cg-recep-notif-badge"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas > 99 ? '99+' : noLeidas}"
+                      th:attr="aria-label=|${noLeidas} notificaciones sin leer|">0</span>
+
+            </a>
+
+            <!-- REPORTES -->
+            <a class="nb" th:href="@{/recepcion/reportes}">
+
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+
+            </a>
+
+            <!-- PERFIL -->
+            <a class="nb" th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+
+            </a>
+
+        </nav>
+
+        <!-- =================================================
+             PERFIL Y CIERRE DE SESIÓN
+             ================================================= -->
+
+        <!-- PERFIL UNIFICADO DEL RECEPCIONISTA -->
+        <div class="sb-bottom recep-sidebar-footer">
+            <div class="sb-user recep-user-card">
+                <div class="avatar recep-user-avatar" aria-hidden="true">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="u-info recep-user-info">
+                    <div class="u-nm" th:text="${#authentication.name}">Usuario</div>
+                    <div class="u-rl">Recepcionista</div>
+                </div>
+            </div>
+            <form class="sb-logout-form" th:action="@{/logout}" method="post">
+                <button class="logout-link recep-logout-button" type="submit">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </aside>
+    <div id="main-content">
+        <header class="rd-topbar">
+            <div class="h-title">Panel de Recepción</div>
+            <a th:href="@{/recepcion/notificaciones}" class="rd-topbar-link" aria-label="Ver notificaciones">
+                <i class="bx bx-bell"></i><span>Avisos</span>
+            </a>
+        </header>
+        <main class="main-inner rd-main">
+            <div class="page active">
+                <section class="card rd-welcome">
+                    <div class="rd-welcome-copy">
+                        <span class="rd-eyebrow">ÁREA ADMINISTRATIVA</span>
+                        <h1>Bienvenido al panel de recepción</h1>
+                        <p>Consulta los indicadores actuales y accede a las herramientas de gestión de ClinGuard.</p>
+                        <div class="rd-quick-links">
+                            <a th:href="@{/recepcion/citas}" class="rd-button rd-button-primary"><i
+                                    class="bx bx-calendar-plus"></i> Gestionar citas</a>
+                            <a th:href="@{/recepcion/pacientes}" class="rd-button rd-button-secondary"><i
+                                    class="bx bx-group"></i> Ver pacientes</a>
+                        </div>
+                    </div>
+                    <div class="rd-welcome-symbol" aria-hidden="true"><i class="bx bx-calendar-check"></i></div>
+                </section>
+
+                <section class="rd-summary-section" aria-labelledby="rd-summary-title">
+                    <div class="rd-heading">
+                        <div>
+                            <h2 id="rd-summary-title">Resumen general</h2>
+                            <p>Indicadores actualizados desde los registros del sistema.</p>
+                        </div>
+                    </div>
+                    <div class="rd-stats">
+                        <article class="m-card rd-stat">
+                            <div class="rd-stat-icon"><i class="bx bx-calendar"></i></div>
+                            <div><span class="rd-stat-label">Citas de hoy</span><strong class="rd-stat-value"
+                                    th:text="${citasHoy != null ? citasHoy : 0}">0</strong></div>
+                        </article>
+                        <article class="m-card rd-stat">
+                            <div class="rd-stat-icon rd-icon-warning"><i class="bx bx-time-five"></i></div>
+                            <div><span class="rd-stat-label">Citas pendientes</span><strong class="rd-stat-value"
+                                    th:text="${citasPendientes != null ? citasPendientes : 0}">0</strong></div>
+                        </article>
+                        <article class="m-card rd-stat">
+                            <div class="rd-stat-icon rd-icon-success"><i class="bx bx-check-circle"></i></div>
+                            <div><span class="rd-stat-label">Citas confirmadas</span><strong class="rd-stat-value"
+                                    th:text="${citasConfirmadas != null ? citasConfirmadas : 0}">0</strong></div>
+                        </article>
+                        <article class="m-card rd-stat">
+                            <div class="rd-stat-icon"><i class="bx bx-group"></i></div>
+                            <div><span class="rd-stat-label">Pacientes registrados</span><strong class="rd-stat-value"
+                                    th:text="${totalPacientes != null ? totalPacientes : 0}">0</strong></div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="card rd-module-section" aria-labelledby="rd-tools-title">
+                    <div class="rd-heading">
+                        <div>
+                            <h2 id="rd-tools-title">Gestión de recepción</h2>
+                            <p>Accede directamente a cada sección administrativa.</p>
+                        </div>
+                    </div>
+                    <div class="rd-module-grid">
+                        <a class="rd-module" th:href="@{/recepcion/pacientes}"><span class="rd-module-icon"><i
+                                    class="bx bx-group"></i></span><span
+                                class="rd-module-copy"><strong>Pacientes</strong><small>Consulta y gestiona
+                                    registros.</small></span><i class="bx bx-chevron-right rd-arrow"></i></a>
+                        <a class="rd-module" th:href="@{/recepcion/citas}"><span class="rd-module-icon"><i
+                                    class="bx bx-calendar"></i></span><span class="rd-module-copy"><strong>Citas
+                                    médicas</strong><small>Registra y administra citas.</small></span><i
+                                class="bx bx-chevron-right rd-arrow"></i></a>
+                        <a class="rd-module" th:href="@{/recepcion/agenda}"><span class="rd-module-icon"><i
+                                    class="bx bx-calendar-check"></i></span><span class="rd-module-copy"><strong>Agenda
+                                    médica</strong><small>Consulta horarios y citas.</small></span><i
+                                class="bx bx-chevron-right rd-arrow"></i></a>
+                        <a class="rd-module" th:href="@{/recepcion/notificaciones}"><span class="rd-module-icon"><i
+                                    class="bx bx-bell"></i></span><span
+                                class="rd-module-copy"><strong>Notificaciones</strong><small>Consulta avisos de
+                                    recepción.</small></span><i class="bx bx-chevron-right rd-arrow"></i></a>
+                        <a class="rd-module" th:href="@{/recepcion/analisis}"><span class="rd-module-icon"><i
+                                    class="bx bx-line-chart"></i></span><span
+                                class="rd-module-copy"><strong>Análisis</strong><small>Explora indicadores y
+                                    tendencias.</small></span><i class="bx bx-chevron-right rd-arrow"></i></a>
+                        <a class="rd-module" th:href="@{/recepcion/reportes}"><span class="rd-module-icon"><i
+                                    class="bx bx-file"></i></span><span
+                                class="rd-module-copy"><strong>Reportes</strong><small>Consulta informes
+                                    administrativos.</small></span><i class="bx bx-chevron-right rd-arrow"></i></a>
+                    </div>
+                </section>
+
+                <section class="card rd-upcoming" aria-labelledby="rd-upcoming-title">
+                    <div class="rd-heading rd-heading-row">
+                        <div>
+                            <h2 id="rd-upcoming-title">Próximas citas</h2>
+                            <p>Las cinco citas futuras más cercanas.</p>
+                        </div>
+                        <a class="rd-view-all" th:href="@{/recepcion/citas}">Ver todas <i
+                                class="bx bx-right-arrow-alt"></i></a>
+                    </div>
+                    <div class="rd-table-scroll">
+                        <table class="rd-table">
+                            <thead>
+                                <tr>
+                                    <th>Paciente / usuario</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cita : ${proximasCitas}">
+                                    <td class="rd-patient" th:text="${cita.pacienteNombre}">Paciente</td>
+                                    <td th:text="${cita.fecha}">2026-10-23</td>
+                                    <td th:text="${cita.hora}">09:00</td>
+                                    <td><span class="rd-status"
+                                            th:classappend="${cita.estado == 'CONFIRMADA' ? ' rd-status-confirmed' : ' rd-status-pending'}"
+                                            th:text="${cita.estado}">PROGRAMADA</span></td>
+                                </tr>
+                                <tr th:if="${proximasCitas == null or #lists.isEmpty(proximasCitas)}">
+                                    <td colspan="4" class="rd-empty"><i class="bx bx-calendar-x"></i>
+                                        <p>No hay próximas citas disponibles para mostrar.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="rd-disclaimer"><i class="bx bx-info-circle"></i> Se muestra información administrativa;
+                        esta pantalla no incluye datos clínicos.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

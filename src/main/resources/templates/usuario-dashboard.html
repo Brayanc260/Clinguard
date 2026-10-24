@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard — Dashboard de Usuario</title>
+
+    <!-- CSS GLOBAL -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <!-- BOXICONS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- TEMA -->
+    <script th:src="@{/js/theme.js}"></script>
+</head>
+
+<body data-page="usuario-dashboard">
+
+    <!-- =========================================
+         SIDEBAR
+    ========================================== -->
+
+    <aside id="sidebar">
+
+        <!-- LOGO -->
+        <div class="sb-brand">
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-oscuro">
+
+            </div>
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <nav class="sb-nav"
+             aria-label="Navegación principal">
+
+            <!-- DASHBOARD -->
+            <a class="nb active"
+               th:href="@{/dashboard}"
+               aria-current="page">
+
+                <i class="bx bx-grid-alt"
+                   aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- MIS CITAS -->
+            <a class="nb" th:href="@{/citas}">
+
+                <i class="bx bx-calendar"
+                   aria-hidden="true"></i>
+                <span>Mis citas</span>
+            </a>
+
+            <!-- MI HISTORIAL -->
+            <a class="nb" th:href="@{/historial}">
+
+                <i class="bx bx-notepad"
+                   aria-hidden="true"></i>
+                <span>Mi historial</span>
+            </a>
+
+            <!-- NOTIFICACIONES -->
+            <th:block
+                th:replace="~{fragments/notificaciones-fragment :: menu}">
+            </th:block>
+
+            <!-- MI PERFIL -->
+            <a class="nb" th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"
+                   aria-hidden="true"></i>
+                <span>Mi perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- =========================================
+             USUARIO ACTUAL
+        ========================================== -->
+
+        <a class="sb-user sb-user-clickable"
+           th:href="@{/perfil}"
+           aria-label="Abrir mi perfil">
+
+            <div class="avatar"
+                 th:text="${username != null and !username.isEmpty()
+                 ? #strings.toUpperCase(
+                     #strings.substring(username, 0, 1))
+                 : 'U'}">
+                U
+            </div>
+
+            <div class="u-info">
+
+                <div class="u-nm"
+                     th:text="${username != null ? username : 'Usuario'}">
+                    Usuario
+                </div>
+
+                <div class="u-rl">
+                    Usuario
+                </div>
+
+            </div>
+        </a>
+
+        <!-- =========================================
+             CERRAR SESIÓN
+        ========================================== -->
+
+        <form th:action="@{/logout}" method="post">
+
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <button class="logout-link ud-logout"
+                    type="submit">
+
+                <i class="bx bx-log-out"
+                   aria-hidden="true"></i>
+                Salir
+
+            </button>
+        </form>
+
+    </aside>
+
+    <!-- =========================================
+         CONTENIDO PRINCIPAL
+    ========================================== -->
+
+    <div id="main-content">
+
+        <!-- HEADER -->
+        <header>
+
+            <div class="h-title">
+                Dashboard de Usuario
+            </div>
+
+            <!-- CAMPANA DE NOTIFICACIONES -->
+            <div class="ud-header-actions">
+
+                <th:block
+                    th:replace="~{fragments/notificaciones-fragment :: campana}">
+                </th:block>
+
+            </div>
+
+        </header>
+
+        <main class="main-inner">
+
+            <div class="rd-dashboard">
+
+                <!-- =================================
+                     BIENVENIDA
+                ================================== -->
+
+                <section class="rd-welcome"
+                         aria-labelledby="bienvenida">
+
+                    <div>
+
+                        <h1 id="bienvenida">
+                            Bienvenido a ClinGuard
+                        </h1>
+
+                        <p>
+                            Hola,
+                            <strong
+                                th:text="${username != null ? username : 'Usuario'}">
+                                Usuario
+                            </strong>.
+                            Consulta tus citas, tu historial médico,
+                            tus notificaciones y administra tu perfil.
+                        </p>
+
+                    </div>
+
+                    <div class="rd-icon green">
+                        <i class="bx bx-plus-medical"
+                           aria-hidden="true"></i>
+                    </div>
+
+                </section>
+
+                <!-- =================================
+                     TARJETAS SUPERIORES
+                ================================== -->
+
+                <div class="rd-summary">
+
+                    <!-- MIS CITAS -->
+                    <a class="rd-summary-card"
+                       th:href="@{/citas}">
+
+                        <i class="bx bx-calendar"
+                           aria-hidden="true"></i>
+                        <span>Mis citas</span>
+
+                    </a>
+
+                    <!-- MI HISTORIAL -->
+                    <a class="rd-summary-card"
+                       th:href="@{/historial}">
+
+                        <i class="bx bx-notepad"
+                           aria-hidden="true"></i>
+                        <span>Mi historial</span>
+
+                    </a>
+
+                    <!-- MI PERFIL -->
+                    <a class="rd-summary-card"
+                       th:href="@{/perfil}">
+
+                        <i class="bx bx-user-circle"
+                           aria-hidden="true"></i>
+                        <span>Mi perfil</span>
+
+                    </a>
+
+                </div>
+
+                <!-- =================================
+                     ACCESOS RÁPIDOS
+                ================================== -->
+
+                <section class="rd-access-panel"
+                         aria-labelledby="accesos">
+
+                    <h2 id="accesos">
+                        Accesos rápidos
+                    </h2>
+
+                    <p class="rd-description">
+                        Accede directamente a tus vistas de ClinGuard.
+                    </p>
+
+                    <div class="rd-access-grid">
+
+                        <!-- MIS CITAS -->
+                        <a class="rd-access-card"
+                           th:href="@{/citas}">
+
+                            <div class="rd-icon purple">
+                                <i class="bx bx-calendar"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Mis citas</h3>
+
+                            <p>
+                                Consulta las fechas, horarios y
+                                estados de tus citas médicas.
+                            </p>
+
+                        </a>
+
+                        <!-- MI HISTORIAL -->
+                        <a class="rd-access-card"
+                           th:href="@{/historial}">
+
+                            <div class="rd-icon orange">
+                                <i class="bx bx-notepad"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Mi historial</h3>
+
+                            <p>
+                                Consulta la información de tus
+                                atenciones médicas registradas.
+                            </p>
+
+                        </a>
+
+                        <!-- NOTIFICACIONES -->
+                        <a class="rd-access-card"
+                           th:href="@{/notificaciones}">
+
+                            <div class="rd-icon green">
+                                <i class="bx bx-bell"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>
+                                Notificaciones
+
+                                <span class="ud-notification-badge"
+                                      th:if="${noLeidas != null and noLeidas > 0}"
+                                      th:text="${noLeidas > 99 ? '99+' : noLeidas}">
+                                </span>
+                            </h3>
+
+                            <p>
+                                Consulta tus avisos, recordatorios
+                                de citas y novedades importantes
+                                de ClinGuard.
+                            </p>
+
+                        </a>
+
+                        <!-- MI PERFIL -->
+                        <a class="rd-access-card"
+                           th:href="@{/perfil}">
+
+                            <div class="rd-icon blue">
+                                <i class="bx bx-user-circle"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Mi perfil</h3>
+
+                            <p>
+                                Revisa y actualiza tu información
+                                personal y tus datos de contacto.
+                            </p>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

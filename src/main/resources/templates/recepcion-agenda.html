@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard | Agenda médica</title>
+
+    <!-- CSS GENERAL -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- BOXICONS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- MODO CLARO / OSCURO -->
+    <script th:src="@{/js/theme.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/recepcion-agenda.css}">
+
+
+    <!-- Contador global de notificaciones de Recepción -->
+    <style>
+      body .cg-recep-notif-badge {
+        margin-left: auto;
+        min-width: 23px;
+        height: 22px;
+        padding: 2px 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #fff;
+        background: #006d7c;
+        border: 1px solid #50c3cb;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+    </style>
+</head>
+
+<body data-page="recepcion-agenda">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside id="sidebar">
+
+        <!-- LOGO -->
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     class="clinguard-logo logo-claro"
+                     alt="ClinGuard">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     class="clinguard-logo logo-oscuro"
+                     alt="ClinGuard">
+
+            </div>
+
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <nav class="sb-nav"
+             aria-label="Navegación de recepción">
+
+            <a class="nb"
+               th:href="@{/recepcionista/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/pacientes}">
+                <i class="bx bx-group"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/citas}">
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+            </a>
+
+            <a class="nb active"
+               th:href="@{/recepcion/agenda}"
+               aria-current="page">
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+            </a>
+
+            <!-- ANÁLISIS -->
+            <a class="nb"
+               th:href="@{/recepcion/analisis}">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/notificaciones}">
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+                <span class="cg-recep-notif-badge"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas > 99 ? '99+' : noLeidas}"
+                      th:attr="aria-label=|${noLeidas} notificaciones sin leer|">0</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/reportes}">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/perfil}">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- PERFIL INFERIOR -->
+        <!-- PERFIL UNIFICADO DEL RECEPCIONISTA -->
+        <div class="sb-bottom recep-sidebar-footer">
+            <div class="sb-user recep-user-card">
+                <div class="avatar recep-user-avatar" aria-hidden="true">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="u-info recep-user-info">
+                    <div class="u-nm" th:text="${#authentication.name}">Usuario</div>
+                    <div class="u-rl">Recepcionista</div>
+                </div>
+            </div>
+            <form class="sb-logout-form" th:action="@{/logout}" method="post">
+                <button class="logout-link recep-logout-button" type="submit">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <!-- ENCABEZADO -->
+        <header>
+
+            <div class="h-title">
+                Agenda médica
+            </div>
+
+        </header>
+
+        <main class="main-inner">
+
+            <div class="page active ra-page">
+
+                <!-- MENSAJE DE ERROR -->
+                <div th:if="${error != null}"
+                     class="ra-alert ra-alert-error"
+                     role="alert"
+                     th:text="${error}">
+                </div>
+
+                <!-- =========================================
+                     PRESENTACIÓN DE AGENDA
+                     ========================================= -->
+
+                <section class="card ra-intro">
+
+                    <div>
+
+                        <h2>Programación médica</h2>
+
+                        <p>
+                            Consulta las citas de cada médico,
+                            revisa los horarios ocupados
+                            y organiza la atención.
+                        </p>
+
+                    </div>
+
+                    <a class="ra-btn ra-btn-primary"
+                       th:href="@{/recepcion/citas}">
+
+                        <i class="bx bx-calendar-plus"></i>
+                        Gestionar citas
+
+                    </a>
+
+                </section>
+
+                <!-- =========================================
+                     FILTROS
+                     ========================================= -->
+
+                <section class="card ra-section">
+
+                    <div class="ra-section-heading">
+
+                        <div>
+
+                            <h3>
+                                <i class="bx bx-filter-alt"></i>
+                                Consultar agenda
+                            </h3>
+
+                            <p>
+                                Selecciona la fecha y el médico
+                                para visualizar las citas.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <form th:action="@{/recepcion/agenda}"
+                          method="get">
+
+                        <div class="ra-form-grid">
+
+                            <!-- FECHA -->
+                            <div class="ra-field">
+
+                                <label for="fecha">
+                                    Fecha
+                                </label>
+
+                                <input type="date"
+                                       id="fecha"
+                                       name="fecha"
+                                       th:value="${fechaSeleccionada}"
+                                       required>
+
+                            </div>
+
+                            <!-- MÉDICO -->
+                            <div class="ra-field">
+
+                                <label for="medicoUsername">
+                                    Médico
+                                </label>
+
+                                <select id="medicoUsername"
+                                        name="medicoUsername">
+
+                                    <option value="">
+                                        Todos los médicos
+                                    </option>
+
+                                    <option th:each="medico : ${medicos}"
+                                            th:value="${medico}"
+                                            th:text="${medico}"
+                                            th:selected="${medico == medicoSeleccionado}">
+                                        Médico
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="ra-actions">
+
+                            <button type="submit"
+                                    class="ra-btn ra-btn-primary">
+
+                                <i class="bx bx-search"></i>
+                                Consultar agenda
+
+                            </button>
+
+                            <a class="ra-btn ra-btn-secondary"
+                               th:href="@{/recepcion/agenda}">
+
+                                <i class="bx bx-reset"></i>
+                                Limpiar filtros
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <!-- =========================================
+                     ESTADÍSTICAS
+                     ========================================= -->
+
+                <div class="ra-stats">
+
+                    <!-- TOTAL -->
+                    <article class="m-card ra-stat-card">
+
+                        <div class="ra-stat-icon">
+                            <i class="bx bx-calendar"></i>
+                        </div>
+
+                        <div class="ra-stat-content">
+
+                            <strong th:text="${totalCitas != null ? totalCitas : 0}">
+                                0
+                            </strong>
+
+                            <span>Citas del filtro</span>
+
+                        </div>
+
+                    </article>
+
+                    <!-- PENDIENTES -->
+                    <article class="m-card ra-stat-card">
+
+                        <div class="ra-stat-icon">
+                            <i class="bx bx-time-five"></i>
+                        </div>
+
+                        <div class="ra-stat-content">
+
+                            <strong th:text="${citasPendientes != null ? citasPendientes : 0}">
+                                0
+                            </strong>
+
+                            <span>Pendientes</span>
+
+                        </div>
+
+                    </article>
+
+                    <!-- CONFIRMADAS -->
+                    <article class="m-card ra-stat-card">
+
+                        <div class="ra-stat-icon">
+                            <i class="bx bx-check-circle"></i>
+                        </div>
+
+                        <div class="ra-stat-content">
+
+                            <strong th:text="${citasConfirmadas != null ? citasConfirmadas : 0}">
+                                0
+                            </strong>
+
+                            <span>Confirmadas</span>
+
+                        </div>
+
+                    </article>
+
+                    <!-- CANCELADAS -->
+                    <article class="m-card ra-stat-card">
+
+                        <div class="ra-stat-icon">
+                            <i class="bx bx-x-circle"></i>
+                        </div>
+
+                        <div class="ra-stat-content">
+
+                            <strong th:text="${citasCanceladas != null ? citasCanceladas : 0}">
+                                0
+                            </strong>
+
+                            <span>Canceladas</span>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <!-- =========================================
+                     TABLA DE CITAS
+                     ========================================= -->
+
+                <section class="card ra-section">
+
+                    <div class="ra-table-heading">
+
+                        <div>
+
+                            <h3>
+                                <i class="bx bx-list-ul"></i>
+                                Citas programadas
+                            </h3>
+
+                            <p>
+                                Horarios y citas registrados
+                                para los filtros seleccionados.
+                            </p>
+
+                        </div>
+
+                        <span class="ra-date-badge"
+                              th:text="${fechaSeleccionada}">
+                            Fecha
+                        </span>
+
+                    </div>
+
+                    <div class="ra-table-tools">
+                        <div class="ra-quick-search">
+                            <i class="bx bx-search" aria-hidden="true"></i>
+                            <input id="raQuickSearch" type="search"
+                                   placeholder="Buscar médico, usuario, hora o estado..."
+                                   aria-label="Buscar entre las citas mostradas"
+                                   autocomplete="off">
+                        </div>
+                        <span id="raVisibleCount" class="ra-table-count" aria-live="polite"
+                              th:text="${totalCitas != null ? totalCitas + ' citas visibles' : '0 citas visibles'}">0 citas visibles</span>
+                    </div>
+                    <div id="raNoResults" class="ra-no-results" hidden>
+                        <i class="bx bx-search-alt" aria-hidden="true"></i>
+                        No hay coincidencias con la búsqueda.
+                    </div>
+                    <div class="ra-table-wrap">
+
+                        <table class="ra-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Médico</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <!-- CITAS REGISTRADAS -->
+                                <tr class="ra-data-row" th:each="cita : ${citas}">
+
+                                    <!-- HORA -->
+                                    <td>
+
+                                        <span class="ra-time"
+                                              th:text="${cita.hora}">
+                                            09:00
+                                        </span>
+
+                                    </td>
+
+                                    <!-- MÉDICO -->
+                                    <td th:text="${#strings.isEmpty(cita.medicoUsername) ? 'Sin asignar' : cita.medicoUsername}">
+                                        Médico
+                                    </td>
+
+                                    <!-- USUARIO -->
+                                    <td th:text="${#strings.isEmpty(cita.usuarioUsername) ? 'Sin asignar' : cita.usuarioUsername}">
+                                        Usuario
+                                    </td>
+
+                                    <!-- FECHA -->
+                                    <td th:text="${cita.fecha}">
+                                        Fecha
+                                    </td>
+
+                                    <!-- ESTADO -->
+                                    <td>
+
+                                        <span class="ra-status"
+                                              th:classappend="${cita.estado != null and #strings.equalsIgnoreCase(cita.estado,'CONFIRMADA') ? ' ra-confirmed' : (cita.estado != null and (#strings.equalsIgnoreCase(cita.estado,'CANCELADA') or #strings.equalsIgnoreCase(cita.estado,'CANCELADO')) ? ' ra-cancelled' : ' ra-pending')}"
+                                              th:text="${#strings.isEmpty(cita.estado) ? 'Sin estado' : cita.estado}">
+                                            PROGRAMADA
+                                        </span>
+
+                                    </td>
+
+                                    <!-- ACCIONES -->
+                                    <td>
+
+                                        <a class="ra-btn ra-btn-small"
+                                           th:href="@{/recepcion/citas}">
+
+                                            <i class="bx bx-calendar-edit"></i>
+                                            Gestionar
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                                <!-- SIN CITAS -->
+                                <tr th:if="${citas == null or #lists.isEmpty(citas)}">
+
+                                    <td colspan="6"
+                                        class="ra-empty">
+
+                                        <i class="bx bx-calendar-x"></i>
+
+                                        <p>
+                                            No se encontraron citas para
+                                            la fecha y el médico seleccionados.
+                                        </p>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <p class="ra-notice">
+
+                        <i class="bx bx-info-circle"></i>
+
+                        Los horarios mostrados corresponden a citas
+                        registradas. La disponibilidad real del médico
+                        depende de sus jornadas de atención.
+
+                    </p>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const search = document.getElementById('raQuickSearch');
+            const count = document.getElementById('raVisibleCount');
+            const empty = document.getElementById('raNoResults');
+            const rows = Array.from(document.querySelectorAll('.ra-data-row'));
+            if (!search) return;
+
+            const normalize = value => (value || '')
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .toLocaleLowerCase('es').trim();
+
+            function filter() {
+                const query = normalize(search.value);
+                let visible = 0;
+                rows.forEach(row => {
+                    const searchable = Array.from(row.querySelectorAll('td'))
+                        .slice(0, 5).map(cell => cell.textContent).join(' ');
+                    const match = normalize(searchable).includes(query);
+                    row.hidden = !match;
+                    if (match) visible++;
+                });
+                if (count) count.textContent = visible + (visible === 1 ? ' cita visible' : ' citas visibles');
+                if (empty) empty.hidden = visible !== 0 || rows.length === 0;
+            }
+            search.addEventListener('input', filter);
+            filter();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard | Reportes administrativos</title>
+
+    <!-- CSS GENERAL -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- BOXICONS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- MODO CLARO / OSCURO -->
+    <script th:src="@{/js/theme.js}"></script>
+    <!-- Ajustes visuales compartidos del rol de recepción -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <!-- Contador global de notificaciones de Recepción -->
+    <style>
+      body .cg-recep-notif-badge {
+        margin-left: auto;
+        min-width: 23px;
+        height: 22px;
+        padding: 2px 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #fff;
+        background: #006d7c;
+        border: 1px solid #50c3cb;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+    </style>
+</head>
+
+<body data-page="recepcion-reportes">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside id="sidebar">
+
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-oscuro">
+
+            </div>
+
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <nav class="sb-nav"
+             aria-label="Navegación de recepción">
+
+            <a class="nb"
+               th:href="@{/recepcionista/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/pacientes}">
+                <i class="bx bx-group"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/citas}">
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/agenda}">
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/analisis}">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/notificaciones}">
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+                <span class="cg-recep-notif-badge"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas > 99 ? '99+' : noLeidas}"
+                      th:attr="aria-label=|${noLeidas} notificaciones sin leer|">0</span>
+            </a>
+
+            <!-- PÁGINA ACTIVA -->
+            <a class="nb active"
+               th:href="@{/recepcion/reportes}"
+               aria-current="page">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/perfil}">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- PERFIL INFERIOR -->
+        <!-- PERFIL UNIFICADO DEL RECEPCIONISTA -->
+        <div class="sb-bottom recep-sidebar-footer">
+            <div class="sb-user recep-user-card">
+                <div class="avatar recep-user-avatar" aria-hidden="true">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="u-info recep-user-info">
+                    <div class="u-nm" th:text="${#authentication.name}">Usuario</div>
+                    <div class="u-rl">Recepcionista</div>
+                </div>
+            </div>
+            <form class="sb-logout-form" th:action="@{/logout}" method="post">
+                <button class="logout-link recep-logout-button" type="submit">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <header>
+
+            <div class="h-title">
+                Reportes
+            </div>
+
+        </header>
+
+        <main class="main-inner">
+
+            <div class="page active">
+
+                <!-- =========================================
+                     PRESENTACIÓN
+                     ========================================= -->
+
+                <section class="card rr-intro">
+
+                    <div>
+
+                        <h2>Reportes administrativos</h2>
+
+                        <p>
+                            Consulta estadísticas de citas
+                            médicas y descarga reportes
+                            administrativos de ClinGuard
+                            utilizando los datos de MongoDB.
+                        </p>
+
+                    </div>
+
+                    <i class="bx bx-file rr-big-icon"></i>
+
+                </section>
+
+                <!-- =========================================
+                     FILTROS POR FECHAS
+                     ========================================= -->
+
+                <section class="card rr-section">
+
+                    <h3>
+                        <i class="bx bx-filter-alt"></i>
+                        Filtrar por fechas
+                    </h3>
+
+                    <form class="rr-filter"
+                          th:action="@{/recepcion/reportes}"
+                          method="get">
+
+                        <!-- DESDE -->
+                        <label for="desde">
+
+                            Desde
+
+                            <input type="date"
+                                   id="desde"
+                                   name="desde"
+                                   th:value="${desde}"
+                                   required>
+
+                        </label>
+
+                        <!-- HASTA -->
+                        <label for="hasta">
+
+                            Hasta
+
+                            <input type="date"
+                                   id="hasta"
+                                   name="hasta"
+                                   th:value="${hasta}"
+                                   required>
+
+                        </label>
+
+                        <!-- CONSULTAR -->
+                        <button type="submit"
+                                class="btn-primary">
+
+                            <i class="bx bx-search"></i>
+                            Consultar
+
+                        </button>
+
+                        <!-- EXPORTAR CSV -->
+                        <a class="btn-sec"
+                           th:href="@{/recepcion/reportes/exportar(desde=${desde},hasta=${hasta})}">
+
+                            <i class="bx bx-download"></i>
+                            Exportar CSV
+
+                        </a>
+
+                    </form>
+
+                </section>
+
+                <!-- =========================================
+                     ESTADÍSTICAS GENERALES
+                     ========================================= -->
+
+                <div class="rr-stats">
+
+                    <!-- PACIENTES -->
+                    <article class="m-card">
+
+                        <i class="bx bx-group"></i>
+
+                        <div>
+
+                            <div class="m-val"
+                                 th:text="${totalPacientes != null ? totalPacientes : 0}">
+                                0
+                            </div>
+
+                            <div class="m-lbl">
+                                Pacientes totales
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- CITAS DEL PERÍODO -->
+                    <article class="m-card">
+
+                        <i class="bx bx-calendar"></i>
+
+                        <div>
+
+                            <div class="m-val"
+                                 th:text="${totalCitas != null ? totalCitas : 0}">
+                                0
+                            </div>
+
+                            <div class="m-lbl">
+                                Citas del período
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- PENDIENTES -->
+                    <article class="m-card">
+
+                        <i class="bx bx-time-five"></i>
+
+                        <div>
+
+                            <div class="m-val"
+                                 th:text="${pendientes != null ? pendientes : 0}">
+                                0
+                            </div>
+
+                            <div class="m-lbl">
+                                Pendientes
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- CONFIRMADAS -->
+                    <article class="m-card">
+
+                        <i class="bx bx-check-circle"></i>
+
+                        <div>
+
+                            <div class="m-val"
+                                 th:text="${confirmadas != null ? confirmadas : 0}">
+                                0
+                            </div>
+
+                            <div class="m-lbl">
+                                Confirmadas
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- CANCELADAS -->
+                    <article class="m-card">
+
+                        <i class="bx bx-x-circle"></i>
+
+                        <div>
+
+                            <div class="m-val"
+                                 th:text="${canceladas != null ? canceladas : 0}">
+                                0
+                            </div>
+
+                            <div class="m-lbl">
+                                Canceladas
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <!-- =========================================
+                     TABLAS DE REPORTES
+                     ========================================= -->
+
+                <div class="rr-columns">
+
+                    <!-- CITAS POR MÉDICO -->
+                    <section class="card rr-section">
+
+                        <h3>
+                            <i class="bx bx-user-pin"></i>
+                            Citas por médico
+                        </h3>
+
+                        <div class="rr-table-wrap">
+
+                            <table>
+
+                                <thead>
+                                    <tr>
+                                        <th>Médico</th>
+                                        <th>Citas</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <tr th:each="dato : ${porMedico}">
+
+                                        <td th:text="${dato.key}">
+                                            Médico
+                                        </td>
+
+                                        <td th:text="${dato.value}">
+                                            0
+                                        </td>
+
+                                    </tr>
+
+                                    <tr th:if="${porMedico == null or #lists.isEmpty(porMedico)}">
+
+                                        <td colspan="2">
+                                            No hay datos disponibles.
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </section>
+
+                    <!-- CITAS POR FECHA -->
+                    <section class="card rr-section">
+
+                        <h3>
+                            <i class="bx bx-calendar-event"></i>
+                            Citas por fecha
+                        </h3>
+
+                        <div class="rr-table-wrap">
+
+                            <table>
+
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Citas</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <tr th:each="dato : ${porFecha}">
+
+                                        <td th:text="${dato.key}">
+                                            Fecha
+                                        </td>
+
+                                        <td th:text="${dato.value}">
+                                            0
+                                        </td>
+
+                                    </tr>
+
+                                    <tr th:if="${porFecha == null or #lists.isEmpty(porFecha)}">
+
+                                        <td colspan="2">
+                                            No hay datos disponibles.
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+                <!-- =========================================
+                     NOTA INFORMATIVA
+                     ========================================= -->
+
+                <p class="rr-note">
+
+                    <i class="bx bx-info-circle"></i>
+
+                    El conteo de pacientes corresponde
+                    a todos los registros del sistema.
+                    Las citas y sus estados se calculan
+                    según el período seleccionado.
+
+                    El archivo CSV contiene información
+                    administrativa, sin motivos de consulta
+                    ni historiales clínicos.
+
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

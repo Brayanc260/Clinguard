@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <title>
+        ClinGuard — Detalle del Paciente
+    </title>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+
+    <script th:src="@{/js/theme.js}"></script>
+
+</head>
+
+
+<body data-page="pacientes">
+
+
+    <!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+    <aside id="sidebar">
+
+
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+            </div>
+
+        </div>
+
+
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+
+            <a class="nb" th:href="@{/dashboard}">
+
+                <i class="bx bx-grid-alt"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-line-chart"></i>
+
+                <span>
+                    Análisis
+                </span>
+
+            </a>
+
+
+            <a class="nb" th:href="@{/conversiones}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-transfer"></i>
+
+                <span>
+                    Conversiones Médicas
+                </span>
+
+            </a>
+
+
+            <a class="nb active" th:href="@{/pacientes}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-user"></i>
+
+                <span>
+                    Pacientes
+                </span>
+
+            </a>
+
+
+            <a class="nb" th:href="@{/citas}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-calendar"></i>
+
+                <span>
+                    Citas
+                </span>
+
+            </a>
+
+
+            <a class="nb" th:href="@{/historial}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-notepad"></i>
+
+                <span>
+                    Historial Médico
+                </span>
+
+            </a>
+
+
+            <a class="nb" th:href="@{/medicamentos}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-capsule"></i>
+
+                <span>
+                    Medicamentos
+                </span>
+
+            </a>
+
+
+            <a class="nb" th:href="@{/reportes}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-file"></i>
+
+                <span>
+                    Reportes
+                </span>
+
+            </a>
+
+
+            <a class="nb" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">
+
+                <i class="bx bx-shield-quarter"></i>
+
+                <span>
+                    Panel Admin
+                </span>
+
+            </a>
+
+
+
+
+            <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
+                <i class='bx bx-bell'></i>
+                <span>Notificaciones</span>
+                <span class="notif-count" th:if="${noLeidas != null and noLeidas > 0}" th:text="${noLeidas}">
+                </span>
+            </a>
+
+
+
+            <a class="nb" th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+
+                <span>
+                    Mi Perfil
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+        <!-- USUARIO -->
+        <a class="sb-user sb-user-clickable" th:href="@{/perfil}">
+
+            <div class="avatar">
+
+                <i class="bx bx-user"></i>
+
+            </div>
+
+            <div class="u-info">
+
+                <div class="u-nm" sec:authentication="name">
+
+                    Usuario
+
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('ADMIN')">
+
+                    Administrador
+
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('MEDICO')">
+
+                    Médico
+
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('ENFERMERO')">
+
+                    Enfermero
+
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <!-- LOGOUT -->
+        <form th:action="@{/logout}" method="post">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <button type="submit" class="logout-link" style="
+                width: calc(100% - 24px);
+                background: transparent;
+            ">
+
+                <i class="bx bx-log-out"></i>
+
+                Salir
+
+            </button>
+
+        </form>
+
+
+    </aside>
+
+
+
+    <!-- =========================================================
+     CONTENIDO
+========================================================= -->
+
+    <div id="main-content">
+
+
+        <header>
+
+            <div class="h-title">
+
+                <a th:href="@{/pacientes}" style="
+                    display: inline-flex;
+                    align-items: center;
+                    margin-right: 10px;
+                    text-decoration: none;
+                ">
+
+                    <i class="bx bx-left-arrow-alt"></i>
+
+                </a>
+
+                Detalle del paciente
+
+            </div>
+
+        </header>
+
+
+
+        <div class="main-inner">
+
+
+            <div class="page active">
+
+
+                <!-- =================================================
+                 CABECERA PACIENTE
+            ================================================== -->
+
+                <div class="card">
+
+
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 20px;
+                        flex-wrap: wrap;
+                    ">
+
+
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            gap: 18px;
+                        ">
+
+
+                            <div class="cita-avatar" style="
+                                width: 62px;
+                                height: 62px;
+                                font-size: 28px;
+                            ">
+
+                                <i class="bx bx-user"></i>
+
+                            </div>
+
+
+                            <div>
+
+
+                                <h2 class="section-title-compact" style="margin-bottom: 5px;">
+
+                                    <span th:text="${paciente.nombres}">
+
+                                        Nombres
+
+                                    </span>
+
+                                    <span th:text="${paciente.apellidos}">
+
+                                        Apellidos
+
+                                    </span>
+
+                                </h2>
+
+
+                                <p class="muted-text-sm">
+
+                                    <span th:text="${paciente.tipoDocumento}">
+
+                                        CC
+
+                                    </span>
+
+                                    -
+
+                                    <span th:text="${paciente.documento}">
+
+                                        000000000
+
+                                    </span>
+
+                                </p>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div style="
+                            display: flex;
+                            gap: 10px;
+                            flex-wrap: wrap;
+                        ">
+
+
+                            <!-- EDITAR -->
+                            <a class="btn-primary" th:href="@{/pacientes/editar/{id}(id=${paciente.id})}"
+                                sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                                <i class="bx bx-edit-alt"></i>
+
+                                Editar
+
+                            </a>
+
+
+                            <!-- HISTORIAL -->
+                            <a class="btn-sec" th:href="@{/historial/paciente/{id}(id=${paciente.id})}"
+                                sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                                <i class="bx bx-notepad"></i>
+
+                                Historial
+
+                            </a>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 INFORMACIÓN PERSONAL
+            ================================================== -->
+
+                <div class="card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h3 class="section-title-compact">
+
+                                Información personal
+
+                            </h3>
+
+
+                            <p class="muted-text-sm">
+
+                                Datos básicos de identificación
+                                del paciente.
+
+                            </p>
+
+
+                        </div>
+
+
+                        <div class="cita-stat-icon cita-stat-blue">
+
+                            <i class="bx bx-id-card"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns:
+                            repeat(3, minmax(0, 1fr));
+                        gap: 22px;
+                        margin-top: 22px;
+                    ">
+
+
+                        <!-- TIPO DOCUMENTO -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Tipo de documento
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.tipoDocumento != null
+                                and !paciente.tipoDocumento.isEmpty()
+                                ? paciente.tipoDocumento
+                                : 'Sin registrar'}">
+
+                                CC
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- DOCUMENTO -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Documento
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.documento != null
+                                and !paciente.documento.isEmpty()
+                                ? paciente.documento
+                                : 'Sin registrar'}">
+
+                                000000000
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- FECHA -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Fecha de nacimiento
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.fechaNacimiento != null
+                                ? paciente.fechaNacimiento
+                                : 'Sin registrar'}">
+
+                                Sin registrar
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- SEXO -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Sexo
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.sexo != null
+                                and !paciente.sexo.isEmpty()
+                                ? paciente.sexo
+                                : 'Sin registrar'}">
+
+                                Sin registrar
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- ESTADO -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Estado
+
+                            </span>
+
+
+                            <div style="margin-top: 6px;">
+
+
+                                <span class="cita-status cita-status-confirmada" th:if="${paciente.activo}">
+
+                                    Activo
+
+                                </span>
+
+
+                                <span class="cita-status cita-status-cancelada" th:unless="${paciente.activo}">
+
+                                    Inactivo
+
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 INFORMACIÓN CLÍNICA
+            ================================================== -->
+
+                <div class="card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h3 class="section-title-compact">
+
+                                Información clínica
+
+                            </h3>
+
+
+                            <p class="muted-text-sm">
+
+                                Información general utilizada
+                                durante la atención médica.
+
+                            </p>
+
+
+                        </div>
+
+
+                        <div class="cita-stat-icon cita-stat-purple">
+
+                            <i class="bx bx-plus-medical"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns:
+                            repeat(2, minmax(0, 1fr));
+                        gap: 22px;
+                        margin-top: 22px;
+                    ">
+
+
+                        <!-- SANGRE -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Tipo de sangre
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.tipoSangre != null
+                                and !paciente.tipoSangre.isEmpty()
+                                ? paciente.tipoSangre
+                                : 'Sin registrar'}">
+
+                                Sin registrar
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- EPS -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                EPS
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.eps != null
+                                and !paciente.eps.isEmpty()
+                                ? paciente.eps
+                                : 'Sin registrar'}">
+
+                                Sin registrar
+
+                            </strong>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 CONTACTO
+            ================================================== -->
+
+                <div class="card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h3 class="section-title-compact">
+
+                                Datos de contacto
+
+                            </h3>
+
+
+                            <p class="muted-text-sm">
+
+                                Información para comunicación
+                                con el paciente.
+
+                            </p>
+
+
+                        </div>
+
+
+                        <div class="cita-stat-icon cita-stat-green">
+
+                            <i class="bx bx-phone"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns:
+                            repeat(2, minmax(0, 1fr));
+                        gap: 22px;
+                        margin-top: 22px;
+                    ">
+
+
+                        <!-- TELÉFONO -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Teléfono
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.telefono != null
+                                and !paciente.telefono.isEmpty()
+                                ? paciente.telefono
+                                : 'Sin registrar'}">
+
+                                Sin registrar
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- CORREO -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Correo electrónico
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.correo != null
+                                and !paciente.correo.isEmpty()
+                                ? paciente.correo
+                                : 'Sin registrar'}">
+
+                                Sin registrar
+
+                            </strong>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 CONTACTO EMERGENCIA
+            ================================================== -->
+
+                <div class="card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h3 class="section-title-compact">
+
+                                Contacto de emergencia
+
+                            </h3>
+
+
+                            <p class="muted-text-sm">
+
+                                Persona de referencia para
+                                situaciones de emergencia.
+
+                            </p>
+
+
+                        </div>
+
+
+                        <div class="cita-stat-icon cita-stat-orange">
+
+                            <i class="bx bx-phone-call"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns:
+                            repeat(2, minmax(0, 1fr));
+                        gap: 22px;
+                        margin-top: 22px;
+                    ">
+
+
+                        <!-- CONTACTO -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Nombre del contacto
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.contactoEmergencia != null
+                                and !paciente.contactoEmergencia.isEmpty()
+                                ? paciente.contactoEmergencia
+                                : 'Sin registrar'}">
+
+                                Sin registrar
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- TELEFONO -->
+                        <div>
+
+
+                            <span class="muted-text-sm">
+
+                                Teléfono de emergencia
+
+                            </span>
+
+
+                            <strong style="display: block; margin-top: 5px;" th:text="${paciente.telefonoEmergencia != null
+                                and !paciente.telefonoEmergencia.isEmpty()
+                                ? paciente.telefonoEmergencia
+                                : 'Sin registrar'}">
+
+                                Sin registrar
+
+                            </strong>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 ACCIONES RÁPIDAS
+            ================================================== -->
+
+                <div class="card" style="
+                    margin-top: 25px;
+                    margin-bottom: 25px;
+                ">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h3 class="section-title-compact">
+
+                                Acciones del paciente
+
+                            </h3>
+
+
+                            <p class="muted-text-sm">
+
+                                Accede rápidamente a las funciones
+                                relacionadas con este paciente.
+
+                            </p>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div style="
+                        display: flex;
+                        gap: 12px;
+                        flex-wrap: wrap;
+                        margin-top: 20px;
+                    ">
+
+
+                        <!-- HISTORIAL -->
+                        <a class="btn-primary" th:href="@{/historial/paciente/{id}(id=${paciente.id})}"
+                            sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                            <i class="bx bx-notepad"></i>
+
+                            Ver historial
+
+                        </a>
+
+
+                        <!-- EDITAR -->
+                        <a class="btn-sec" th:href="@{/pacientes/editar/{id}(id=${paciente.id})}"
+                            sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                            <i class="bx bx-edit-alt"></i>
+
+                            Editar paciente
+
+                        </a>
+
+
+                        <!-- VOLVER -->
+                        <a class="btn-sec" th:href="@{/pacientes}">
+
+                            <i class="bx bx-arrow-back"></i>
+
+                            Volver a pacientes
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>

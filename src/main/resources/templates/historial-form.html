@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${modoEdicion
+            ? 'ClinGuard — Editar Historial'
+            : 'ClinGuard — Nuevo Historial'}">
+
+        ClinGuard — Historial Médico
+
+    </title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script th:src="@{/js/theme.js}"></script>
+
+</head>
+
+
+<body data-page="historial-form">
+
+
+    <!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+    <aside id="sidebar">
+
+
+        <!-- LOGO -->
+
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+         NAVEGACIÓN
+    ====================================================== -->
+
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+
+            <!-- DASHBOARD -->
+
+            <a class="nb" th:href="@{/dashboard}">
+
+                <i class="bx bx-grid-alt"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+
+            <!-- ANÁLISIS -->
+
+            <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-line-chart"></i>
+
+                <span>
+                    Análisis
+                </span>
+
+            </a>
+
+
+
+            <!-- CONVERSIONES -->
+
+            <a class="nb" th:href="@{/conversiones}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-transfer"></i>
+
+                <span>
+                    Conversiones Médicas
+                </span>
+
+            </a>
+
+
+
+            <!-- PACIENTES -->
+
+            <a class="nb" th:href="@{/pacientes}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-user"></i>
+
+                <span>
+                    Pacientes
+                </span>
+
+            </a>
+
+
+
+            <!-- CITAS -->
+
+            <a class="nb" th:href="@{/citas}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-calendar"></i>
+
+                <span>
+                    Citas
+                </span>
+
+            </a>
+
+
+
+            <!-- HISTORIAL -->
+
+            <a class="nb active" th:href="@{/historial}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-notepad"></i>
+
+                <span>
+                    Historial Médico
+                </span>
+
+            </a>
+
+
+
+            <!-- MEDICAMENTOS -->
+
+            <a class="nb" th:href="@{/medicamentos}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-capsule"></i>
+
+                <span>
+                    Medicamentos
+                </span>
+
+            </a>
+
+
+
+            <!-- REPORTES -->
+
+            <a class="nb" th:href="@{/reportes}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-file"></i>
+
+                <span>
+                    Reportes
+                </span>
+
+            </a>
+
+
+
+            <!-- PANEL ADMIN -->
+
+            <a class="nb" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">
+
+                <i class="bx bx-shield-quarter"></i>
+
+                <span>
+                    Panel Admin
+                </span>
+
+            </a>
+
+
+
+
+
+            <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
+                <i class='bx bx-bell'></i>
+                <span>Notificaciones</span>
+                <span class="notif-count" th:if="${noLeidas != null and noLeidas > 0}" th:text="${noLeidas}">
+                </span>
+            </a>
+
+
+
+            <!-- PERFIL -->
+
+            <a class="nb" th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+
+                <span>
+                    Mi Perfil
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+
+        <!-- =====================================================
+         USUARIO ACTUAL
+    ====================================================== -->
+
+        <a class="sb-user sb-user-clickable" th:href="@{/perfil}">
+
+
+            <div class="avatar">
+
+                <i class="bx bx-user"></i>
+
+            </div>
+
+
+            <div class="u-info">
+
+
+                <div class="u-nm" th:text="${#authentication.name}">
+
+                    Usuario
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('ADMIN')">
+
+                    Administrador
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('MEDICO')">
+
+                    Médico
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('ENFERMERO')">
+
+                    Enfermero
+
+                </div>
+
+
+            </div>
+
+        </a>
+
+
+
+        <!-- LOGOUT -->
+
+        <form th:action="@{/logout}" method="post">
+
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+
+            <button type="submit" class="logout-link" style="
+                width: calc(100% - 24px);
+                background: transparent;
+            ">
+
+                <i class="bx bx-log-out"></i>
+
+                <span>
+                    Salir
+                </span>
+
+            </button>
+
+
+        </form>
+
+
+    </aside>
+
+
+
+    <!-- =========================================================
+     CONTENIDO
+========================================================= -->
+
+    <div id="main-content">
+
+
+        <!-- HEADER -->
+
+        <header>
+
+
+            <div class="h-title" th:text="${modoEdicion
+                ? 'Editar Historial Médico'
+                : 'Nuevo Historial Médico'}">
+
+                Nuevo Historial Médico
+
+            </div>
+
+
+        </header>
+
+
+
+        <div class="main-inner">
+
+
+            <div class="historial-form-container">
+
+
+                <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+                <div class="historial-form-header">
+
+
+                    <div>
+
+
+                        <h1 th:text="${modoEdicion
+                            ? 'Editar historial médico'
+                            : 'Registrar historial médico'}">
+
+                            Registrar historial médico
+
+                        </h1>
+
+
+                        <p>
+
+                            Completa la información clínica
+                            correspondiente al paciente.
+
+                        </p>
+
+
+                    </div>
+
+
+
+                    <a th:href="@{/historial}" class="btn-secundario">
+
+                        <i class="bx bx-arrow-back"></i>
+
+                        Volver
+
+                    </a>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 MENSAJE DE ERROR
+            ================================================== -->
+
+                <div class="cita-alert cita-alert-error" th:if="${error}">
+
+                    <i class="bx bx-error-circle"></i>
+
+                    <span th:text="${error}">
+
+                        Error
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
+                <section class="historial-form-card">
+
+
+                    <form th:object="${historial}"
+                          th:action="${modoEdicion} ? @{/historial/actualizar/{id}(id=${historial.id})} : @{/historial/guardar}"
+                          method="post">
+
+
+                        <div class="historial-paciente-aviso" th:if="${pacienteSeleccionado != null}"
+                            style="padding:14px 18px;margin-bottom:20px;border:1px solid var(--border, #355565);border-radius:12px;">
+                            <i class="bx bx-user-check" aria-hidden="true"></i>
+                            Paciente seleccionado: <strong
+                                th:text="${pacienteSeleccionado.nombres + ' ' + pacienteSeleccionado.apellidos}">Paciente</strong>
+                        </div>
+
+                        <!-- CSRF -->
+
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+
+
+                        <div class="historial-form-grid">
+
+
+                            <!-- PACIENTE ASOCIADO POR ID DE MONGODB -->
+                            <div class="historial-campo">
+                                <label for="pacienteId"><i class="bx bx-user"></i> Paciente registrado</label>
+
+                                <!-- En edición el médico no puede reasignar el historial a otro paciente.
+                                     El selector deshabilitado es visual; el campo oculto conserva el ID. -->
+                                <select id="pacienteId" th:field="*{pacienteId}" required
+                                        th:disabled="${modoEdicion}">
+                                    <option value="">Seleccionar paciente...</option>
+                                    <option th:each="p : ${pacientes}" th:value="${p.id}"
+                                            th:text="${p.nombres + ' ' + p.apellidos + ' — ' + (p.documento != null ? p.documento : 'Sin documento')}">
+                                        Nombre del paciente
+                                    </option>
+                                </select>
+                                <input type="hidden" name="pacienteId" th:value="*{pacienteId}"
+                                       th:if="${modoEdicion}">
+                                <small class="muted-text-sm" th:if="${modoEdicion}">
+                                    El paciente asociado no puede modificarse durante la edición.
+                                </small>
+                                <small class="muted-text-sm" th:unless="${modoEdicion}">
+                                    Selecciona un paciente registrado en MongoDB.
+                                </small>
+                            </div>
+
+                            <!-- =================================================
+                             FECHA
+                        ================================================== -->
+
+                            <div class="historial-campo">
+
+
+                                <label for="fecha">
+
+                                    <i class="bx bx-calendar"></i>
+
+                                    Fecha
+
+                                </label>
+
+
+                                <input type="date" id="fecha" th:field="*{fecha}" required>
+
+
+                            </div>
+
+
+
+                            <!-- =================================================
+                             MÉDICO - ADMIN
+                        ================================================== -->
+
+                            <div class="historial-campo" sec:authorize="hasRole('ADMIN')">
+
+
+                                <label for="medicoUsernameAdmin">
+
+                                    <i class="bx bx-plus-medical"></i>
+
+                                    Médico responsable
+
+                                </label>
+
+
+                                <input type="text" id="medicoUsernameAdmin" th:field="*{medicoUsername}"
+                                    placeholder="Username del médico">
+
+
+                            </div>
+
+
+
+                            <!-- =================================================
+                             MÉDICO - MEDICO
+                        ================================================== -->
+
+                            <div class="historial-campo" sec:authorize="hasRole('MEDICO')">
+
+
+                                <label for="medicoUsernameMedico">
+
+                                    <i class="bx bx-plus-medical"></i>
+
+                                    Médico responsable
+
+                                </label>
+
+
+                                <input type="text" id="medicoUsernameMedico" th:field="*{medicoUsername}" readonly>
+
+
+                            </div>
+
+
+
+                            <!-- =================================================
+                             MOTIVO DE CONSULTA
+                        ================================================== -->
+
+                            <div class="historial-campo">
+
+
+                                <label for="motivoConsulta">
+
+                                    <i class="bx bx-message-square-detail"></i>
+
+                                    Motivo de consulta
+
+                                </label>
+
+
+                                <input type="text" id="motivoConsulta" th:field="*{motivoConsulta}"
+                                    placeholder="Ej. Consulta general" required>
+
+
+                            </div>
+
+
+
+                            <!-- =================================================
+                             DIAGNÓSTICO
+                        ================================================== -->
+
+                            <div class="historial-campo full">
+
+
+                                <label for="diagnostico">
+
+                                    <i class="bx bx-clipboard"></i>
+
+                                    Diagnóstico
+
+                                </label>
+
+
+                                <textarea id="diagnostico" th:field="*{diagnostico}" rows="4"
+                                    placeholder="Ingrese el diagnóstico del paciente">
+                            </textarea>
+
+
+                            </div>
+
+
+
+                            <!-- =================================================
+                             TRATAMIENTO
+                        ================================================== -->
+
+                            <div class="historial-campo full">
+
+
+                                <label for="tratamiento">
+
+                                    <i class="bx bx-capsule"></i>
+
+                                    Tratamiento
+
+                                </label>
+
+
+                                <textarea id="tratamiento" th:field="*{tratamiento}" rows="4"
+                                    placeholder="Tratamiento, medicamentos o recomendaciones">
+                            </textarea>
+
+
+                            </div>
+
+
+
+                            <!-- =================================================
+                             OBSERVACIONES
+                        ================================================== -->
+
+                            <div class="historial-campo full">
+
+
+                                <label for="observaciones">
+
+                                    <i class="bx bx-message-square-detail"></i>
+
+                                    Observaciones
+
+                                </label>
+
+
+                                <textarea id="observaciones" th:field="*{observaciones}" rows="4"
+                                    placeholder="Observaciones adicionales">
+                            </textarea>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                         ACCIONES
+                    ================================================== -->
+
+                        <div class="historial-form-actions">
+
+
+                            <a th:href="@{/historial}" class="btn-secundario">
+
+                                <i class="bx bx-x"></i>
+
+                                Cancelar
+
+                            </a>
+
+
+                            <button type="submit" class="btn-principal">
+
+
+                                <i class="bx bx-save"></i>
+
+
+                                <span th:text="${modoEdicion
+                                    ? 'Guardar cambios'
+                                    : 'Crear historial'}">
+
+                                    Crear historial
+
+                                </span>
+
+
+                            </button>
+
+
+                        </div>
+
+
+                    </form>
+
+
+                </section>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>
