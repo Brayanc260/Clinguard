@@ -1,0 +1,621 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard | Acceso restringido</title>
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+          rel="stylesheet">
+
+    <!-- CARGAR TEMA ANTES DE MOSTRAR LA PÁGINA -->
+    <script>
+        (function () {
+            const saved = localStorage.getItem("clinguard-theme");
+
+            const systemDark = window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            ).matches;
+
+            const theme = saved === "dark" || saved === "light"
+                ? saved
+                : (systemDark ? "dark" : "light");
+
+            document.documentElement.setAttribute(
+                "data-theme", theme
+            );
+        })();
+    </script>
+
+    <style>
+        /* =========================================
+           CLINGUARD - MODO CLARO
+        ========================================= */
+        :root,
+        :root[data-theme="light"] {
+            color-scheme: light;
+
+            --bg1: #EFFAFA;
+            --bg2: #FFFFFF;
+            --bg3: #E2F2F2;
+
+            --border: #BDDADB;
+
+            --text1: #153D45;
+            --text2: #486B72;
+
+            --accent: #007C8A;
+            --accent-hover: #006775;
+            --accent-dim: rgba(0,124,138,.10);
+
+            --warn: #A65C00;
+            --warn-dim: rgba(166,92,0,.10);
+
+            --on-accent: #FFFFFF;
+
+            --shadow-card:
+                0 4px 14px rgba(0,0,0,.07);
+        }
+
+        /* =========================================
+           CLINGUARD - MODO OSCURO
+        ========================================= */
+        :root[data-theme="dark"] {
+            color-scheme: dark;
+
+            --bg1: #091C23;
+            --bg2: #15313A;
+            --bg3: #1D404A;
+
+            --border: #38606A;
+
+            --text1: #E3F9FB;
+            --text2: #A0C3C8;
+
+            --accent: #37C9DE;
+            --accent-hover: #6EDDEB;
+            --accent-dim: rgba(55,201,222,.12);
+
+            --warn: #FBBF24;
+            --warn-dim: rgba(251,191,36,.12);
+
+            --on-accent: #091C23;
+
+            --shadow-card:
+                0 4px 14px rgba(0,0,0,.18);
+        }
+
+        /* =========================================
+           ESTILOS GENERALES
+        ========================================= */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+
+            min-height: 100vh;
+            min-height: 100dvh;
+
+            margin: 0;
+
+            background: var(--bg1);
+            color: var(--text1);
+
+            font-family:
+                "Plus Jakarta Sans",
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            transition:
+                background-color .25s,
+                color .25s;
+        }
+
+        /* =========================================
+           ENCABEZADO
+        ========================================= */
+        .error-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            min-height: 74px;
+            padding: 14px 36px;
+
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .error-brand {
+            display: inline-flex;
+            align-items: center;
+
+            color: var(--text1);
+            text-decoration: none;
+
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -.6px;
+        }
+
+        .brand-accent {
+            color: var(--accent);
+        }
+
+        /* =========================================
+           BOTÓN MODO CLARO / OSCURO
+        ========================================= */
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+
+            min-height: 40px;
+            padding: 9px 14px;
+
+            background: var(--bg3);
+            color: var(--text1);
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+
+            transition:
+                background-color .2s,
+                border-color .2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+        }
+
+        .theme-toggle i {
+            font-size: 19px;
+            color: var(--accent);
+        }
+
+        /* =========================================
+           CONTENIDO PRINCIPAL
+        ========================================= */
+        .error-main {
+            display: grid;
+            place-items: center;
+
+            flex: 1;
+            padding: 40px 20px;
+        }
+
+        .error-card {
+            width: 100%;
+            max-width: 590px;
+
+            padding: 44px 38px;
+
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+
+            box-shadow: var(--shadow-card);
+            text-align: center;
+        }
+
+        /* =========================================
+           ICONO DE ACCESO RESTRINGIDO
+        ========================================= */
+        .error-icon {
+            display: grid;
+            place-items: center;
+
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 24px;
+
+            background: var(--warn-dim);
+            color: var(--warn);
+
+            border-radius: 50%;
+        }
+
+        .error-icon i {
+            font-size: 44px;
+        }
+
+        /* =========================================
+           CÓDIGO 403
+        ========================================= */
+        .error-code {
+            display: inline-block;
+
+            margin-bottom: 17px;
+            padding: 7px 14px;
+
+            background: var(--warn-dim);
+            color: var(--warn);
+
+            border-radius: 7px;
+
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* =========================================
+           TÍTULO Y DESCRIPCIÓN
+        ========================================= */
+        .error-title {
+            margin: 0;
+
+            color: var(--text1);
+
+            font-size: 28px;
+            font-weight: 750;
+            line-height: 1.35;
+        }
+
+        .error-description {
+            max-width: 470px;
+            margin: 16px auto 0;
+
+            color: var(--text2);
+            font-size: 14px;
+            line-height: 1.85;
+        }
+
+        /* =========================================
+           MENSAJE INFORMATIVO
+        ========================================= */
+        .error-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+
+            margin-top: 28px;
+            padding: 17px;
+
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            text-align: left;
+        }
+
+        .error-note i {
+            flex-shrink: 0;
+            margin-top: 1px;
+
+            color: var(--accent);
+            font-size: 22px;
+        }
+
+        .error-note p {
+            margin: 0;
+
+            color: var(--text2);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* =========================================
+           BOTONES
+        ========================================= */
+        .error-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+
+            margin-top: 30px;
+        }
+
+        .error-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+
+            min-height: 45px;
+            padding: 12px 19px;
+
+            background: var(--accent);
+            color: var(--on-accent);
+
+            border: 1px solid var(--accent);
+            border-radius: 9px;
+
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 650;
+
+            transition:
+                background-color .2s,
+                border-color .2s;
+        }
+
+        .error-button i {
+            font-size: 19px;
+        }
+
+        .error-button:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        /* BOTÓN SECUNDARIO */
+        .error-button-secondary {
+            background: var(--bg3);
+            color: var(--text1);
+            border-color: var(--border);
+        }
+
+        .error-button-secondary:hover {
+            background: var(--accent-dim);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+        }
+
+        /* =========================================
+           PIE DE PÁGINA
+        ========================================= */
+        .error-footer {
+            padding: 20px;
+
+            color: var(--text2);
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .error-footer strong {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+        @media (max-width: 560px) {
+
+            .error-header {
+                padding: 14px 18px;
+            }
+
+            .error-brand {
+                font-size: 20px;
+            }
+
+            .theme-toggle {
+                padding: 9px 11px;
+            }
+
+            .theme-toggle span {
+                display: none;
+            }
+
+            .error-main {
+                padding: 28px 16px;
+            }
+
+            .error-card {
+                padding: 34px 22px;
+            }
+
+            .error-title {
+                font-size: 23px;
+            }
+
+            .error-description {
+                font-size: 13px;
+            }
+
+            .error-actions {
+                flex-direction: column;
+            }
+
+            .error-button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ======================================
+         ENCABEZADO SIN LOGO
+    ======================================= -->
+    <header class="error-header">
+
+        <a th:href="@{/}"
+           href="/"
+           class="error-brand">
+
+            Clin<span class="brand-accent">Guard</span>
+
+        </a>
+
+        <button type="button"
+                id="themeToggle"
+                class="theme-toggle"
+                aria-label="Cambiar tema">
+
+            <i id="themeIcon"
+               class="bx bx-moon"
+               aria-hidden="true"></i>
+
+            <span id="themeLabel">
+                Modo oscuro
+            </span>
+
+        </button>
+
+    </header>
+
+    <!-- ======================================
+         CONTENIDO PRINCIPAL
+    ======================================= -->
+    <main class="error-main">
+
+        <section class="error-card"
+                 aria-labelledby="error-title">
+
+            <div class="error-icon">
+                <i class="bx bx-lock-alt"
+                   aria-hidden="true"></i>
+            </div>
+
+            <span class="error-code">
+                ERROR 403
+            </span>
+
+            <h1 class="error-title"
+                id="error-title">
+                Acceso restringido
+            </h1>
+
+            <p class="error-description">
+                Tu cuenta no tiene los permisos necesarios
+                para acceder a esta sección de ClinGuard.
+                Puedes continuar utilizando las funciones
+                disponibles según tu rol.
+            </p>
+
+            <!-- MENSAJE INFORMATIVO -->
+            <div class="error-note">
+
+                <i class="bx bx-info-circle"
+                   aria-hidden="true"></i>
+
+                <p>
+                    Si consideras que deberías tener acceso
+                    a esta sección, comunícate con el
+                    administrador de ClinGuard para revisar
+                    los permisos de tu cuenta.
+                </p>
+
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="error-actions">
+
+                <a th:href="@{/dashboard}"
+                   href="/dashboard"
+                   class="error-button">
+
+                    <i class="bx bx-home-alt"
+                       aria-hidden="true"></i>
+
+                    Volver al dashboard
+                </a>
+
+                <a th:href="@{/login}"
+                   href="/login"
+                   class="error-button error-button-secondary">
+
+                    <i class="bx bx-log-in"
+                       aria-hidden="true"></i>
+
+                    Iniciar sesión
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="error-footer">
+        <strong>ClinGuard</strong>
+        · Sistema de gestión clínica
+    </footer>
+
+    <!-- ======================================
+         CONTROL DE TEMA
+    ======================================= -->
+    <script>
+        const themeToggle =
+            document.getElementById("themeToggle");
+
+        const themeIcon =
+            document.getElementById("themeIcon");
+
+        const themeLabel =
+            document.getElementById("themeLabel");
+
+        function updateThemeButton() {
+            const currentTheme =
+                document.documentElement.getAttribute(
+                    "data-theme"
+                );
+
+            if (currentTheme === "dark") {
+                themeIcon.className = "bx bx-sun";
+                themeLabel.textContent = "Modo claro";
+
+                themeToggle.setAttribute(
+                    "aria-label",
+                    "Activar modo claro"
+                );
+            } else {
+                themeIcon.className = "bx bx-moon";
+                themeLabel.textContent = "Modo oscuro";
+
+                themeToggle.setAttribute(
+                    "aria-label",
+                    "Activar modo oscuro"
+                );
+            }
+        }
+
+        themeToggle.addEventListener("click", () => {
+            const currentTheme =
+                document.documentElement.getAttribute(
+                    "data-theme"
+                );
+
+            const newTheme =
+                currentTheme === "dark"
+                    ? "light"
+                    : "dark";
+
+            document.documentElement.setAttribute(
+                "data-theme", newTheme
+            );
+
+            localStorage.setItem(
+                "clinguard-theme", newTheme
+            );
+
+            updateThemeButton();
+        });
+
+        updateThemeButton();
+    </script>
+
+</body>
+</html>

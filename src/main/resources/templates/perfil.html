@@ -1,0 +1,840 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard | Mi Perfil</title>
+
+    <!-- CSS GLOBAL -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- BOXICONS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- MODO CLARO Y OSCURO -->
+    <script th:src="@{/js/theme.js}"></script>
+</head>
+
+<body data-page="perfil">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside id="sidebar" class="perfil-sidebar">
+
+        <!-- LOGO -->
+        <div class="sb-brand">
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-oscuro">
+
+            </div>
+        </div>
+
+        <!-- =================================================
+             MENÚ ADMIN / MÉDICO / ENFERMERO / USUARIO
+             ================================================= -->
+
+        <nav class="sb-nav"
+             aria-label="Navegación principal"
+             sec:authorize="!hasRole('RECEPCIONISTA')">
+
+            <a class="nb"
+               th:href="@{/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/analisis}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/conversiones}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-transfer"></i>
+                <span>Conversiones Médicas</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/pacientes}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-user"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/citas}">
+                <i class="bx bx-calendar"></i>
+
+                <span sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                    Citas
+                </span>
+
+                <span sec:authorize="hasRole('USUARIO')">
+                    Mis Citas
+                </span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/historial}">
+                <i class="bx bx-notepad"></i>
+
+                <span sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                    Historial Médico
+                </span>
+
+                <span sec:authorize="hasRole('USUARIO')">
+                    Mi Historial
+                </span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/medicamentos}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-capsule"></i>
+                <span>Medicamentos</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/reportes}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/admin}"
+               sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-shield-quarter"></i>
+                <span>Panel Admin</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/notificaciones}">
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+
+                <span class="notif-count"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas}">
+                </span>
+            </a>
+
+            <a class="nb active"
+               th:href="@{/perfil}"
+               aria-current="page">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- =================================================
+             MENÚ EXCLUSIVO DE RECEPCIONISTA
+             ================================================= -->
+
+        <nav class="sb-nav"
+             aria-label="Navegación de recepción"
+             sec:authorize="hasRole('RECEPCIONISTA')">
+
+            <!-- DASHBOARD -->
+            <a class="nb"
+               th:href="@{/recepcionista/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- PACIENTES -->
+            <a class="nb"
+               th:href="@{/recepcion/pacientes}">
+                <i class="bx bx-group"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <!-- CITAS MÉDICAS -->
+            <a class="nb"
+               th:href="@{/recepcion/citas}">
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+            </a>
+
+            <!-- AGENDA MÉDICA -->
+            <a class="nb"
+               th:href="@{/recepcion/agenda}">
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+            </a>
+
+            <!-- ANÁLISIS -->
+            <a class="nb"
+               th:href="@{/recepcion/analisis}">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <!-- NOTIFICACIONES -->
+            <a class="nb"
+               th:href="@{/recepcion/notificaciones}">
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+            </a>
+
+            <!-- REPORTES -->
+            <a class="nb"
+               th:href="@{/recepcion/reportes}">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <!-- MI PERFIL -->
+            <a class="nb active"
+               th:href="@{/perfil}"
+               aria-current="page">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- =================================================
+             USUARIO ACTUAL Y CIERRE DE SESIÓN
+             ================================================= -->
+
+        <div class="sb-bottom">
+
+            <a class="sb-user sb-user-clickable"
+               th:href="@{/perfil}">
+
+                <div class="avatar">
+                    <i class="bx bx-user"></i>
+                </div>
+
+                <div class="u-info">
+
+                    <div class="u-nm"
+                         th:text="${usuario.nombre}">
+                        Usuario
+                    </div>
+
+                    <div class="u-rl"
+                         sec:authorize="hasRole('ADMIN')">
+                        Administrador
+                    </div>
+
+                    <div class="u-rl"
+                         sec:authorize="hasRole('MEDICO')">
+                        Médico
+                    </div>
+
+                    <div class="u-rl"
+                         sec:authorize="hasRole('ENFERMERO')">
+                        Enfermero
+                    </div>
+
+                    <div class="u-rl"
+                         sec:authorize="hasRole('USUARIO')">
+                        Usuario
+                    </div>
+
+                    <div class="u-rl"
+                         sec:authorize="hasRole('RECEPCIONISTA')">
+                        Recepcionista
+                    </div>
+
+                </div>
+
+            </a>
+
+            <form class="sb-logout-form"
+                  th:action="@{/logout}"
+                  method="post">
+
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <button type="submit"
+                        class="logout-link">
+
+                    <i class="bx bx-log-out"></i>
+                    <span>Salir</span>
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <header>
+            <div class="h-title">
+                Mi Perfil
+            </div>
+        </header>
+
+        <main class="main-inner">
+
+            <div class="page active"
+                 id="page-perfil">
+
+                <!-- =========================================
+                     MENSAJES
+                     ========================================= -->
+
+                <div class="cita-alert cita-alert-success"
+                     th:if="${exito}">
+
+                    <i class="bx bx-check-circle"></i>
+
+                    <span th:text="${exito}">
+                        Perfil actualizado correctamente.
+                    </span>
+
+                </div>
+
+                <div class="cita-alert cita-alert-error"
+                     th:if="${error}">
+
+                    <i class="bx bx-error-circle"></i>
+
+                    <span th:text="${error}">
+                        Error al actualizar perfil.
+                    </span>
+
+                </div>
+
+                <!-- =========================================
+                     CABECERA DEL PERFIL
+                     ========================================= -->
+
+                <section class="card perfil-banner">
+
+                    <div class="perfil-avatar">
+                        <i class="bx bx-user"></i>
+                    </div>
+
+                    <div class="perfil-banner-info">
+
+                        <h2 th:text="${usuario.nombre}">
+                            Nombre completo
+                        </h2>
+
+                        <p class="muted-text-sm"
+                           th:text="${'@' + usuario.username}">
+                            @usuario
+                        </p>
+
+                        <span class="cita-status cita-status-confirmada"
+                              sec:authorize="hasRole('ADMIN')">
+                            Administrador
+                        </span>
+
+                        <span class="cita-status cita-status-confirmada"
+                              sec:authorize="hasRole('MEDICO')">
+                            Médico
+                        </span>
+
+                        <span class="cita-status cita-status-confirmada"
+                              sec:authorize="hasRole('ENFERMERO')">
+                            Enfermero
+                        </span>
+
+                        <span class="cita-status cita-status-confirmada"
+                              sec:authorize="hasRole('USUARIO')">
+                            Usuario
+                        </span>
+
+                        <span class="cita-status cita-status-confirmada"
+                              sec:authorize="hasRole('RECEPCIONISTA')">
+                            Recepcionista
+                        </span>
+
+                    </div>
+
+                </section>
+
+                <!-- =========================================
+                     EDITAR INFORMACIÓN PERSONAL
+                     ========================================= -->
+
+                <section class="card perfil-section">
+
+                    <div class="card-toolbar">
+
+                        <div>
+
+                            <h3 class="section-title-compact">
+                                Editar información personal
+                            </h3>
+
+                            <p class="muted-text-sm">
+                                Modifica tus datos personales
+                                y presiona Guardar cambios.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <form th:action="@{/perfil/actualizar}"
+                          method="post">
+
+                        <input type="hidden"
+                               th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <div class="perfil-form-grid">
+
+                            <!-- NOMBRE -->
+                            <div class="form-group">
+
+                                <label for="nombre">
+                                    Nombre completo
+                                </label>
+
+                                <input id="nombre"
+                                       name="nombre"
+                                       type="text"
+                                       th:value="${usuario.nombre}"
+                                       placeholder="Nombre completo"
+                                       required>
+
+                            </div>
+
+                            <!-- USERNAME -->
+                            <div class="form-group">
+
+                                <label for="username">
+                                    Nombre de usuario
+                                </label>
+
+                                <input id="username"
+                                       type="text"
+                                       th:value="${usuario.username}"
+                                       readonly>
+
+                                <small class="muted-text-sm">
+                                    El nombre de usuario no puede
+                                    modificarse desde el perfil.
+                                </small>
+
+                            </div>
+
+                            <!-- CORREO -->
+                            <div class="form-group">
+
+                                <label for="email">
+                                    Correo electrónico
+                                </label>
+
+                                <input id="email"
+                                       name="email"
+                                       type="email"
+                                       th:value="${usuario.email}"
+                                       placeholder="correo@ejemplo.com">
+
+                            </div>
+
+                            <!-- TELÉFONO -->
+                            <div class="form-group">
+
+                                <label for="telefono">
+                                    Teléfono
+                                </label>
+
+                                <input id="telefono"
+                                       name="telefono"
+                                       type="text"
+                                       th:value="${usuario.telefono}"
+                                       placeholder="Número de teléfono">
+
+                            </div>
+
+                            <!-- DOCUMENTO -->
+                            <div class="form-group">
+
+                                <label for="documento">
+                                    Documento
+                                </label>
+
+                                <input id="documento"
+                                       name="documento"
+                                       type="text"
+                                       th:value="${usuario.documento}"
+                                       placeholder="Número de documento">
+
+                            </div>
+
+                            <!-- FECHA DE NACIMIENTO -->
+                            <div class="form-group">
+
+                                <label for="fechaNacimiento">
+                                    Fecha de nacimiento
+                                </label>
+
+                                <input id="fechaNacimiento"
+                                       name="fechaNacimiento"
+                                       type="date"
+                                       th:value="${usuario.fechaNacimiento}">
+
+                            </div>
+
+                            <!-- DIRECCIÓN -->
+                            <div class="form-group">
+
+                                <label for="direccion">
+                                    Dirección
+                                </label>
+
+                                <input id="direccion"
+                                       name="direccion"
+                                       type="text"
+                                       th:value="${usuario.direccion}"
+                                       placeholder="Dirección de residencia">
+
+                            </div>
+
+                            <!-- CIUDAD -->
+                            <div class="form-group">
+
+                                <label for="ciudad">
+                                    Ciudad
+                                </label>
+
+                                <input id="ciudad"
+                                       name="ciudad"
+                                       type="text"
+                                       th:value="${usuario.ciudad}"
+                                       placeholder="Ciudad">
+
+                            </div>
+
+                            <!-- GÉNERO -->
+                            <div class="form-group">
+
+                                <label for="genero">
+                                    Género
+                                </label>
+
+                                <select id="genero"
+                                        name="genero">
+
+                                    <option value="">
+                                        Selecciona una opción
+                                    </option>
+
+                                    <option value="Femenino"
+                                            th:selected="${usuario.genero == 'Femenino'}">
+                                        Femenino
+                                    </option>
+
+                                    <option value="Masculino"
+                                            th:selected="${usuario.genero == 'Masculino'}">
+                                        Masculino
+                                    </option>
+
+                                    <option value="Otro"
+                                            th:selected="${usuario.genero == 'Otro'}">
+                                        Otro
+                                    </option>
+
+                                    <option value="Prefiero no decirlo"
+                                            th:selected="${usuario.genero == 'Prefiero no decirlo'}">
+                                        Prefiero no decirlo
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- ROL -->
+                            <div class="form-group">
+
+                                <label for="rol">
+                                    Rol
+                                </label>
+
+                                <input id="rol"
+                                       type="text"
+                                       th:value="${usuario.rol}"
+                                       readonly>
+
+                                <small class="muted-text-sm">
+                                    El rol no puede modificarse
+                                    desde el perfil.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <!-- =================================
+                             BIOGRAFÍA
+                             ================================= -->
+
+                        <div class="form-group perfil-biografia">
+
+                            <label for="biografia">
+                                Biografía / Información adicional
+                            </label>
+
+                            <textarea id="biografia"
+                                      name="biografia"
+                                      rows="4"
+                                      th:text="${usuario.biografia}"
+                                      placeholder="Escribe una breve descripción..."></textarea>
+
+                        </div>
+
+                        <!-- =================================
+                             BOTONES
+                             ================================= -->
+
+                        <div class="perfil-actions">
+
+                            <a class="btn-sec"
+                               th:href="@{/dashboard}">
+
+                                <i class="bx bx-x"></i>
+                                Cancelar
+
+                            </a>
+
+                            <button type="submit"
+                                    class="btn-primary">
+
+                                <i class="bx bx-save"></i>
+                                Guardar cambios
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <!-- =========================================
+                     INFORMACIÓN DE LA CUENTA
+                     ========================================= -->
+
+                <section class="card perfil-section">
+
+                    <h3 class="section-title">
+                        Información de la cuenta
+                    </h3>
+
+                    <div class="perfil-info-grid">
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Usuario
+                            </span>
+
+                            <strong th:text="${usuario.username}">
+                                Usuario
+                            </strong>
+
+                        </div>
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Correo
+                            </span>
+
+                            <strong th:text="${usuario.email != null and !usuario.email.isEmpty() ? usuario.email : 'Sin registrar'}">
+                                Sin registrar
+                            </strong>
+
+                        </div>
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Teléfono
+                            </span>
+
+                            <strong th:text="${usuario.telefono != null and !usuario.telefono.isEmpty() ? usuario.telefono : 'Sin registrar'}">
+                                Sin registrar
+                            </strong>
+
+                        </div>
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Documento
+                            </span>
+
+                            <strong th:text="${usuario.documento != null and !usuario.documento.isEmpty() ? usuario.documento : 'Sin registrar'}">
+                                Sin registrar
+                            </strong>
+
+                        </div>
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Fecha de nacimiento
+                            </span>
+
+                            <strong th:text="${usuario.fechaNacimiento != null ? usuario.fechaNacimiento : 'Sin registrar'}">
+                                Sin registrar
+                            </strong>
+
+                        </div>
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Género
+                            </span>
+
+                            <strong th:text="${usuario.genero != null and !usuario.genero.isEmpty() ? usuario.genero : 'Sin registrar'}">
+                                Sin registrar
+                            </strong>
+
+                        </div>
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Ciudad
+                            </span>
+
+                            <strong th:text="${usuario.ciudad != null and !usuario.ciudad.isEmpty() ? usuario.ciudad : 'Sin registrar'}">
+                                Sin registrar
+                            </strong>
+
+                        </div>
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Dirección
+                            </span>
+
+                            <strong th:text="${usuario.direccion != null and !usuario.direccion.isEmpty() ? usuario.direccion : 'Sin registrar'}">
+                                Sin registrar
+                            </strong>
+
+                        </div>
+
+                        <div class="perfil-info-item">
+
+                            <span class="muted-text-sm">
+                                Rol
+                            </span>
+
+                            <strong th:text="${usuario.rol}">
+                                Rol
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- =========================================
+                     ACCESOS RÁPIDOS USUARIO
+                     ========================================= -->
+
+                <div class="grid-2 perfil-section perfil-quick-links"
+                     sec:authorize="hasRole('USUARIO')">
+
+                    <!-- MIS CITAS -->
+                    <a class="card"
+                       th:href="@{/citas}">
+
+                        <div class="perfil-quick-content">
+
+                            <div class="cita-stat-icon cita-stat-blue">
+                                <i class="bx bx-calendar"></i>
+                            </div>
+
+                            <div>
+
+                                <h3 class="section-title-compact">
+                                    Mis Citas
+                                </h3>
+
+                                <p class="muted-text-sm">
+                                    Consulta las citas asociadas
+                                    a tu cuenta.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                    <!-- MI HISTORIAL -->
+                    <a class="card"
+                       th:href="@{/historial}">
+
+                        <div class="perfil-quick-content">
+
+                            <div class="cita-stat-icon cita-stat-purple">
+                                <i class="bx bx-notepad"></i>
+                            </div>
+
+                            <div>
+
+                                <h3 class="section-title-compact">
+                                    Mi Historial
+                                </h3>
+
+                                <p class="muted-text-sm">
+                                    Consulta tu información médica
+                                    registrada.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

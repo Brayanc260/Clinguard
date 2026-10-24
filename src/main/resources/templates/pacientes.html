@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <title>
+        ClinGuard — Pacientes
+    </title>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script th:src="@{/js/theme.js}"></script>
+    <style>
+      /* Ajustes de pacientes: conserva la paleta y el CSS de ClinGuard */
+      .pacientes-search { margin: 20px 0 18px; display: flex; flex-direction: column; gap: 7px; }
+      .pacientes-search-field { position: relative; width: 100%; max-width: 680px; }
+      .pacientes-search-field .pacientes-search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none; color: #80b7c3; z-index: 1; }
+      .pacientes-search-field input { box-sizing: border-box; display: block; width: 100%; min-height: 46px; padding: 11px 45px 11px 46px; border-radius: 12px; border: 1px solid #356170; color: #e4f3f5; background: #0b252d; outline: none; font: inherit; font-size: 14px; }
+      .pacientes-search-field input::placeholder { color: #96b2bb; }
+      .pacientes-search-field input:focus { border-color: #39c3d6; box-shadow: 0 0 0 3px rgba(57,195,214,.12); }
+      .pacientes-search-field input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+      .pacientes-search-clear { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 8px; border: 0; background: transparent; color: #a6c5cd; cursor: pointer; display: grid; place-items: center; font-size: 20px; }
+      .pacientes-search-clear:hover { background: rgba(255,255,255,.07); color: #fff; }
+      .pacientes-search-help { font-size: 12px; color: #9fbcc4; }
+      .pacientes-search-status { font-size: 12px; color: #9fbcc4; min-height: 18px; }
+      [data-theme="light"] .pacientes-search-field input { background: #fff; color: #254451; border-color: #c7dce3; }
+      [data-theme="light"] .pacientes-search-field input::placeholder { color: #657f88; }
+      [data-theme="light"] .pacientes-search-help, [data-theme="light"] .pacientes-search-status { color: #647c86; }
+      [data-theme="light"] .pacientes-search-clear { color: #557780; }
+      .pacientes-page-counter { font-variant-numeric: tabular-nums; }
+      #pacientes-tbody td { vertical-align: middle; }
+      #pacientes-tbody .cita-actions { display: flex; gap: 8px; align-items: center; }
+      @media (max-width: 680px) { .pacientes-search-field { max-width: 100%; } }
+    </style>
+</head>
+
+
+<body data-page="pacientes">
+
+
+    <!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+    <aside id="sidebar">
+
+
+        <!-- LOGO -->
+
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+         NAVEGACIÓN
+    ====================================================== -->
+
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+
+            <!-- DASHBOARD -->
+
+            <a class="nb" th:href="@{/dashboard}">
+
+                <i class="bx bx-grid-alt"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+
+            <!-- ANÁLISIS -->
+
+            <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-line-chart"></i>
+
+                <span>
+                    Análisis
+                </span>
+
+            </a>
+
+
+
+            <!-- CONVERSIONES -->
+
+            <a class="nb" th:href="@{/conversiones}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-transfer"></i>
+
+                <span>
+                    Conversiones Médicas
+                </span>
+
+            </a>
+
+
+
+            <!-- PACIENTES -->
+
+            <a class="nb active" th:href="@{/pacientes}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-user"></i>
+
+                <span>
+                    Pacientes
+                </span>
+
+            </a>
+
+
+
+            <!-- CITAS -->
+
+            <a class="nb" th:href="@{/citas}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-calendar"></i>
+
+                <span>
+                    Citas
+                </span>
+
+            </a>
+
+
+
+            <!-- HISTORIAL -->
+
+            <a class="nb" th:href="@{/historial}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-notepad"></i>
+
+                <span>
+                    Historial Médico
+                </span>
+
+            </a>
+
+
+
+            <!-- MEDICAMENTOS -->
+
+            <a class="nb" th:href="@{/medicamentos}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-capsule"></i>
+
+                <span>
+                    Medicamentos
+                </span>
+
+            </a>
+
+
+
+            <!-- REPORTES -->
+
+            <a class="nb" th:href="@{/reportes}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-file"></i>
+
+                <span>
+                    Reportes
+                </span>
+
+            </a>
+
+
+
+            <!-- ADMIN -->
+
+            <a class="nb" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">
+
+                <i class="bx bx-shield-quarter"></i>
+
+                <span>
+                    Panel Admin
+                </span>
+
+            </a>
+
+
+
+
+
+            <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
+                <i class='bx bx-bell'></i>
+                <span>Notificaciones</span>
+                <span class="notif-count" th:if="${noLeidas != null and noLeidas > 0}" th:text="${noLeidas}">
+                </span>
+            </a>
+
+
+
+
+            <!-- PERFIL -->
+
+            <a class="nb" th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+
+                <span>
+                    Mi Perfil
+                </span>
+
+            </a>
+
+        </nav>
+
+
+
+        <!-- USUARIO -->
+
+        <a class="sb-user sb-user-clickable" th:href="@{/perfil}">
+
+
+            <div class="avatar">
+
+                <i class="bx bx-user"></i>
+
+            </div>
+
+
+            <div class="u-info">
+
+
+                <div class="u-nm" th:text="${#authentication.name}">
+
+                    Usuario
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('ADMIN')">
+
+                    Administrador
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('MEDICO')">
+
+                    Médico
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('ENFERMERO')">
+
+                    Enfermero
+
+                </div>
+
+
+            </div>
+
+
+        </a>
+
+
+
+        <!-- LOGOUT -->
+
+        <form th:action="@{/logout}" method="post">
+
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+
+            <button type="submit" class="logout-link" style="
+                width: calc(100% - 24px);
+                background: transparent;
+            ">
+
+                <i class="bx bx-log-out"></i>
+
+                Salir
+
+            </button>
+
+
+        </form>
+
+
+    </aside>
+
+
+
+
+    <!-- =========================================================
+     CONTENIDO
+========================================================= -->
+
+    <div id="main-content">
+
+
+        <header>
+
+            <div class="h-title">
+
+                Pacientes
+
+            </div>
+
+        </header>
+
+
+
+        <div class="main-inner">
+
+
+            <div class="page active">
+
+
+                <!-- =================================================
+                 MENSAJES
+            ================================================== -->
+
+                <div class="cita-alert cita-alert-success" th:if="${exito}">
+
+                    <i class="bx bx-check-circle"></i>
+
+                    <span th:text="${exito}">
+                        Operación realizada correctamente.
+                    </span>
+
+                </div>
+
+
+                <div class="cita-alert cita-alert-error" th:if="${error}">
+
+                    <i class="bx bx-error-circle"></i>
+
+                    <span th:text="${error}">
+                        Ocurrió un error.
+                    </span>
+
+                </div>
+
+
+
+
+                <!-- =================================================
+                 CABECERA
+            ================================================== -->
+
+                <div class="card">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h2 class="section-title-compact">
+
+                                Gestión de pacientes
+
+                            </h2>
+
+
+                            <p class="muted-text-sm">
+
+                                Administra los pacientes
+                                registrados en ClinGuard.
+
+                            </p>
+
+
+                        </div>
+
+
+
+                        <a th:href="@{/pacientes/nuevo}" class="btn-primary"
+                            sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                            <i class="bx bx-plus"></i>
+
+                            Nuevo paciente
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <!-- =================================================
+                 RESUMEN
+            ================================================== -->
+
+                <div class="grid-4">
+
+
+                    <!-- TOTAL -->
+
+                    <div class="m-card">
+
+
+                        <div>
+
+
+                            <div class="m-val" th:text="${totalPacientes}">
+
+                                0
+
+                            </div>
+
+
+                            <div class="m-lbl">
+
+                                Pacientes registrados
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- FICHAS -->
+
+                    <div class="m-card">
+
+
+                        <div>
+
+
+                            <div class="m-val">
+
+                                <i class="bx bx-id-card"></i>
+
+                            </div>
+
+
+                            <div class="m-lbl">
+
+                                Fichas clínicas
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- HISTORIAL -->
+
+                    <div class="m-card">
+
+
+                        <div>
+
+
+                            <div class="m-val">
+
+                                <i class="bx bx-notepad"></i>
+
+                            </div>
+
+
+                            <div class="m-lbl">
+
+                                Seguimiento médico
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- CITAS -->
+
+                    <div class="m-card">
+
+
+                        <div>
+
+
+                            <div class="m-val">
+
+                                <i class="bx bx-calendar"></i>
+
+                            </div>
+
+
+                            <div class="m-lbl">
+
+                                Gestión de citas
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <!-- =================================================
+                 LISTA
+            ================================================== -->
+
+                <div class="card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h3 class="section-title-compact">
+
+                                Lista de pacientes
+
+                            </h3>
+
+
+                            <p class="muted-text-sm">
+
+                                Consulta la información
+                                de los pacientes registrados.
+
+                            </p>
+
+
+                        </div>
+
+
+                        <!-- CONTADOR PÁGINA -->
+
+                        <div class="pacientes-page-counter" th:if="${totalPacientes > 0}">
+
+                            Mostrando
+
+                            <strong th:text="${numeroInicial}">
+                                1
+                            </strong>
+
+                            -
+
+                            <strong th:text="${numeroFinal}">
+                                40
+                            </strong>
+
+                            de
+
+                            <strong th:text="${totalPacientes}">
+                                100
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+                    <!-- =================================================
+                     BUSCADOR
+                ================================================== -->
+
+                    <form class="pacientes-search" id="pacientes-busqueda-form" th:action="@{/pacientes}" method="get" role="search">
+                        <div class="pacientes-search-field">
+                            <i class="bx bx-search pacientes-search-icon" aria-hidden="true"></i>
+                            <input type="search" id="buscar-paciente" name="buscar" autocomplete="off"
+                                   th:value="${buscar}" placeholder="Buscar por nombre, documento, teléfono o correo"
+                                   aria-label="Buscar pacientes automáticamente">
+                            <button type="button" id="pacientes-limpiar" class="pacientes-search-clear"
+                                    title="Borrar búsqueda" aria-label="Borrar búsqueda" hidden>
+                                <i class="bx bx-x"></i>
+                            </button>
+                        </div>
+                        <span class="pacientes-search-status" id="pacientes-busqueda-estado" aria-live="polite">Los resultados se actualizan automáticamente al escribir.</span>
+                    </form>
+
+
+
+
+                    <!-- =================================================
+                     TABLA
+                ================================================== -->
+
+                    <div class="table-container">
+
+
+                        <table>
+
+
+                            <thead>
+
+
+                                <tr>
+
+
+                                    <th>
+                                        Paciente
+                                    </th>
+
+
+                                    <th>
+                                        Documento
+                                    </th>
+
+
+                                    <th>
+                                        Teléfono
+                                    </th>
+
+
+                                    <th>
+                                        Correo
+                                    </th>
+
+
+                                    <th>
+                                        Dirección
+                                    </th>
+
+
+                                    <th>
+                                        Acciones
+                                    </th>
+
+
+                                </tr>
+
+
+                            </thead>
+
+
+
+
+                            <tbody id="pacientes-tbody">
+
+
+                                <tr th:each="paciente : ${pacientes}" class="paciente-row">
+
+
+                                    <!-- PACIENTE -->
+
+                                    <td>
+
+
+                                        <div class="cita-paciente-cell">
+
+
+                                            <div class="cita-avatar">
+
+                                                <i class="bx bx-user"></i>
+
+                                            </div>
+
+
+                                            <div>
+
+
+                                                <strong th:text="${paciente.nombres + ' ' + paciente.apellidos}">
+
+                                                    Nombre paciente
+
+                                                </strong>
+
+
+                                                <div class="muted-text-sm"
+                                                    th:text="${paciente.tipoDocumento + ' · ' + paciente.documento}">
+
+                                                    CC · 1000000000
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </td>
+
+
+
+
+                                    <!-- DOCUMENTO -->
+
+                                    <td th:text="${paciente.documento != null
+                                        ? paciente.documento
+                                        : 'Sin registrar'}">
+
+                                        Documento
+
+                                    </td>
+
+
+
+
+                                    <!-- TELÉFONO -->
+
+                                    <td th:text="${paciente.telefono != null
+                                        ? paciente.telefono
+                                        : 'Sin registrar'}">
+
+                                        Teléfono
+
+                                    </td>
+
+
+
+
+                                    <!-- CORREO -->
+
+                                    <td th:text="${paciente.correo != null
+                                        ? paciente.correo
+                                        : 'Sin registrar'}">
+
+                                        Correo
+
+                                    </td>
+
+
+
+
+                                    <!-- DIRECCIÓN -->
+
+                                    <td th:text="${paciente.direccion != null
+                                        ? paciente.direccion
+                                        : 'Sin registrar'}">
+
+                                        Dirección
+
+                                    </td>
+
+
+
+
+                                    <!-- ACCIONES -->
+
+                                    <td>
+
+
+                                        <div class="cita-actions">
+
+
+                                            <!-- VER -->
+
+                                            <a class="cita-action-btn"
+                                                th:href="@{/pacientes/ver/{id}(id=${paciente.id})}"
+                                                title="Ver paciente">
+
+                                                <i class="bx bx-show"></i>
+
+                                            </a>
+
+
+
+                                            <!-- EDITAR -->
+
+                                            <a class="cita-action-btn cita-action-edit"
+                                                th:href="@{/pacientes/editar/{id}(id=${paciente.id})}"
+                                                sec:authorize="hasAnyRole('ADMIN','MEDICO')" title="Editar paciente">
+
+                                                <i class="bx bx-edit-alt"></i>
+
+                                            </a>
+
+
+
+                                            <!-- HISTORIAL -->
+
+                                            <a class="cita-action-btn"
+                                                th:href="@{/historial/paciente/{id}(id=${paciente.id})}"
+                                                sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')"
+                                                title="Ver historial">
+
+                                                <i class="bx bx-notepad"></i>
+
+                                            </a>
+
+
+
+                                            <!-- ELIMINAR -->
+
+                                            <form th:action="@{/pacientes/eliminar/{id}(id=${paciente.id})}"
+                                                method="post" sec:authorize="hasRole('ADMIN')"
+                                                onsubmit="return confirm('¿Deseas eliminar este paciente?');">
+
+
+                                                <input type="hidden" name="pagina" th:value="${paginaActual}">
+
+
+                                                <input type="hidden" th:name="${_csrf.parameterName}"
+                                                    th:value="${_csrf.token}">
+
+
+                                                <button type="submit" class="cita-action-btn cita-action-delete"
+                                                    title="Eliminar paciente">
+
+                                                    <i class="bx bx-trash"></i>
+
+                                                </button>
+
+
+                                            </form>
+
+
+                                        </div>
+
+
+                                    </td>
+
+
+                                </tr>
+
+
+
+
+                                <!-- SIN RESULTADOS -->
+
+                                <tr th:if="${pacientes == null
+                                    or #lists.isEmpty(pacientes)}">
+
+
+                                    <td colspan="6">
+
+
+                                        <div class="citas-empty-content">
+
+
+                                            <div class="citas-empty-icon">
+
+                                                <i class="bx bx-user-x"></i>
+
+                                            </div>
+
+
+                                            <h4>
+
+                                                No se encontraron pacientes
+
+                                            </h4>
+
+
+                                            <p>
+
+                                                No hay pacientes que coincidan con la búsqueda o aún no existen registros.
+
+                                            </p>
+
+
+                                        </div>
+
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+
+
+                    <!-- =================================================
+                     PAGINACIÓN
+                ================================================== -->
+
+                    <div class="pagination-container" th:if="${totalPaginas > 1}">
+
+
+                        <!-- ANTERIOR -->
+
+                        <a th:if="${tieneAnterior}" th:href="@{/pacientes(pagina=${paginaActual - 1},buscar=${buscar})}"
+                            class="pagination-btn">
+
+                            <i class="bx bx-chevron-left"></i>
+
+                            Anterior
+
+                        </a>
+
+
+                        <span th:unless="${tieneAnterior}" class="pagination-btn disabled">
+
+                            <i class="bx bx-chevron-left"></i>
+
+                            Anterior
+
+                        </span>
+
+
+
+
+                        <!-- PÁGINAS -->
+
+                        <div class="pagination-pages">
+
+
+                            <a th:each="i : ${#numbers.sequence(0, totalPaginas - 1)}"
+                                th:href="@{/pacientes(pagina=${i},buscar=${buscar})}" th:text="${i + 1}"
+                                th:classappend="${i == paginaActual} ? ' active' : ''" class="pagination-number">
+
+                                1
+
+                            </a>
+
+
+                        </div>
+
+
+
+
+                        <!-- SIGUIENTE -->
+
+                        <a th:if="${tieneSiguiente}" th:href="@{/pacientes(pagina=${paginaActual + 1},buscar=${buscar})}"
+                            class="pagination-btn">
+
+                            Siguiente
+
+                            <i class="bx bx-chevron-right"></i>
+
+                        </a>
+
+
+                        <span th:unless="${tieneSiguiente}" class="pagination-btn disabled">
+
+                            Siguiente
+
+                            <i class="bx bx-chevron-right"></i>
+
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('pacientes-busqueda-form');
+        const input = document.getElementById('buscar-paciente');
+        const limpiar = document.getElementById('pacientes-limpiar');
+        const estado = document.getElementById('pacientes-busqueda-estado');
+        if (!form || !input) return;
+        let timeout;
+        let componiendo = false;
+        function reflejarEstado() {
+          limpiar.hidden = input.value.length === 0;
+        }
+        function buscar() {
+          clearTimeout(timeout);
+          estado.textContent = 'Buscando pacientes…';
+          timeout = setTimeout(function () {
+            // GET conserva la búsqueda en la URL; el controlador consulta toda MongoDB.
+            // Nueva búsqueda comienza desde la primera página.
+            form.requestSubmit();
+          }, 350);
+        }
+        input.addEventListener('compositionstart', function () { componiendo = true; });
+        input.addEventListener('compositionend', function () { componiendo = false; reflejarEstado(); buscar(); });
+        input.addEventListener('input', function () {
+          reflejarEstado();
+          if (!componiendo) buscar();
+        });
+        limpiar.addEventListener('click', function () {
+          input.value = '';
+          reflejarEstado();
+          input.focus();
+          buscar();
+        });
+        reflejarEstado();
+      });
+    </script>
+</body>
+
+</html>

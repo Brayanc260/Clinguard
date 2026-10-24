@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html data-theme="dark" lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard — Historial Médico</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script th:src="@{/js/theme.js}"></script>
+
+    <style>
+        /* Ajustes exclusivos de la vista de historiales */
+        .hist-patient-panel {
+            margin-top: 22px;
+            padding: 22px 26px
+        }
+
+        .hist-patient-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap
+        }
+
+        .hist-patient-identity {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0
+        }
+
+        .hist-patient-symbol {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: rgba(45, 190, 213, .13);
+            color: #39c6db;
+            font-size: 24px;
+            flex: none
+        }
+
+        .hist-overline {
+            display: block;
+            color: #8eb5bf;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            margin-bottom: 5px
+        }
+
+        .hist-patient-panel h2 {
+            margin: 0 0 4px;
+            font-size: 20px;
+            line-height: 1.25;
+            overflow-wrap: anywhere
+        }
+
+        .hist-patient-panel .muted-text-sm {
+            margin: 0
+        }
+
+        .hist-patient-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .hist-count {
+            padding: 8px 12px;
+            border: 1px solid rgba(128, 190, 203, .3);
+            border-radius: 11px;
+            font-size: 13px;
+            color: inherit;
+            white-space: nowrap
+        }
+
+        .hist-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 17px;
+            padding: 13px 15px;
+            border: 1px solid rgba(127, 181, 197, .25);
+            background: rgba(90, 150, 168, .08);
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: inherit
+        }
+
+        .hist-notice i {
+            font-size: 19px;
+            color: #4bc3d7;
+            margin-top: 1px
+        }
+
+        .hist-empty-wrap .citas-empty-content {
+            min-height: 220px;
+            padding: 30px 18px;
+            text-align: center
+        }
+
+        .hist-empty-wrap .citas-empty-content h4 {
+            margin-bottom: 8px
+        }
+
+        .hist-empty-wrap .citas-empty-content p {
+            max-width: 510px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5
+        }
+
+        .hist-list-card {
+            margin-top: 22px !important
+        }
+
+        .historial-search-empty {
+            padding: 18px;
+            text-align: center;
+            color: var(--text-muted, #87979b)
+        }
+
+        .historial-row[hidden],
+        .historial-patient-card[hidden] {
+            display: none !important
+        }
+
+        @media(max-width:700px) {
+            .hist-patient-panel {
+                padding: 18px
+            }
+
+            .hist-patient-actions {
+                width: 100%
+            }
+
+            .hist-patient-actions .btn-primary {
+                width: 100%;
+                text-align: center;
+                justify-content: center
+            }
+        }
+    </style>
+</head>
+
+<body data-page="historial">
+
+    <!-- =========================================================
+     SIDEBAR
+========================================================= -->
+    <aside id="sidebar">
+
+        <div class="sb-brand">
+            <div class="sb-logo">
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+            </div>
+        </div>
+
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+            <a class="nb" th:href="@{/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <a class="nb" th:href="@{/conversiones}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-transfer"></i>
+                <span>Conversiones Médicas</span>
+            </a>
+
+            <a class="nb" th:href="@{/pacientes}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-user"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb" th:href="@{/citas}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-calendar"></i>
+                <span>Citas</span>
+            </a>
+
+            <a class="nb" th:href="@{/citas}" sec:authorize="hasRole('USUARIO')">
+                <i class="bx bx-calendar"></i>
+                <span>Mis Citas</span>
+            </a>
+
+            <a class="nb active" th:href="@{/historial}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-notepad"></i>
+                <span>Historial Médico</span>
+            </a>
+
+            <a class="nb active" th:href="@{/historial}" sec:authorize="hasRole('USUARIO')">
+                <i class="bx bx-notepad"></i>
+                <span>Mi Historial</span>
+            </a>
+
+            <a class="nb" th:href="@{/medicamentos}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-capsule"></i>
+                <span>Medicamentos</span>
+            </a>
+
+            <a class="nb" th:href="@{/reportes}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-shield-quarter"></i>
+                <span>Panel Admin</span>
+            </a>
+
+
+            <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
+                <i class='bx bx-bell'></i>
+                <span>Notificaciones</span>
+                <span class="notif-count" th:if="${noLeidas != null and noLeidas > 0}" th:text="${noLeidas}">
+                </span>
+            </a>
+
+
+            <a class="nb" th:href="@{/perfil}">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <a class="sb-user sb-user-clickable" th:href="@{/perfil}">
+
+            <div class="avatar">
+                <i class="bx bx-user"></i>
+            </div>
+
+            <div class="u-info">
+
+                <div class="u-nm" th:text="${#authentication.name}">
+                    Usuario
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('ADMIN')">
+                    Administrador
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('MEDICO')">
+                    Médico
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('ENFERMERO')">
+                    Enfermero
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('USUARIO')">
+                    Usuario
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <form th:action="@{/logout}" method="post">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <button type="submit" class="logout-link" style="width: calc(100% - 24px); background: transparent;">
+
+                <i class="bx bx-log-out"></i>
+                <span>Salir</span>
+
+            </button>
+
+        </form>
+
+    </aside>
+
+
+    <!-- =========================================================
+     CONTENIDO
+========================================================= -->
+    <div id="main-content">
+
+        <header>
+
+            <div class="h-title" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                Historial Médico
+            </div>
+
+            <div class="h-title" sec:authorize="hasRole('USUARIO')">
+                Mi Historial
+            </div>
+
+        </header>
+
+
+        <div class="main-inner">
+
+
+            <!-- MENSAJES -->
+
+            <div class="cita-alert cita-alert-success" th:if="${exito}">
+
+                <i class="bx bx-check-circle"></i>
+
+                <span th:text="${exito}">
+                    Operación realizada correctamente.
+                </span>
+
+            </div>
+
+
+            <div class="cita-alert cita-alert-error" th:if="${error}">
+
+                <i class="bx bx-error-circle"></i>
+
+                <span th:text="${error}">
+                    Ocurrió un error.
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+             CABECERA
+        ================================================== -->
+
+            <div class="card" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <div class="card-toolbar">
+
+                    <div>
+
+                        <h2 class="section-title-compact">
+                            Gestión de historiales
+                        </h2>
+
+                        <p class="muted-text-sm">
+                            Consulta, registra y administra los historiales médicos de ClinGuard.
+                        </p>
+
+                    </div>
+
+
+                    <a class="btn-primary"
+                        th:href="${pacienteSeleccionado != null} ? @{/historial/nuevo(pacienteId=${pacienteSeleccionado.id})} : @{/historial/nuevo}"
+                        sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                        <i class="bx bx-plus"></i>
+
+                        Nuevo historial
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- USUARIO -->
+
+            <div class="card" sec:authorize="hasRole('USUARIO')">
+
+                <div class="card-toolbar">
+
+                    <div>
+
+                        <h2 class="section-title-compact">
+
+                            <i class="bx bx-notepad"></i>
+
+                            Mi historial médico
+
+                        </h2>
+
+                        <p class="muted-text-sm">
+                            Consulta los registros médicos asociados a tu cuenta.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+             ESTADÍSTICAS
+        ================================================== -->
+
+            <div class="grid-4" style="margin-top:25px;" th:if="${pacienteSeleccionado == null}">
+
+
+                <div class="m-card">
+
+                    <div>
+
+                        <div class="m-val" th:text="${totalHistoriales != null ? totalHistoriales : 0}">
+                            0
+                        </div>
+
+                        <div class="m-lbl" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                            Historiales registrados
+                        </div>
+
+                        <div class="m-lbl" sec:authorize="hasRole('USUARIO')">
+                            Mis historiales
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="m-card">
+
+                    <div>
+
+                        <div class="m-val">
+                            <i class="bx bx-notepad"></i>
+                        </div>
+
+                        <div class="m-lbl">
+                            Registros clínicos
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="m-card">
+
+                    <div>
+
+                        <div class="m-val">
+                            <i class="bx bx-user"></i>
+                        </div>
+
+                        <div class="m-lbl" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                            Pacientes registrados
+                        </div>
+
+                        <div class="m-lbl" sec:authorize="hasRole('USUARIO')">
+                            Atención médica
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="m-card">
+
+                    <div>
+
+                        <div class="m-val">
+                            <i class="bx bx-time-five"></i>
+                        </div>
+
+                        <div class="m-lbl">
+                            Seguimiento médico
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Paciente seleccionado: identificación y contexto del historial -->
+            <section class="card hist-patient-panel" th:if="${pacienteSeleccionado != null}"
+                aria-label="Historial del paciente seleccionado">
+                <div class="hist-patient-top">
+                    <div class="hist-patient-identity">
+                        <span class="hist-patient-symbol"><i class="bx bx-user-circle"></i></span>
+                        <div>
+                            <span class="hist-overline">Historial del paciente</span>
+                            <h2 th:text="${pacienteSeleccionado.nombres + ' ' + pacienteSeleccionado.apellidos}">
+                                Paciente</h2>
+                            <p class="muted-text-sm">Registros vinculados por ID o documento verificado</p>
+                        </div>
+                    </div>
+                    <div class="hist-patient-actions">
+                        <span class="hist-count"><strong
+                                th:text="${totalHistoriales != null ? totalHistoriales : 0}">0</strong> historiales
+                            vinculados</span>
+                        <a class="btn-primary" sec:authorize="hasAnyRole('ADMIN','MEDICO')"
+                            th:href="@{/historial/nuevo(pacienteId=${pacienteSeleccionado.id})}">
+                            <i class="bx bx-plus"></i> Nuevo historial</a>
+                        <a class="btn-primary" th:href="@{/pacientes}"><i class="bx bx-arrow-back"></i> Volver a
+                            pacientes</a>
+                    </div>
+                </div>
+                <div class="hist-notice" th:if="${totalHistoriales == 0}">
+                    <i class="bx bx-info-circle" aria-hidden="true"></i>
+                    <span>No se encontraron historiales con una referencia verificada para este paciente. Los registros
+                        antiguos identificados solamente por nombre requieren revisión antes de vincularlos.</span>
+                </div>
+            </section>
+
+            <!-- =================================================
+             LISTA HISTORIALES
+        ================================================== -->
+
+            <div class="card hist-list-card">
+
+
+                <div class="card-toolbar">
+
+                    <div>
+
+                        <h3 class="section-title-compact" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                            Lista de historiales
+                        </h3>
+
+
+                        <h3 class="section-title-compact" sec:authorize="hasRole('USUARIO')">
+                            Mis registros médicos
+                        </h3>
+
+
+                        <p class="muted-text-sm" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')"
+                            th:text="${pacienteSeleccionado != null} ? 'Registros verificados del paciente seleccionado.' : 'Consulta los historiales médicos registrados en el sistema.'">
+                            Consulta los historiales médicos registrados en el sistema.
+                        </p>
+
+
+                        <p class="muted-text-sm" sec:authorize="hasRole('USUARIO')">
+                            Aquí aparecen únicamente los historiales asociados a tu cuenta.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUSCADOR -->
+
+                <div class="citas-toolbar" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                    <div class="citas-search-box">
+
+                        <i class="bx bx-search"></i>
+
+                        <input type="text" id="buscar-historial" placeholder="Buscar en los registros de esta página..."
+                            aria-label="Buscar historiales de la página actual">
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                 TABLA
+            ================================================== -->
+
+                <!-- Detalles de los historiales del paciente seleccionado -->
+                <div th:if="${pacienteSeleccionado != null and historiales != null and !#lists.isEmpty(historiales)}"
+                    style="display:grid;gap:16px;margin:18px 0 24px;">
+                    <article class="historial-patient-card" th:each="registro : ${historiales}"
+                        style="border:1px solid var(--border,#355565);border-radius:14px;padding:20px;background:rgba(255,255,255,.025);">
+                        <div
+                            style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+                            <div>
+                                <div style="font-weight:700;font-size:1.05rem;"
+                                    th:text="${registro.motivoConsulta != null and !registro.motivoConsulta.isBlank() ? registro.motivoConsulta : 'Consulta clínica'}">
+                                    Consulta clínica</div>
+                                <span class="muted-text-sm"
+                                    th:text="${'Fecha: ' + (registro.fecha != null ? registro.fecha : 'Sin fecha')}">Fecha</span>
+                            </div>
+                            <a class="btn-primary" th:href="@{/historial/ver/{id}(id=${registro.id})}"><i
+                                    class="bx bx-show"></i> Ver detalle completo</a>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+                            <div>
+                                <div class="muted-text-sm">Médico responsable</div>
+                                <div
+                                    th:text="${registro.medicoUsername != null and !registro.medicoUsername.isBlank() ? registro.medicoUsername : 'Sin asignar'}">
+                                    Médico</div>
+                            </div>
+                            <div>
+                                <div class="muted-text-sm">Diagnóstico</div>
+                                <div style="white-space:pre-wrap;overflow-wrap:anywhere"
+                                    th:text="${registro.diagnostico != null and !registro.diagnostico.isBlank() ? registro.diagnostico : 'Sin diagnóstico registrado'}">
+                                    Diagnóstico</div>
+                            </div>
+                            <div>
+                                <div class="muted-text-sm">Tratamiento</div>
+                                <div style="white-space:pre-wrap;overflow-wrap:anywhere"
+                                    th:text="${registro.tratamiento != null and !registro.tratamiento.isBlank() ? registro.tratamiento : 'Sin tratamiento registrado'}">
+                                    Tratamiento</div>
+                            </div>
+                            <div>
+                                <div class="muted-text-sm">Observaciones</div>
+                                <div style="white-space:pre-wrap;overflow-wrap:anywhere"
+                                    th:text="${registro.observaciones != null and !registro.observaciones.isBlank() ? registro.observaciones : 'Sin observaciones'}">
+                                    Observaciones</div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="table-container"
+                    th:if="${pacienteSeleccionado == null and historiales != null and !#lists.isEmpty(historiales)}">
+
+                    <table>
+
+                        <thead>
+
+                            <tr sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                                <th>Paciente</th>
+                                <th>Fecha</th>
+                                <th>Motivo de consulta</th>
+                                <th>Diagnóstico</th>
+                                <th>Médico</th>
+                                <th>Acciones</th>
+
+                            </tr>
+
+
+                            <tr sec:authorize="hasRole('USUARIO')">
+
+                                <th>Fecha</th>
+                                <th>Motivo de consulta</th>
+                                <th>Diagnóstico</th>
+                                <th>Médico</th>
+                                <th>Acciones</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            <tr th:each="historial : ${historiales}" class="historial-row">
+
+
+                                <!-- PACIENTE -->
+
+                                <td sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                                    <div class="cita-paciente-cell">
+
+                                        <div class="cita-avatar">
+                                            <i class="bx bx-user"></i>
+                                        </div>
+
+                                        <strong
+                                            th:text="${nombresPacientes != null and historial.pacienteId != null and nombresPacientes.containsKey(historial.pacienteId) ? nombresPacientes[historial.pacienteId] : (historial.usuarioUsername != null and !historial.usuarioUsername.isEmpty() ? historial.usuarioUsername : 'Paciente sin identificar')}">
+
+                                            Paciente
+
+                                        </strong>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- FECHA -->
+
+                                <td>
+
+                                    <div class="cita-date-cell">
+
+                                        <i class="bx bx-calendar"></i>
+
+                                        <span th:text="${historial.fecha != null and !historial.fecha.isEmpty()
+                                        ? historial.fecha
+                                        : 'Sin fecha'}">
+
+                                            Fecha
+
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- MOTIVO -->
+
+                                <td th:text="${historial.motivoConsulta != null and !historial.motivoConsulta.isEmpty()
+                                ? historial.motivoConsulta
+                                : 'Sin información'}">
+
+                                    Motivo
+
+                                </td>
+
+
+                                <!-- DIAGNÓSTICO -->
+
+                                <td th:text="${historial.diagnostico != null and !historial.diagnostico.isEmpty()
+                                ? historial.diagnostico
+                                : 'Sin diagnóstico'}">
+
+                                    Diagnóstico
+
+                                </td>
+
+
+                                <!-- MÉDICO -->
+
+                                <td th:text="${historial.medicoUsername != null and !historial.medicoUsername.isEmpty()
+                                ? historial.medicoUsername
+                                : 'Sin asignar'}">
+
+                                    Médico
+
+                                </td>
+
+
+                                <!-- ACCIONES -->
+
+                                <td>
+
+                                    <div class="cita-actions">
+
+
+                                        <a class="cita-action-btn cita-action-view"
+                                            th:href="@{/historial/ver/{id}(id=${historial.id})}" title="Ver historial">
+
+                                            <i class="bx bx-show"></i>
+
+                                        </a>
+
+
+                                        <a class="cita-action-btn cita-action-edit"
+                                            th:href="@{/historial/editar/{id}(id=${historial.id})}"
+                                            title="Editar historial" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                                            <i class="bx bx-edit-alt"></i>
+
+                                        </a>
+
+
+                                        <form th:action="@{/historial/eliminar/{id}(id=${historial.id})}" method="post"
+                                            sec:authorize="hasRole('ADMIN')"
+                                            onsubmit="return confirm('¿Deseas marcar este historial como anulado?');">
+
+
+                                            <input type="hidden" th:name="${_csrf.parameterName}"
+                                                th:value="${_csrf.token}">
+
+
+                                            <button type="submit" class="cita-action-btn cita-action-delete"
+                                                title="Anular historial">
+
+                                                <i class="bx bx-block"></i>
+
+                                            </button>
+
+                                        </form>
+
+
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- =================================================
+                 VACÍO PERSONAL
+            ================================================== -->
+
+                <div class="citas-empty-content" th:if="${historiales == null or #lists.isEmpty(historiales)}"
+                    sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+
+                    <div class="citas-empty-icon">
+
+                        <i class="bx bx-notepad"></i>
+
+                    </div>
+
+
+                    <h4
+                        th:text="${pacienteSeleccionado != null} ? 'Sin historiales vinculados' : 'No hay historiales registrados'">
+                        No hay historiales registrados
+                    </h4>
+
+
+                    <p
+                        th:text="${pacienteSeleccionado != null} ? 'No hay registros vinculados mediante ID o documento para este paciente. Esto no significa que no existan registros antiguos pendientes de verificación.' : 'Los historiales médicos aparecerán aquí cuando sean creados.'">
+                        Los historiales médicos aparecerán aquí cuando sean creados.
+                    </p>
+
+
+                    <a th:if="${pacienteSeleccionado == null}" th:href="@{/historial/nuevo}" class="btn-primary"
+                        sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                        <i class="bx bx-plus"></i>
+
+                        Crear historial
+
+                    </a>
+
+                </div>
+
+
+                <p id="historial-sin-coincidencias" class="historial-search-empty" hidden>No hay coincidencias en los
+                    registros de esta página.</p>
+
+                <!-- VACÍO USUARIO -->
+
+                <div class="citas-empty-content" th:if="${historiales == null or #lists.isEmpty(historiales)}"
+                    sec:authorize="hasRole('USUARIO')" style="
+                    min-height:270px;
+                    display:flex;
+                    flex-direction:column;
+                    justify-content:center;
+                    align-items:center;
+                    ">
+
+
+                    <div class="citas-empty-icon">
+
+                        <i class="bx bx-notepad"></i>
+
+                    </div>
+
+
+                    <h4>
+                        Aún no tienes historial médico
+                    </h4>
+
+
+                    <p style="
+                        max-width:520px;
+                        text-align:center;
+                        ">
+
+                        Cuando el personal autorizado registre información clínica
+                        asociada a tu usuario, aparecerá automáticamente aquí.
+
+                    </p>
+
+                </div>
+
+
+                <!-- =================================================
+                 PAGINACIÓN
+            ================================================== -->
+
+                <div class="historial-pagination" th:if="${totalPaginas != null and totalPaginas > 1}">
+
+
+                    <a class="historial-page-btn" th:classappend="${paginaActual == 0}
+                        ? ' disabled'
+                        : ''"
+                        th:href="${pacienteSeleccionado != null} ? @{/historial/paciente/{id}(id=${pacienteSeleccionado.id},page=${paginaActual - 1})} : @{/historial(page=${paginaActual - 1},size=${size})}">
+
+
+                        <i class="bx bx-chevron-left"></i>
+
+                        Anterior
+
+                    </a>
+
+
+                    <div class="historial-page-numbers">
+
+
+                        <a th:each="i : ${#numbers.sequence(0, totalPaginas - 1)}" class="historial-page-number"
+                            th:classappend="${i == paginaActual}
+                            ? ' active'
+                            : ''"
+                            th:href="${pacienteSeleccionado != null} ? @{/historial/paciente/{id}(id=${pacienteSeleccionado.id},page=${i})} : @{/historial(page=${i},size=${size})}"
+                            th:text="${i + 1}">
+
+                            1
+
+                        </a>
+
+
+                    </div>
+
+
+                    <a class="historial-page-btn" th:classappend="${paginaActual + 1 >= totalPaginas}
+                        ? ' disabled'
+                        : ''"
+                        th:href="${pacienteSeleccionado != null} ? @{/historial/paciente/{id}(id=${pacienteSeleccionado.id},page=${paginaActual + 1})} : @{/historial(page=${paginaActual + 1},size=${size})}">
+
+
+                        Siguiente
+
+                        <i class="bx bx-chevron-right"></i>
+
+                    </a>
+
+
+                </div>
+
+
+                <!-- INFORMACIÓN PAGINACIÓN -->
+
+                <div class="historial-page-info" th:if="${totalPaginas != null and totalPaginas > 0}">
+
+
+                    Página
+
+                    <strong th:text="${paginaActual + 1}">
+                        1
+                    </strong>
+
+                    de
+
+                    <strong th:text="${totalPaginas}">
+                        1
+                    </strong>
+
+                    —
+
+                    <span th:text="${totalHistoriales}">
+                        0
+                    </span>
+
+                    registros
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+     BUSCADOR
+========================================================= -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const buscador = document.getElementById("buscar-historial");
+            const aviso = document.getElementById("historial-sin-coincidencias");
+            if (!buscador) return;
+            const registros = Array.from(document.querySelectorAll(".historial-row, .historial-patient-card"));
+            buscador.addEventListener("input", function () {
+                const texto = buscador.value.toLocaleLowerCase("es").trim();
+                let visibles = 0;
+                registros.forEach(function (registro) {
+                    const coincide = registro.textContent.toLocaleLowerCase("es").includes(texto);
+                    registro.hidden = !coincide;
+                    if (coincide) visibles++;
+                });
+                if (aviso) aviso.hidden = !texto || visibles > 0 || registros.length === 0;
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,10 +1,7 @@
 package com.mycompany.clinica.entity;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Document(collection = "medicamentos")
 public class Medicamento {
@@ -12,32 +9,60 @@ public class Medicamento {
     @Id
     private String id;
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Indexed(unique = true)
     private String nombre;
+    private String principioActivo;
+    private String presentacion;
 
-    @NotNull(message = "La dosis mínima es obligatoria")
+    private Double cantidadMedicamento;
+    private String unidadMedicamento;
+
+    private Double cantidadVehiculo;
+    private String unidadVehiculo;
+
+    private String viaAdministracion;
+
+    private Integer stock;
+
+    private String estado;
+
     private Double dosisMinimaMgKg;
-
-    @NotNull(message = "La dosis máxima es obligatoria")
     private Double dosisMaximaMgKg;
-
     private String descripcion;
 
     public Medicamento() {}
-
-    public Medicamento(String nombre, Double dosisMinimaMgKg, Double dosisMaximaMgKg, String descripcion) {
-        this.nombre = nombre;
-        this.dosisMinimaMgKg = dosisMinimaMgKg;
-        this.dosisMaximaMgKg = dosisMaximaMgKg;
-        this.descripcion = descripcion;
-    }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getPrincipioActivo() { return principioActivo; }
+    public void setPrincipioActivo(String principioActivo) { this.principioActivo = principioActivo; }
+
+    public String getPresentacion() { return presentacion; }
+    public void setPresentacion(String presentacion) { this.presentacion = presentacion; }
+
+    public Double getCantidadMedicamento() { return cantidadMedicamento; }
+    public void setCantidadMedicamento(Double cantidadMedicamento) { this.cantidadMedicamento = cantidadMedicamento; }
+
+    public String getUnidadMedicamento() { return unidadMedicamento; }
+    public void setUnidadMedicamento(String unidadMedicamento) { this.unidadMedicamento = unidadMedicamento; }
+
+    public Double getCantidadVehiculo() { return cantidadVehiculo; }
+    public void setCantidadVehiculo(Double cantidadVehiculo) { this.cantidadVehiculo = cantidadVehiculo; }
+
+    public String getUnidadVehiculo() { return unidadVehiculo; }
+    public void setUnidadVehiculo(String unidadVehiculo) { this.unidadVehiculo = unidadVehiculo; }
+
+    public String getViaAdministracion() { return viaAdministracion; }
+    public void setViaAdministracion(String viaAdministracion) { this.viaAdministracion = viaAdministracion; }
+
+    public Integer getStock() { return stock; }
+    public void setStock(Integer stock) { this.stock = stock; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 
     public Double getDosisMinimaMgKg() { return dosisMinimaMgKg; }
     public void setDosisMinimaMgKg(Double dosisMinimaMgKg) { this.dosisMinimaMgKg = dosisMinimaMgKg; }

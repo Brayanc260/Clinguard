@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard | Notificaciones</title>
+
+    <!-- ESTILOS GENERALES -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- ICONOS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- TEMA -->
+    <script th:src="@{/js/theme.js}"></script>
+
+    <!-- Contador global de notificaciones de Recepción -->
+    <style>
+      body .cg-recep-notif-badge {
+        margin-left: auto;
+        min-width: 23px;
+        height: 22px;
+        padding: 2px 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #fff;
+        background: #006d7c;
+        border: 1px solid #50c3cb;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+    </style>
+</head>
+
+<body data-page="recepcion-notificaciones">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside id="sidebar">
+
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-oscuro">
+
+            </div>
+
+        </div>
+
+        <nav class="sb-nav"
+             aria-label="Navegación de recepción">
+
+            <a class="nb"
+               th:href="@{/recepcionista/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/pacientes}">
+                <i class="bx bx-group"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/citas}">
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/agenda}">
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/analisis}">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <!-- PÁGINA ACTIVA -->
+            <a class="nb active"
+               th:href="@{/recepcion/notificaciones}"
+               aria-current="page">
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+                <span class="cg-recep-notif-badge"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas > 99 ? '99+' : noLeidas}"
+                      th:attr="aria-label=|${noLeidas} notificaciones sin leer|">0</span>
+                
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/reportes}">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/perfil}">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- PERFIL INFERIOR -->
+        <!-- PERFIL UNIFICADO DEL RECEPCIONISTA -->
+        <div class="sb-bottom recep-sidebar-footer">
+            <div class="sb-user recep-user-card">
+                <div class="avatar recep-user-avatar" aria-hidden="true">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="u-info recep-user-info">
+                    <div class="u-nm" th:text="${#authentication.name}">Usuario</div>
+                    <div class="u-rl">Recepcionista</div>
+                </div>
+            </div>
+            <form class="sb-logout-form" th:action="@{/logout}" method="post">
+                <button class="logout-link recep-logout-button" type="submit">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <header>
+
+            <div class="h-title">
+                Notificaciones
+            </div>
+
+        </header>
+
+        <main class="main-inner">
+
+            <div class="page active rr-page">
+
+                <!-- =========================================
+                     PRESENTACIÓN
+                     ========================================= -->
+
+                <section class="card rr-intro">
+
+                    <div>
+
+                        <h2>Notificaciones de recepción</h2>
+
+                        <p>
+                            Consulta los avisos dirigidos
+                            a tu cuenta y lleva el
+                            seguimiento de su lectura.
+                        </p>
+
+                    </div>
+
+                    <i class="bx bx-bell rr-big-icon" aria-hidden="true"></i>
+
+                </section>
+
+                <!-- =========================================
+                     INDICADORES
+                     ========================================= -->
+
+                <div class="rr-stats" aria-label="Resumen de notificaciones">
+
+                    <!-- TODAS -->
+                    <article class="m-card">
+
+                        <i class="bx bx-bell"></i>
+
+                        <div>
+
+                            <div class="m-val"
+                                 th:text="${totalNotificaciones != null ? totalNotificaciones : 0}">
+                                0
+                            </div>
+
+                            <div class="m-lbl">
+                                Todas
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- NO LEÍDAS -->
+                    <article class="m-card">
+
+                        <i class="bx bx-envelope"></i>
+
+                        <div>
+
+                            <div class="m-val"
+                                 th:text="${noLeidas != null ? noLeidas : 0}">
+                                0
+                            </div>
+
+                            <div class="m-lbl">
+                                No leídas
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- LEÍDAS -->
+                    <article class="m-card">
+
+                        <i class="bx bx-envelope-open"></i>
+
+                        <div>
+
+                            <div class="m-val"
+                                 th:text="${leidas != null ? leidas : 0}">
+                                0
+                            </div>
+
+                            <div class="m-lbl">
+                                Leídas
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <!-- =========================================
+                     BANDEJA DE ENTRADA
+                     ========================================= -->
+
+                <section class="card rr-section" aria-labelledby="rr-inbox-title">
+
+                    <div class="rr-head">
+
+                        <div>
+
+                            <h3 id="rr-inbox-title">Bandeja de entrada</h3>
+                            <span class="rr-total-visible" th:text="${notificaciones != null ? #lists.size(notificaciones) + ' resultados' : '0 resultados'}">0 resultados</span>
+
+                            <p>
+                                Notificaciones dirigidas
+                                a tu usuario de ClinGuard.
+                            </p>
+
+                        </div>
+
+                        <!-- MARCAR TODAS COMO LEÍDAS -->
+                        <form th:action="@{/recepcion/notificaciones/marcar-todas}"
+                              method="post">
+
+                            <button type="submit"
+                                    class="btn-primary"
+                                    th:disabled="${noLeidas == null or noLeidas == 0}">
+
+                                <i class="bx bx-check-double"></i>
+                                Marcar todas como leídas
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                    <!-- =====================================
+                         FILTROS
+                         ===================================== -->
+
+                    <form class="rr-filter"
+                          th:action="@{/recepcion/notificaciones}"
+                          method="get">
+
+                        <!-- ESTADO -->
+                        <select name="filtro"
+                                aria-label="Filtrar notificaciones">
+
+                            <option value="todas"
+                                    th:selected="${filtro == 'todas'}">
+                                Todas
+                            </option>
+
+                            <option value="no-leidas"
+                                    th:selected="${filtro == 'no-leidas'}">
+                                No leídas
+                            </option>
+
+                            <option value="leidas"
+                                    th:selected="${filtro == 'leidas'}">
+                                Leídas
+                            </option>
+
+                        </select>
+
+                        <!-- BÚSQUEDA -->
+                        <input type="search"
+                               name="q"
+                               th:value="${q}"
+                               placeholder="Buscar título, mensaje o tipo"
+                               maxlength="120"
+                               aria-label="Buscar notificaciones">
+
+                        <button type="submit"
+                                class="btn-primary">
+
+                            <i class="bx bx-search"></i>
+                            Buscar
+
+                        </button>
+
+                        <a class="btn-sec"
+                           th:href="@{/recepcion/notificaciones}">
+                            Limpiar
+                        </a>
+
+                    </form>
+
+                    <!-- =====================================
+                         LISTADO DE NOTIFICACIONES
+                         ===================================== -->
+
+                    <div class="rr-list">
+
+                        <article class="rr-notif"
+                                 th:each="n : ${notificaciones}"
+                                 th:classappend="${!n.leida} ? ' rr-unread' : ''">
+
+                            <!-- ICONO -->
+                            <div class="rr-notif-icon">
+
+                                <i class="bx bx-bell"></i>
+
+                            </div>
+
+                            <!-- CONTENIDO -->
+                            <div class="rr-notif-content">
+
+                                <div class="rr-notif-top">
+
+                                    <strong th:text="${n.titulo}">
+                                        Nueva notificación
+                                    </strong>
+
+                                    <span class="rr-chip"
+                                          th:text="${n.tipo}">
+                                        CITA
+                                    </span>
+
+                                </div>
+
+                                <p th:text="${n.mensaje}">
+                                    Descripción de la notificación.
+                                </p>
+
+                                <small th:text="${n.fechaCreacion != null ? #temporals.format(n.fechaCreacion.atZone(T(java.time.ZoneId).of('America/Bogota')), 'dd/MM/yyyy HH:mm') : ''}">
+                                    Fecha
+                                </small>
+
+                            </div>
+
+                            <!-- ACCIONES -->
+                            <div class="rr-notif-actions" aria-label="Acciones de notificación">
+
+                                <!-- MARCAR COMO LEÍDA -->
+                                <form th:if="${!n.leida}"
+                                      th:action="@{/recepcion/notificaciones/{id}/leer(id=${n.id})}"
+                                      method="post">
+
+                                    <button class="rr-action"
+                                            type="submit">
+
+                                        <i class="bx bx-check"></i>
+                                        Marcar leída
+
+                                    </button>
+
+                                </form>
+
+                                <!-- ELIMINAR -->
+                                <form th:action="@{/recepcion/notificaciones/{id}/eliminar(id=${n.id})}"
+                                      method="post">
+
+                                    <button class="rr-action rr-danger"
+                                            type="submit">
+
+                                        <i class="bx bx-trash"></i>
+                                        Eliminar
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </article>
+
+                        <!-- BANDEJA VACÍA -->
+                        <div class="rr-empty"
+                             th:if="${notificaciones == null or #lists.isEmpty(notificaciones)}">
+
+                            <i class="bx bx-bell-off"></i>
+
+                            <p>
+                                No se encontraron notificaciones.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- NOTA -->
+                <p class="rr-note">
+
+                    <i class="bx bx-info-circle"></i>
+
+                    Las notificaciones se muestran cuando
+                    ClinGuard las crea y las dirige a tu usuario.
+                    Esta pantalla no envía correos ni mensajes
+                    externos.
+
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

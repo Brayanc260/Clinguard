@@ -1,0 +1,694 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard — Notificaciones</title>
+
+    <!-- CSS GLOBAL -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- BOXICONS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- TEMA CLARO / OSCURO -->
+    <script th:src="@{/js/theme.js}" defer></script>
+</head>
+
+<body data-page="notificaciones">
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside id="sidebar">
+
+    <!-- LOGO ORIGINAL CLINGUARD -->
+    <div class="sb-brand">
+        <a class="sb-logo"
+           th:href="@{/dashboard}"
+           aria-label="Ir al dashboard de ClinGuard">
+
+            <img th:src="@{/img/logo-claro.png}"
+                 alt="ClinGuard"
+                 class="clinguard-logo logo-claro">
+
+            <img th:src="@{/img/logo-oscuro.png}"
+                 alt="ClinGuard"
+                 class="clinguard-logo logo-oscuro">
+
+        </a>
+    </div>
+
+    <!-- NAVEGACIÓN POR ROL -->
+    <nav class="sb-nav"
+         aria-label="Navegación principal">
+
+        <!-- DASHBOARD -->
+        <a class="nb"
+           th:href="@{/dashboard}">
+            <i class="bx bx-grid-alt" aria-hidden="true"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <!-- ANÁLISIS -->
+        <a class="nb"
+           th:if="${esPersonalClinico == true}"
+           th:href="@{/analisis}">
+            <i class="bx bx-line-chart" aria-hidden="true"></i>
+            <span>Análisis</span>
+        </a>
+
+        <!-- CONVERSIONES -->
+        <a class="nb"
+           th:if="${esPersonalClinico == true}"
+           th:href="@{/conversiones}">
+            <i class="bx bx-transfer-alt" aria-hidden="true"></i>
+            <span>Conversiones Médicas</span>
+        </a>
+
+        <!-- PACIENTES -->
+        <a class="nb"
+           th:if="${esPersonalClinico == true}"
+           th:href="@{/pacientes}">
+            <i class="bx bx-user" aria-hidden="true"></i>
+            <span>Pacientes</span>
+        </a>
+
+        <!-- CITAS -->
+        <a class="nb"
+           th:href="@{/citas}">
+            <i class="bx bx-calendar" aria-hidden="true"></i>
+            <span th:text="${esUsuario == true ? 'Mis Citas' : 'Citas'}">
+                Citas
+            </span>
+        </a>
+
+        <!-- HISTORIAL -->
+        <a class="nb"
+           th:href="@{/historial}">
+            <i class="bx bx-notepad" aria-hidden="true"></i>
+            <span th:text="${esUsuario == true ? 'Mi Historial' : 'Historial Médico'}">
+                Historial Médico
+            </span>
+        </a>
+
+        <!-- MEDICAMENTOS -->
+        <a class="nb"
+           th:if="${esPersonalClinico == true}"
+           th:href="@{/medicamentos}">
+            <i class="bx bx-capsule" aria-hidden="true"></i>
+            <span>Medicamentos</span>
+        </a>
+
+        <!-- REPORTES -->
+        <a class="nb"
+           th:if="${esPersonalClinico == true}"
+           th:href="@{/reportes}">
+            <i class="bx bx-file" aria-hidden="true"></i>
+            <span>Reportes</span>
+        </a>
+
+        <!-- PANEL ADMIN: visible solo para ADMIN -->
+        <a class="nb"
+           th:if="${esAdmin == true}"
+           th:href="@{/admin}">
+            <i class="bx bx-shield-quarter" aria-hidden="true"></i>
+            <span>Panel Admin</span>
+        </a>
+
+        <!-- NOTIFICACIONES -->
+        <a class="nb active"
+           th:href="@{/notificaciones}"
+           aria-current="page">
+
+            <i class="bx bx-bell" aria-hidden="true"></i>
+            <span>Notificaciones</span>
+
+            <span class="notif-count"
+                  th:if="${noLeidas != null and noLeidas > 0}"
+                  th:text="${noLeidas > 99 ? '99+' : noLeidas}">
+            </span>
+        </a>
+
+        <!-- MI PERFIL -->
+        <a class="nb"
+           th:href="@{/perfil}">
+            <i class="bx bx-user-circle" aria-hidden="true"></i>
+            <span>Mi Perfil</span>
+        </a>
+
+    </nav>
+
+    <!-- =================================================
+         PERFIL INFERIOR CORREGIDO
+    ================================================= -->
+
+    <div class="cg-sidebar-footer">
+
+        <a class="sb-user sb-user-clickable"
+           th:href="@{/perfil}"
+           aria-label="Abrir mi perfil">
+
+            <!-- AVATAR -->
+            <div class="avatar"
+                 th:text="${username != null and !username.isEmpty()
+                 ? #strings.toUpperCase(#strings.substring(username,0,1))
+                 : 'U'}">
+                U
+            </div>
+
+            <!-- NOMBRE Y ROL -->
+            <div class="u-info">
+
+                <div class="u-nm"
+                     th:text="${username != null ? username : 'Usuario'}">
+                    Usuario
+                </div>
+
+                <div class="u-rl"
+                     th:text="${rol != null ? rol : 'Usuario'}">
+                    Usuario
+                </div>
+
+            </div>
+        </a>
+
+        <!-- CERRAR SESIÓN -->
+        <form th:action="@{/logout}"
+              method="post"
+              class="cg-logout-form">
+
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <button type="submit"
+                    class="cg-logout-btn">
+
+                <i class="bx bx-log-out"
+                   aria-hidden="true"></i>
+
+                <span>Salir</span>
+
+            </button>
+        </form>
+
+    </div>
+
+</aside>
+
+<!-- =====================================================
+     CONTENIDO PRINCIPAL
+===================================================== -->
+
+<div id="main-content">
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="h-title">
+            Notificaciones
+        </div>
+
+        <div class="notif-top-actions">
+
+            <!-- CAMPANA GLOBAL -->
+            <th:block
+                th:replace="~{fragments/notificaciones-fragment :: campana}">
+            </th:block>
+
+        </div>
+
+    </header>
+
+    <main class="main-inner">
+
+        <div class="rd-dashboard">
+
+            <!-- =================================================
+                 ENCABEZADO PRINCIPAL
+            ================================================= -->
+
+            <section class="rd-welcome"
+                     aria-labelledby="titulo-notificaciones">
+
+                <div>
+
+                    <h1 id="titulo-notificaciones">
+                        Gestión de notificaciones
+                    </h1>
+
+                    <!-- ADMIN -->
+                    <p th:if="${esAdmin == true}">
+                        Consulta los avisos administrativos,
+                        registros de pacientes, citas y novedades
+                        del sistema ClinGuard.
+                    </p>
+
+                    <!-- MÉDICO -->
+                    <p th:if="${esMedico == true}">
+                        Consulta tus citas asignadas, cambios
+                        de agenda, recordatorios y actualizaciones
+                        de atención médica.
+                    </p>
+
+                    <!-- ENFERMERO -->
+                    <p th:if="${esEnfermero == true}">
+                        Mantente informado sobre tus asignaciones,
+                        citas, actividades asistenciales
+                        y recordatorios.
+                    </p>
+
+                    <!-- USUARIO -->
+                    <p th:if="${esUsuario == true}">
+                        Consulta los avisos de tus citas médicas,
+                        recordatorios y novedades
+                        de tu historial personal.
+                    </p>
+
+                </div>
+
+                <!-- MARCAR TODAS COMO LEÍDAS -->
+                <div class="rd-actions">
+
+                    <form th:action="@{/notificaciones/marcar-todas}"
+                          method="post">
+
+                        <input type="hidden"
+                               th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <button type="submit"
+                                class="btn-primary"
+                                th:disabled="${noLeidas == null or noLeidas == 0}">
+
+                            <i class="bx bx-check-double"
+                               aria-hidden="true"></i>
+
+                            Marcar todas
+
+                        </button>
+                    </form>
+
+                </div>
+
+            </section>
+
+            <!-- =================================================
+                 TARJETAS RESUMEN
+            ================================================= -->
+
+            <section class="notif-summary"
+                     aria-label="Resumen de notificaciones">
+
+                <!-- TOTAL -->
+                <div class="notif-stat-card">
+
+                    <i class="bx bx-bell"
+                       aria-hidden="true"></i>
+
+                    <strong
+                        th:text="${totalNotificaciones != null ? totalNotificaciones : 0}">
+                        0
+                    </strong>
+
+                    <span>Total de notificaciones</span>
+
+                </div>
+
+                <!-- SIN LEER -->
+                <div class="notif-stat-card">
+
+                    <i class="bx bx-envelope"
+                       aria-hidden="true"></i>
+
+                    <strong
+                        th:text="${noLeidas != null ? noLeidas : 0}">
+                        0
+                    </strong>
+
+                    <span>Sin leer</span>
+
+                </div>
+
+                <!-- LEÍDAS -->
+                <div class="notif-stat-card">
+
+                    <i class="bx bx-check-circle"
+                       aria-hidden="true"></i>
+
+                    <strong
+                        th:text="${leidas != null ? leidas : 0}">
+                        0
+                    </strong>
+
+                    <span>Leídas</span>
+
+                </div>
+
+                <!-- ROL -->
+                <div class="notif-stat-card">
+
+                    <i class="bx bx-shield-quarter"
+                       aria-hidden="true"></i>
+
+                    <strong
+                        th:text="${rol != null ? rol : 'Usuario'}">
+                        Usuario
+                    </strong>
+
+                    <span>Rol de la cuenta</span>
+
+                </div>
+
+            </section>
+
+            <!-- =================================================
+                 BANDEJA DE NOTIFICACIONES
+            ================================================= -->
+
+            <section class="rd-access-panel notif-panel"
+                     aria-labelledby="lista-notificaciones">
+
+                <div class="panel-head">
+
+                    <div>
+
+                        <h2 id="lista-notificaciones">
+                            Lista de notificaciones
+                        </h2>
+
+                        <p class="rd-description">
+                            Consulta y administra las notificaciones
+                            relacionadas con tu cuenta.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- =================================================
+                     BUSCADOR
+                ================================================= -->
+
+                <form class="notif-search"
+                      th:action="@{/notificaciones}"
+                      method="get"
+                      role="search">
+
+                    <i class="bx bx-search"
+                       aria-hidden="true"></i>
+
+                    <input type="search"
+                           name="q"
+                           th:value="${q}"
+                           placeholder="Buscar por título, mensaje o categoría..."
+                           aria-label="Buscar notificaciones">
+
+                    <input type="hidden"
+                           name="filtro"
+                           th:value="${filtro != null ? filtro : 'todas'}">
+
+                    <input type="hidden"
+                           name="tipo"
+                           th:value="${tipo != null ? tipo : ''}">
+
+                </form>
+
+                <!-- =================================================
+                     FILTROS
+                ================================================= -->
+
+                <div class="notif-filters"
+                     aria-label="Filtros de notificaciones">
+
+                    <!-- TODAS -->
+                    <a class="filter-chip"
+                       th:href="@{/notificaciones(filtro='todas',tipo=${tipo},q=${q})}"
+                       th:classappend="${filtro == null or filtro == 'todas'} ? ' active'">
+                        Todas
+                    </a>
+
+                    <!-- SIN LEER -->
+                    <a class="filter-chip"
+                       th:href="@{/notificaciones(filtro='no-leidas',tipo=${tipo},q=${q})}"
+                       th:classappend="${filtro == 'no-leidas'} ? ' active'">
+                        Sin leer
+                    </a>
+
+                    <!-- LEÍDAS -->
+                    <a class="filter-chip"
+                       th:href="@{/notificaciones(filtro='leidas',tipo=${tipo},q=${q})}"
+                       th:classappend="${filtro == 'leidas'} ? ' active'">
+                        Leídas
+                    </a>
+
+                    <!-- CITAS -->
+                    <a class="filter-chip"
+                       th:href="@{/notificaciones(filtro=${filtro},tipo='CITA',q=${q})}"
+                       th:classappend="${tipo == 'CITA'} ? ' active'">
+                        Citas
+                    </a>
+
+                    <!-- HISTORIAL -->
+                    <a class="filter-chip"
+                       th:href="@{/notificaciones(filtro=${filtro},tipo='HISTORIAL',q=${q})}"
+                       th:classappend="${tipo == 'HISTORIAL'} ? ' active'">
+                        Historial
+                    </a>
+
+                    <!-- PACIENTES: ADMIN -->
+                    <a class="filter-chip"
+                       th:if="${esAdmin == true}"
+                       th:href="@{/notificaciones(filtro=${filtro},tipo='PACIENTE',q=${q})}"
+                       th:classappend="${tipo == 'PACIENTE'} ? ' active'">
+                        Pacientes
+                    </a>
+
+                    <!-- SEGURIDAD -->
+                    <a class="filter-chip"
+                       th:href="@{/notificaciones(filtro=${filtro},tipo='SEGURIDAD',q=${q})}"
+                       th:classappend="${tipo == 'SEGURIDAD'} ? ' active'">
+                        Seguridad
+                    </a>
+
+                    <!-- SISTEMA -->
+                    <a class="filter-chip"
+                       th:href="@{/notificaciones(filtro=${filtro},tipo='SISTEMA',q=${q})}"
+                       th:classappend="${tipo == 'SISTEMA'} ? ' active'">
+                        Sistema
+                    </a>
+
+                    <!-- LIMPIAR FILTROS -->
+                    <a class="filter-chip"
+                       th:href="@{/notificaciones}">
+                        <i class="bx bx-reset"
+                           aria-hidden="true"></i>
+                        Limpiar
+                    </a>
+
+                </div>
+
+                <!-- =================================================
+                     TABLA DE NOTIFICACIONES
+                ================================================= -->
+
+                <div class="notif-table-wrap">
+
+                    <table class="cg-table notif-table">
+
+                        <thead>
+                            <tr>
+                                <th scope="col">TIPO</th>
+                                <th scope="col">FECHA</th>
+                                <th scope="col">TÍTULO</th>
+                                <th scope="col">MENSAJE</th>
+                                <th scope="col">ESTADO</th>
+                                <th scope="col">ACCIONES</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <!-- NOTIFICACIONES DINÁMICAS -->
+                            <tr th:each="n : ${notificaciones}"
+                                th:classappend="${!n.leida} ? ' notif-unread'">
+
+                                <!-- TIPO -->
+                                <td>
+
+                                    <div class="notif-type">
+
+                                        <div class="notif-type-icon">
+
+                                            <i th:class="${n.tipo == 'CITA'} ? 'bx bx-calendar-check' :
+                                                (${n.tipo == 'HISTORIAL'} ? 'bx bx-notepad' :
+                                                (${n.tipo == 'PACIENTE'} ? 'bx bx-user-plus' :
+                                                (${n.tipo == 'SEGURIDAD'} ? 'bx bx-shield-quarter' :
+                                                (${n.tipo == 'MEDICAMENTO'} ? 'bx bx-capsule' :
+                                                'bx bx-bell'))))">
+                                            </i>
+
+                                        </div>
+
+                                        <strong
+                                            th:text="${n.tipo}">
+                                            CITA
+                                        </strong>
+
+                                    </div>
+
+                                </td>
+
+                                <!-- FECHA -->
+                                <td>
+
+                                    <span class="notif-date">
+
+                                        <i class="bx bx-calendar"
+                                           aria-hidden="true"></i>
+
+                                        <span
+                                            th:text="${n.fechaCreacion != null ? #temporals.format(n.fechaCreacion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">
+                                            14/10/2026 09:00
+                                        </span>
+
+                                    </span>
+
+                                </td>
+
+                                <!-- TÍTULO -->
+                                <td>
+
+                                    <strong
+                                        th:text="${n.titulo}">
+                                        Nueva notificación
+                                    </strong>
+
+                                </td>
+
+                                <!-- MENSAJE -->
+                                <td class="notif-message"
+                                    th:text="${n.mensaje}">
+
+                                    Mensaje de la notificación.
+
+                                </td>
+
+                                <!-- ESTADO -->
+                                <td>
+
+                                    <span class="notif-status"
+                                          th:classappend="${n.leida} ? ' read' : ' pending'"
+                                          th:text="${n.leida} ? 'Leída' : 'Sin leer'">
+
+                                        Sin leer
+
+                                    </span>
+
+                                </td>
+
+                                <!-- ACCIONES -->
+                                <td>
+
+                                    <div class="notif-row-actions">
+
+                                        <!-- MARCAR COMO LEÍDA -->
+                                        <form th:if="${!n.leida}"
+                                              th:action="@{/notificaciones/{id}/leer(id=${n.id})}"
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   th:if="${_csrf != null}"
+                                                   th:name="${_csrf.parameterName}"
+                                                   th:value="${_csrf.token}">
+
+                                            <button type="submit"
+                                                    class="notif-icon-btn"
+                                                    title="Marcar como leída"
+                                                    aria-label="Marcar como leída">
+
+                                                <i class="bx bx-check"
+                                                   aria-hidden="true"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                        <!-- ELIMINAR -->
+                                        <form th:action="@{/notificaciones/{id}/eliminar(id=${n.id})}"
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   th:if="${_csrf != null}"
+                                                   th:name="${_csrf.parameterName}"
+                                                   th:value="${_csrf.token}">
+
+                                            <button type="submit"
+                                                    class="notif-icon-btn danger"
+                                                    title="Eliminar notificación"
+                                                    aria-label="Eliminar notificación">
+
+                                                <i class="bx bx-trash"
+                                                   aria-hidden="true"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            <!-- SIN NOTIFICACIONES -->
+                            <tr th:if="${notificaciones == null or #lists.isEmpty(notificaciones)}">
+
+                                <td colspan="6">
+
+                                    <div class="notif-empty">
+
+                                        <i class="bx bx-bell-off"
+                                           aria-hidden="true"></i>
+
+                                        <h3>No hay notificaciones</h3>
+
+                                        <p>
+                                            Actualmente no tienes notificaciones
+                                            que coincidan con los filtros seleccionados.
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

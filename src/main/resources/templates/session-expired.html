@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sesión finalizada</title>
+    <script th:src="@{/js/theme.js}"></script>
+</head>
+
+<body>
+
+    <h2>Sesión finalizada</h2>
+
+    <p>
+        Tu sesión expiró, fue invalidada o ya no se encuentra activa.
+    </p>
+
+    <a th:href="@{/login}">
+        Volver a iniciar sesión
+    </a>
+
+</body>
+</html>

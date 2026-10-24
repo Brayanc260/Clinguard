@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <title>
+        ClinGuard — Enfermería
+    </title>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script th:src="@{/js/theme.js}"></script>
+</head>
+
+
+<body data-page="dashboard">
+
+
+    <!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+    <aside id="sidebar">
+
+
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+            </div>
+
+        </div>
+
+
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+
+            <!-- DASHBOARD -->
+            <a class="nb active" th:href="@{/dashboard}">
+
+                <i class="bx bx-grid-alt"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- CONVERSIONES -->
+            <a class="nb" th:href="@{/conversiones}">
+
+                <i class="bx bx-transfer"></i>
+
+                <span>
+                    Conversiones Médicas
+                </span>
+
+            </a>
+
+
+            <!-- PACIENTES -->
+            <a class="nb" th:href="@{/pacientes}">
+
+                <i class="bx bx-user"></i>
+
+                <span>
+                    Pacientes
+                </span>
+
+            </a>
+
+
+            <!-- CITAS -->
+            <a class="nb" th:href="@{/citas}">
+
+                <i class="bx bx-calendar"></i>
+
+                <span>
+                    Citas
+                </span>
+
+            </a>
+
+
+            <!-- HISTORIAL -->
+            <a class="nb" th:href="@{/historial}">
+
+                <i class="bx bx-notepad"></i>
+
+                <span>
+                    Historial Médico
+                </span>
+
+            </a>
+
+
+            <!-- MEDICAMENTOS -->
+            <a class="nb" th:href="@{/medicamentos}">
+
+                <i class="bx bx-capsule"></i>
+
+                <span>
+                    Medicamentos
+                </span>
+
+            </a>
+
+
+
+
+            <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
+                <i class='bx bx-bell'></i>
+                <span>Notificaciones</span>
+                <span class="notif-count" th:if="${noLeidas != null and noLeidas > 0}" th:text="${noLeidas}">
+                </span>
+            </a>
+
+
+            <!-- PERFIL -->
+            <a class="nb" th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+
+                <span>
+                    Mi Perfil
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+        <!-- =====================================================
+         USUARIO
+    ====================================================== -->
+
+        <a class="sb-user sb-user-clickable" th:href="@{/perfil}">
+
+
+            <div class="avatar">
+
+                <i class="bx bx-plus-medical"></i>
+
+            </div>
+
+
+            <div class="u-info">
+
+
+                <div class="u-nm" th:text="${#authentication.name}">
+
+                    enfermero
+
+                </div>
+
+
+                <div class="u-rl">
+
+                    Enfermero
+
+                </div>
+
+
+            </div>
+
+
+        </a>
+
+
+        <!-- =====================================================
+         LOGOUT
+    ====================================================== -->
+
+        <form th:action="@{/logout}" method="post">
+
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+
+            <button type="submit" class="logout-link" style="
+                width: calc(100% - 24px);
+                background: transparent;
+            ">
+
+                <i class="bx bx-log-out"></i>
+
+                Salir
+
+            </button>
+
+
+        </form>
+
+
+    </aside>
+
+
+
+    <!-- =========================================================
+     CONTENIDO
+========================================================= -->
+
+    <div id="main-content">
+
+
+        <header>
+
+
+            <div class="h-title">
+
+                Dashboard de Enfermería
+
+            </div>
+
+
+        </header>
+
+
+
+        <div class="main-inner">
+
+
+            <div class="page active">
+
+
+                <!-- =================================================
+                 BIENVENIDA
+            ================================================== -->
+
+                <div class="card">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h2 class="section-title-compact">
+
+                                Bienvenido a ClinGuard
+
+                            </h2>
+
+
+                            <p class="muted-text-sm">
+
+                                Gestiona tus actividades de enfermería,
+                                pacientes, citas y herramientas clínicas.
+
+                            </p>
+
+
+                        </div>
+
+
+                        <div class="cita-stat-icon cita-stat-green">
+
+                            <i class="bx bx-plus-medical"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 TARJETAS
+            ================================================== -->
+
+                <div class="grid-4" style="margin-top: 25px;">
+
+
+                    <!-- PACIENTES -->
+                    <div class="m-card">
+
+
+                        <div>
+
+
+                            <div class="m-val">
+
+                                <i class="bx bx-user"></i>
+
+                            </div>
+
+
+                            <div class="m-lbl">
+
+                                Pacientes
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- CITAS -->
+                    <div class="m-card">
+
+
+                        <div>
+
+
+                            <div class="m-val">
+
+                                <i class="bx bx-calendar"></i>
+
+                            </div>
+
+
+                            <div class="m-lbl">
+
+                                Citas
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- HISTORIAL -->
+                    <div class="m-card">
+
+
+                        <div>
+
+
+                            <div class="m-val">
+
+                                <i class="bx bx-notepad"></i>
+
+                            </div>
+
+
+                            <div class="m-lbl">
+
+                                Historiales
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- MEDICAMENTOS -->
+                    <div class="m-card">
+
+
+                        <div>
+
+
+                            <div class="m-val">
+
+                                <i class="bx bx-capsule"></i>
+
+                            </div>
+
+
+                            <div class="m-lbl">
+
+                                Medicamentos
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 ACCESOS RÁPIDOS
+            ================================================== -->
+
+                <div class="card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h3 class="section-title-compact">
+
+                                Accesos rápidos
+
+                            </h3>
+
+
+                            <p class="muted-text-sm">
+
+                                Accede directamente a las funciones
+                                principales de enfermería.
+
+                            </p>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns:
+                            repeat(3, minmax(0, 1fr));
+                        gap: 18px;
+                        margin-top: 20px;
+                    ">
+
+
+                        <!-- PACIENTES -->
+                        <a th:href="@{/pacientes}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-blue">
+
+                                <i class="bx bx-user"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Pacientes
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Consulta información de los pacientes.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- CITAS -->
+                        <a th:href="@{/citas}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-purple">
+
+                                <i class="bx bx-calendar"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Citas
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Consulta y gestiona las citas médicas.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- CONVERSIONES -->
+                        <a th:href="@{/conversiones}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-green">
+
+                                <i class="bx bx-transfer"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Conversiones
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Utiliza las herramientas de conversión clínica.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- HISTORIAL -->
+                        <a th:href="@{/historial}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-orange">
+
+                                <i class="bx bx-notepad"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Historial médico
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Consulta registros médicos de pacientes.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- MEDICAMENTOS -->
+                        <a th:href="@{/medicamentos}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-blue">
+
+                                <i class="bx bx-capsule"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Medicamentos
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Accede a las herramientas de medicamentos.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- PERFIL -->
+                        <a th:href="@{/perfil}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-purple">
+
+                                <i class="bx bx-user-circle"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Mi perfil
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Consulta y actualiza tu información.
+
+                            </p>
+
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>

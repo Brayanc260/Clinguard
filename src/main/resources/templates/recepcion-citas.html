@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard | Citas de recepción</title>
+
+    <!-- CSS GENERAL -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <!-- BOXICONS -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- MODO CLARO / OSCURO -->
+    <script th:src="@{/js/theme.js}"></script>
+
+
+    <!-- Contador global de notificaciones de Recepción -->
+    <style>
+      .sb-nav .nb {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      body[data-page="recepcion-citas"] #sidebar .sb-nav a.nb .cg-recep-notif-badge {
+        margin-left: auto !important;
+        min-width: 26px !important;
+        height: 23px !important;
+        padding: 0 6px !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #ffffff !important;
+        background: #007c90 !important;
+        border: 1px solid #42c7d5 !important;
+        box-shadow: none !important;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        flex: 0 0 auto;
+      }
+      .sb-nav .nb > span:not(.cg-recep-notif-badge) { min-width: 0; }
+      .rc-page .rc-form-grid {
+        display: grid;
+        grid-template-columns: minmax(260px, 1.25fr) minmax(260px, 1.25fr) minmax(180px, .75fr) minmax(180px, .75fr);
+        gap: 18px;
+        align-items: end;
+      }
+      .rc-page .rc-field { min-width:0; }
+      .rc-page .rc-field input,
+      .rc-page .rc-field select {
+        width:100%;
+        max-width:100%;
+        box-sizing:border-box;
+      }
+      .rc-page .rc-field select {
+        min-height:44px;
+        margin-top:0;
+        background:var(--card-bg,#102d36);
+        color:inherit;
+        border:1px solid #3b6470;
+        border-radius:8px;
+        padding:9px;
+      }
+      .rc-page .rc-field .rc-stack {
+        display:grid;
+        gap:10px;
+      }
+      .rc-page .rc-actions {
+        margin-top: 18px;
+      }
+      @media(max-width:1150px) {
+        .rc-page .rc-form-grid { grid-template-columns: repeat(2, minmax(0,1fr)); align-items:start; }
+      }
+      @media(max-width:750px) {
+        .rc-page .rc-form-grid { grid-template-columns:1fr; }
+      }
+    </style>
+</head>
+
+<body data-page="recepcion-citas">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside id="sidebar">
+
+        <div class="sb-brand">
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}" class="clinguard-logo logo-claro" alt="ClinGuard">
+
+                <img th:src="@{/img/logo-oscuro.png}" class="clinguard-logo logo-oscuro" alt="ClinGuard">
+
+            </div>
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <nav class="sb-nav" aria-label="Navegación de recepción">
+
+            <a class="nb" th:href="@{/recepcionista/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb" th:href="@{/recepcion/pacientes}">
+                <i class="bx bx-group"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb active" th:href="@{/recepcion/citas}" aria-current="page">
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+            </a>
+
+            <a class="nb" th:href="@{/recepcion/agenda}">
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+            </a>
+
+            <!-- ANÁLISIS -->
+            <a class="nb" th:href="@{/recepcion/analisis}">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <a class="nb" th:href="@{/recepcion/notificaciones}">
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+                <span class="cg-recep-notif-badge"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas > 99 ? '99+' : noLeidas}"
+                      th:attr="aria-label=|${noLeidas} notificaciones sin leer|"
+                      style="margin-left:auto;min-width:26px;height:23px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;color:white;background:#007c90;border:1px solid #42c7d5;font-size:12px;font-weight:700;line-height:1;white-space:nowrap;">0</span>
+            </a>
+
+            <a class="nb" th:href="@{/recepcion/reportes}">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb" th:href="@{/perfil}">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- PERFIL INFERIOR -->
+        <!-- PERFIL UNIFICADO DEL RECEPCIONISTA -->
+        <div class="sb-bottom recep-sidebar-footer">
+            <div class="sb-user recep-user-card">
+                <div class="avatar recep-user-avatar" aria-hidden="true">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="u-info recep-user-info">
+                    <div class="u-nm" th:text="${#authentication.name}">Usuario</div>
+                    <div class="u-rl">Recepcionista</div>
+                </div>
+            </div>
+            <form class="sb-logout-form" th:action="@{/logout}" method="post">
+                <button class="logout-link recep-logout-button" type="submit">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <header>
+            <div class="h-title">
+                Gestión de citas médicas
+            </div>
+        </header>
+
+        <main class="main-inner">
+
+            <div class="page active rc-page">
+
+                <!-- MENSAJES -->
+                <div th:if="${mensaje != null}" class="rc-alert rc-alert-ok" role="status" th:text="${mensaje}">
+                </div>
+
+                <div th:if="${error != null}" class="rc-alert rc-alert-error" role="alert" th:text="${error}">
+                </div>
+
+                <!-- =========================================
+                     PRESENTACIÓN
+                     ========================================= -->
+
+                <section class="card rc-hero-card">
+
+                    <div class="rc-lead">
+
+                        <div>
+                            <h2>Administración de citas</h2>
+
+                            <p>
+                                Programa, consulta, confirma
+                                o cancela citas médicas sin
+                                acceder a información clínica.
+                            </p>
+                        </div>
+
+                        <i class="bx bx-calendar-check rc-lead-icon" aria-hidden="true"></i>
+
+                    </div>
+
+                </section>
+
+                <!-- =========================================
+                     REGISTRAR CITA
+                     ========================================= -->
+
+                <section class="card rc-section" aria-labelledby="rc-new-title">
+
+                    <h3 id="rc-new-title">
+                        <i class="bx bx-calendar-plus"></i>
+                        Registrar nueva cita
+                    </h3>
+
+                    <p class="rc-sub">
+                        Selecciona un paciente activo del directorio y un médico activo.
+                        Elige el paciente y el médico en las listas; el paciente no necesita una cuenta de acceso.
+                    </p>
+
+                    <form th:action="@{/recepcion/citas/registrar}" method="post">
+
+                        <div class="rc-form-grid">
+
+                            <!-- Pacientes activos del directorio de MongoDB -->
+                            <div class="rc-field">
+                                <label for="pacienteId">Paciente registrado *</label>
+                                <div class="rc-stack">
+                                    <select id="pacienteId" name="pacienteId" required aria-label="Seleccionar paciente registrado">
+                                        <option value="">Selecciona un paciente</option>
+                                        <option th:each="p : ${pacientesActivos}" th:value="${p.id}"
+                                                th:text="|${p.nombres} ${p.apellidos} · ${p.tipoDocumento} ${p.documento}|">Paciente</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Médicos activos de la colección usuarios -->
+                            <div class="rc-field">
+                                <label for="medicoUsername">Médico registrado *</label>
+                                <div class="rc-stack">
+                                    <select id="medicoUsername" name="medicoUsername" required aria-label="Seleccionar médico">
+                                        <option value="">Selecciona un médico</option>
+                                        <option th:each="m : ${medicosActivos}" th:value="${m.username}"
+                                                th:text="|${m.nombre} · ${m.username}|">Médico</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- FECHA -->
+                            <div class="rc-field">
+
+                                <label for="fecha">
+                                    Fecha *
+                                </label>
+
+                                <input id="fecha" name="fecha" type="date" required>
+
+                            </div>
+
+                            <!-- HORA -->
+                            <div class="rc-field">
+
+                                <label for="hora">
+                                    Hora *
+                                </label>
+
+                                <input id="hora" name="hora" type="time" required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="rc-actions">
+
+                            <button type="submit" class="rc-btn rc-btn-primary">
+
+                                <i class="bx bx-plus-circle"></i>
+                                Registrar cita
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <!-- =========================================
+                     CONSULTAR AGENDA
+                     ========================================= -->
+
+                <section class="card rc-section" aria-labelledby="rc-agenda-title">
+
+                    <h3 id="rc-agenda-title">
+                        <i class="bx bx-search"></i>
+                        Consultar agenda médica
+                    </h3>
+
+                    <p class="rc-sub">
+                        Filtra las citas por médico
+                        y fecha.
+                    </p>
+
+                    <form th:action="@{/recepcion/citas/agenda}" method="get">
+
+                        <div class="rc-form-grid">
+
+                            <!-- MÉDICO -->
+                            <div class="rc-field">
+
+                                <label for="agendaMedico">
+                                    Médico *
+                                </label>
+
+                                <input id="agendaMedico" name="medicoUsername" type="text"
+                                    placeholder="Usuario del médico" th:value="${medicoSeleccionado}" required>
+
+                            </div>
+
+                            <!-- FECHA -->
+                            <div class="rc-field">
+
+                                <label for="agendaFecha">
+                                    Fecha *
+                                </label>
+
+                                <input id="agendaFecha" name="fecha" type="date" th:value="${fechaSeleccionada}"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="rc-actions">
+
+                            <button type="submit" class="rc-btn rc-btn-primary">
+
+                                <i class="bx bx-search"></i>
+                                Consultar agenda
+
+                            </button>
+
+                            <a th:href="@{/recepcion/citas}" class="rc-btn">
+
+                                <i class="bx bx-reset"></i>
+                                Ver todas las citas
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <!-- =========================================
+                     TABLA DE CITAS
+                     ========================================= -->
+
+                <section class="card rc-section" aria-labelledby="rc-table-title">
+
+                    <div class="rc-lead">
+
+                        <div>
+
+                            <h3 id="rc-table-title">
+                                Citas registradas
+                            </h3>
+
+                            <p class="rc-sub">
+                                Listado administrativo
+                                de citas médicas.
+                            </p>
+
+                        </div>
+
+                        <span id="rcVisibleCount" class="rc-status"
+                            th:text="${citas != null ? #lists.size(citas) + ' registros' : '0 registros'}">
+                            0 registros
+                        </span>
+
+                    </div>
+
+                    <div class="rc-table-tools">
+                        <label class="rc-filter-label" for="rcQuickSearch"><i class="bx bx-search"></i><span
+                                class="sr-only">Buscar en citas mostradas</span></label>
+                        <input id="rcQuickSearch" type="search" placeholder="Buscar paciente, médico, fecha o estado…"
+                            autocomplete="off" aria-label="Buscar en citas mostradas">
+                    </div>
+
+                    <div class="rc-table-wrap">
+
+                        <table class="rc-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Médico</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr class="rc-data-row" th:each="cita : ${citas}">
+
+                                    <td th:text="${cita.nombrePaciente}">
+                                        Usuario
+                                    </td>
+
+                                    <td th:text="${cita.medicoUsername}">
+                                        Médico
+                                    </td>
+
+                                    <td th:text="${cita.fecha}">
+                                        Fecha
+                                    </td>
+
+                                    <td th:text="${cita.hora}">
+                                        Hora
+                                    </td>
+
+                                    <td>
+                                        <span class="rc-status"
+                                            th:text="${cita.estado != null and !#strings.isEmpty(cita.estado) ? cita.estado : 'Sin estado'}">
+                                            PROGRAMADA
+                                        </span>
+                                    </td>
+
+                                    <!-- ACCIONES -->
+                                    <td>
+
+                                        <div class="rc-row-actions">
+
+                                            <!-- CONFIRMAR -->
+                                            <form th:action="@{/recepcion/citas/confirmar}" method="post"
+                                                th:if="${cita.estado == null or (!#strings.equalsIgnoreCase(cita.estado,'CONFIRMADA') and !#strings.equalsIgnoreCase(cita.estado,'CANCELADA') and !#strings.equalsIgnoreCase(cita.estado,'COMPLETADA') and !#strings.equalsIgnoreCase(cita.estado,'ATENDIDA') and !#strings.equalsIgnoreCase(cita.estado,'RECHAZADA') and !#strings.equalsIgnoreCase(cita.estado,'RECHAZADO') and !#strings.equalsIgnoreCase(cita.estado,'CANCELADO') and !#strings.equalsIgnoreCase(cita.estado,'COMPLETADO') and !#strings.equalsIgnoreCase(cita.estado,'ATENDIDO'))}">
+
+                                                <input type="hidden" name="id" th:value="${cita.id}">
+
+                                                <button type="submit" class="rc-btn" title="Confirmar cita">
+
+                                                    <i class="bx bx-check-circle"></i>
+                                                    Confirmar
+
+                                                </button>
+
+                                            </form>
+
+                                            <!-- CANCELAR -->
+                                            <form th:action="@{/recepcion/citas/cancelar}" method="post"
+                                                th:if="${cita.estado == null or (!#strings.equalsIgnoreCase(cita.estado,'CANCELADA') and !#strings.equalsIgnoreCase(cita.estado,'COMPLETADA') and !#strings.equalsIgnoreCase(cita.estado,'ATENDIDA') and !#strings.equalsIgnoreCase(cita.estado,'RECHAZADA') and !#strings.equalsIgnoreCase(cita.estado,'RECHAZADO') and !#strings.equalsIgnoreCase(cita.estado,'CANCELADO') and !#strings.equalsIgnoreCase(cita.estado,'COMPLETADO') and !#strings.equalsIgnoreCase(cita.estado,'ATENDIDO'))}">
+
+                                                <input type="hidden" name="id" th:value="${cita.id}">
+
+                                                <button type="submit" class="rc-btn rc-btn-danger"
+                                                    title="Cancelar cita">
+
+                                                    <i class="bx bx-x-circle"></i>
+                                                    Cancelar
+
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                        <!-- REPROGRAMAR -->
+                                        <details class="rc-reschedule"
+                                            th:if="${cita.estado == null or (!#strings.equalsIgnoreCase(cita.estado,'CANCELADA') and !#strings.equalsIgnoreCase(cita.estado,'COMPLETADA') and !#strings.equalsIgnoreCase(cita.estado,'ATENDIDA') and !#strings.equalsIgnoreCase(cita.estado,'RECHAZADA') and !#strings.equalsIgnoreCase(cita.estado,'RECHAZADO') and !#strings.equalsIgnoreCase(cita.estado,'CANCELADO') and !#strings.equalsIgnoreCase(cita.estado,'COMPLETADO') and !#strings.equalsIgnoreCase(cita.estado,'ATENDIDO'))}">
+
+                                            <summary>
+                                                Reprogramar cita
+                                            </summary>
+
+                                            <form class="rc-inline-form" th:action="@{/recepcion/citas/reprogramar}"
+                                                method="post">
+
+                                                <input type="hidden" name="id" th:value="${cita.id}">
+
+                                                <div class="rc-field">
+
+                                                    <label th:for="|fecha-${cita.id}|">
+                                                        Nueva fecha
+                                                    </label>
+
+                                                    <input th:id="|fecha-${cita.id}|" name="nuevaFecha" type="date"
+                                                        required>
+
+                                                </div>
+
+                                                <div class="rc-field">
+
+                                                    <label th:for="|hora-${cita.id}|">
+                                                        Nueva hora
+                                                    </label>
+
+                                                    <input th:id="|hora-${cita.id}|" name="nuevaHora" type="time"
+                                                        required>
+
+                                                </div>
+
+                                                <button type="submit" class="rc-btn rc-btn-primary">
+                                                    Guardar cambio
+                                                </button>
+
+                                            </form>
+                                        </details>
+                                    </td>
+                                </tr>
+                                <tr th:if="${citas == null or #lists.isEmpty(citas)}">
+                                    <td colspan="6" class="rc-empty">
+                                        <i class="bx bx-calendar-x"></i>
+                                        <p>No hay citas para mostrar.</p>
+                                    </td>
+                                </tr>
+                                <tr id="rcSearchEmpty" style="display:none">
+                                    <td colspan="6" class="rc-empty">
+                                        <i class="bx bx-search-alt"></i>
+                                        <p>No hay citas que coincidan con la búsqueda.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="rc-notice">Esta vista no muestra motivos de consulta, observaciones ni historiales clínicos.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buscador = document.getElementById('rcQuickSearch');
+        const tabla = document.querySelector('.rc-table');
+        const sinCoincidencias = document.getElementById('rcSearchEmpty');
+        if (!buscador || !tabla) return;
+
+        const filas = Array.from(tabla.querySelectorAll('tbody tr.rc-data-row'));
+        const contador = document.getElementById('rcVisibleCount');
+        const normalizar = texto => (texto || '')
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .toLocaleLowerCase('es').trim();
+
+        function filtrar() {
+            const busqueda = normalizar(buscador.value);
+            let visibles = 0;
+            filas.forEach(fila => {
+                const texto = Array.from(fila.querySelectorAll('td')).slice(0, 5)
+                    .map(celda => celda.textContent || '').join(' ');
+                const coincide = normalizar(texto).includes(busqueda);
+                fila.hidden = !coincide;
+                fila.style.display = coincide ? '' : 'none';
+                if (coincide) visibles++;
+            });
+            if (sinCoincidencias) sinCoincidencias.style.display = filas.length > 0 && visibles === 0 ? '' : 'none';
+            if (contador) contador.textContent = visibles + (visibles === 1 ? ' registro' : ' registros');
+        }
+
+        buscador.addEventListener('input', filtrar);
+        filtrar();
+    });
+    </script>
+</body>
+</html>

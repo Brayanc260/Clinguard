@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard | Pacientes de recepción</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <script th:src="@{/js/theme.js}"></script>
+
+    <!-- Contador global de notificaciones de Recepción -->
+    <style>
+      body .cg-recep-notif-badge {
+        margin-left: auto;
+        min-width: 23px;
+        height: 22px;
+        padding: 2px 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #fff;
+        background: #006d7c;
+        border: 1px solid #50c3cb;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+    </style>
+</head>
+
+<body data-page="recepcion-pacientes">
+
+    <!-- =====================================================
+         SIDEBAR RECEPCIONISTA
+         ===================================================== -->
+
+    <aside id="sidebar">
+
+        <div class="sb-brand">
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     class="clinguard-logo logo-claro"
+                     alt="ClinGuard">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     class="clinguard-logo logo-oscuro"
+                     alt="ClinGuard">
+
+            </div>
+        </div>
+
+        <nav class="sb-nav"
+             aria-label="Navegación de recepción">
+
+            <a class="nb"
+               th:href="@{/recepcionista/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb active"
+               th:href="@{/recepcion/pacientes}"
+               aria-current="page">
+                <i class="bx bx-group"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/citas}">
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/agenda}">
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+            </a>
+
+            <!-- NUEVO: ANÁLISIS -->
+            <a class="nb"
+               th:href="@{/recepcion/analisis}">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/notificaciones}">
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+                <span class="cg-recep-notif-badge"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas > 99 ? '99+' : noLeidas}"
+                      th:attr="aria-label=|${noLeidas} notificaciones sin leer|">0</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/recepcion/reportes}">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb"
+               th:href="@{/perfil}">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- PERFIL INFERIOR -->
+        <!-- PERFIL UNIFICADO DEL RECEPCIONISTA -->
+        <div class="sb-bottom recep-sidebar-footer">
+            <div class="sb-user recep-user-card">
+                <div class="avatar recep-user-avatar" aria-hidden="true">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="u-info recep-user-info">
+                    <div class="u-nm" th:text="${#authentication.name}">Usuario</div>
+                    <div class="u-rl">Recepcionista</div>
+                </div>
+            </div>
+            <form class="sb-logout-form" th:action="@{/logout}" method="post">
+                <button class="logout-link recep-logout-button" type="submit">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <header>
+            <div class="h-title">
+                Gestión de pacientes
+            </div>
+        </header>
+
+        <main class="main-inner">
+
+            <div class="page active">
+
+                <!-- MENSAJES -->
+                <div th:if="${mensaje}"
+                     class="rp-alert rp-alert-ok"
+                     th:text="${mensaje}"
+                     role="status">
+                </div>
+
+                <div th:if="${error}"
+                     class="rp-alert rp-alert-error"
+                     th:text="${error}"
+                     role="alert">
+                </div>
+
+                <!-- =========================================
+                     ENCABEZADO
+                     ========================================= -->
+
+                <section class="card rp-header-card">
+
+                    <div>
+                        <h2>Pacientes registrados</h2>
+
+                        <p>
+                            Consulta y actualiza los datos
+                            administrativos de los pacientes.
+                        </p>
+                    </div>
+
+                    <a th:href="@{/recepcion/pacientes/nuevo}"
+                       class="rp-btn rp-btn-primary">
+
+                        <i class="bx bx-user-plus"></i>
+                        Nuevo paciente
+
+                    </a>
+
+                </section>
+
+                <!-- =========================================
+                     ESTADÍSTICAS
+                     ========================================= -->
+
+                <div class="rp-stats">
+
+                    <article class="m-card rp-stat">
+
+                        <i class="bx bx-group"></i>
+
+                        <div>
+                            <strong th:text="${totalPacientes}">
+                                0
+                            </strong>
+
+                            <span>Total de pacientes</span>
+                        </div>
+
+                    </article>
+
+                    <article class="m-card rp-stat">
+
+                        <i class="bx bx-check-circle"></i>
+
+                        <div>
+                            <strong th:text="${activos}">
+                                0
+                            </strong>
+
+                            <span>Pacientes activos</span>
+                        </div>
+
+                    </article>
+
+                    <article class="m-card rp-stat">
+
+                        <i class="bx bx-search"></i>
+
+                        <div>
+                            <strong id="rp-visible"
+                                    th:text="${totalPacientes}">
+                                0
+                            </strong>
+
+                            <span>Resultados visibles</span>
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <!-- =========================================
+                     DIRECTORIO
+                     ========================================= -->
+
+                <section class="card rp-table-card">
+
+                    <div class="rp-heading">
+
+                        <div>
+                            <h3>Directorio de pacientes</h3>
+
+                            <p>
+                                Identificación y datos de contacto
+                            </p>
+                        </div>
+
+                        <span class="rp-count"
+                              th:text="|${totalPacientes} registros|">
+                            0 registros
+                        </span>
+
+                    </div>
+
+                    <!-- FILTROS -->
+                    <div class="rp-filters">
+
+                        <label class="rp-search">
+
+                            <i class="bx bx-search"></i>
+
+                            <input id="rp-search"
+                                   type="search"
+                                   placeholder="Buscar paciente, documento o EPS"
+                                   aria-label="Buscar pacientes">
+
+                        </label>
+
+                        <select id="rp-state"
+                                aria-label="Filtrar por estado">
+
+                            <option value="todos">
+                                Todos los estados
+                            </option>
+
+                            <option value="activo">
+                                Activos
+                            </option>
+
+                            <option value="inactivo">
+                                Inactivos
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- TABLA -->
+                    <div class="rp-table-wrap">
+
+                        <table class="rp-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Documento</th>
+                                    <th>Teléfono</th>
+                                    <th>Correo</th>
+                                    <th>EPS</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr class="rp-row"
+                                    th:each="p : ${pacientes}"
+                                    th:attr="data-status=${p.activo ? 'activo' : 'inactivo'}">
+
+                                    <td>
+                                        <strong th:text="|${p.nombres} ${p.apellidos}|">
+                                            Nombre
+                                        </strong>
+                                    </td>
+
+                                    <td th:text="|${p.tipoDocumento} ${p.documento}|">
+                                        Documento
+                                    </td>
+
+                                    <td th:text="${#strings.isEmpty(p.telefono) ? '—' : p.telefono}">
+                                        —
+                                    </td>
+
+                                    <td th:text="${#strings.isEmpty(p.correo) ? '—' : p.correo}">
+                                        —
+                                    </td>
+
+                                    <td th:text="${#strings.isEmpty(p.eps) ? '—' : p.eps}">
+                                        —
+                                    </td>
+
+                                    <td>
+
+                                        <span class="rp-status"
+                                              th:classappend="${p.activo ? ' rp-active' : ' rp-inactive'}"
+                                              th:text="${p.activo ? 'Activo' : 'Inactivo'}">
+                                            Activo
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <a th:href="@{/recepcion/pacientes/editar/{id}(id=${p.id})}"
+                                           class="rp-btn rp-btn-outline">
+
+                                            <i class="bx bx-edit-alt"></i>
+                                            Editar
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr th:if="${#lists.isEmpty(pacientes)}">
+
+                                    <td colspan="7"
+                                        class="rp-empty">
+                                        No hay pacientes registrados.
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <!-- Paginación local: se filtran todos los registros antes de paginar -->
+                    <nav id="rp-pagination" class="rp-pagination" aria-label="Páginas de pacientes" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0;">
+                        <span id="rp-page-summary" role="status" aria-live="polite"></span>
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                            <button type="button" id="rp-prev" class="rp-btn rp-btn-outline">Anterior</button>
+                            <span id="rp-page-label" aria-live="polite">Página 1 de 1</span>
+                            <button type="button" id="rp-next" class="rp-btn rp-btn-outline">Siguiente</button>
+                        </div>
+                    </nav>
+
+                    <p id="rp-no-results"
+                       class="rp-empty"
+                       hidden>
+                        No hay coincidencias con los filtros seleccionados.
+                    </p>
+
+                    <p class="rp-notice">
+
+                        <i class="bx bx-shield-quarter"></i>
+
+                        Solo información administrativa.
+                        No se muestran historiales clínicos.
+
+                    </p>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- =====================================================
+         FILTROS DE PACIENTES
+         ===================================================== -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const search = document.getElementById('rp-search');
+            const state = document.getElementById('rp-state');
+            const rows = Array.from(document.querySelectorAll('.rp-row'));
+            const count = document.getElementById('rp-visible');
+            const empty = document.getElementById('rp-no-results');
+            const prev = document.getElementById('rp-prev');
+            const next = document.getElementById('rp-next');
+            const pageLabel = document.getElementById('rp-page-label');
+            const summary = document.getElementById('rp-page-summary');
+            const PAGE_SIZE = 50;
+            let page = 1;
+
+            function normalizar(value) {
+                return String(value || '').toLocaleLowerCase('es')
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            }
+
+            function render() {
+                const term = normalizar(search.value.trim());
+                const filtered = rows.filter(row => {
+                    const textMatch = normalizar(row.textContent).includes(term);
+                    const stateMatch = state.value === 'todos' || row.dataset.status === state.value;
+                    return textMatch && stateMatch;
+                });
+                const total = filtered.length;
+                const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+                page = Math.min(Math.max(1, page), pages);
+                const start = (page - 1) * PAGE_SIZE;
+                const visible = new Set(filtered.slice(start, start + PAGE_SIZE));
+                rows.forEach(row => { row.hidden = !visible.has(row); });
+                count.textContent = String(visible.size);
+                empty.hidden = total > 0 || rows.length === 0;
+                pageLabel.textContent = `Página ${page} de ${pages}`;
+                summary.textContent = total === 0
+                    ? '0 pacientes encontrados'
+                    : `Mostrando ${start + 1} - ${Math.min(start + PAGE_SIZE, total)} de ${total} pacientes`;
+                prev.disabled = page <= 1;
+                next.disabled = page >= pages;
+            }
+            search.addEventListener('input', () => { page = 1; render(); });
+            state.addEventListener('change', () => { page = 1; render(); });
+            prev.addEventListener('click', () => { page--; render(); });
+            next.addEventListener('click', () => { page++; render(); });
+            render();
+        });
+    </script>
+
+</body>
+</html>

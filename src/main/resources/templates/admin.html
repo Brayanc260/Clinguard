@@ -1,0 +1,769 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard — Panel Admin</title>
+
+    <!-- CSS GENERAL -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- ICONOS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- TEMA -->
+    <script th:src="@{/js/theme.js}"></script>
+</head>
+
+<body data-page="admin">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside id="sidebar">
+
+        <!-- LOGO -->
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     alt="ClinGuard"
+                     class="clinguard-logo logo-oscuro">
+
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             NAVEGACIÓN
+             ================================================= -->
+
+        <nav class="sb-nav"
+             aria-label="Navegación principal">
+
+            <!-- DASHBOARD -->
+            <a class="nb"
+               th:href="@{/dashboard}">
+
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+
+            </a>
+
+            <!-- ANÁLISIS -->
+            <a class="nb"
+               th:href="@{/analisis}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+
+            </a>
+
+            <!-- CONVERSIONES -->
+            <a class="nb"
+               th:href="@{/conversiones}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-transfer"></i>
+                <span>Conversiones Médicas</span>
+
+            </a>
+
+            <!-- PACIENTES -->
+            <a class="nb"
+               th:href="@{/pacientes}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-user"></i>
+                <span>Pacientes</span>
+
+            </a>
+
+            <!-- CITAS -->
+            <a class="nb"
+               th:href="@{/citas}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-calendar"></i>
+                <span>Citas</span>
+
+            </a>
+
+            <!-- HISTORIAL -->
+            <a class="nb"
+               th:href="@{/historial}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-notepad"></i>
+                <span>Historial Médico</span>
+
+            </a>
+
+            <!-- MEDICAMENTOS -->
+            <a class="nb"
+               th:href="@{/medicamentos}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-capsule"></i>
+                <span>Medicamentos</span>
+
+            </a>
+
+            <!-- REPORTES -->
+            <a class="nb"
+               th:href="@{/reportes}"
+               sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+
+            </a>
+
+            <!-- PANEL ADMIN -->
+            <a class="nb active"
+               th:href="@{/admin}"
+               sec:authorize="hasRole('ADMIN')">
+
+                <i class="bx bx-shield-quarter"></i>
+                <span>Panel Admin</span>
+
+            </a>
+
+            <!-- =============================================
+                 REGISTRAR USUARIO - NUEVO
+                 ============================================= -->
+
+            <a class="nb"
+               th:href="@{/admin/usuarios/nuevo}"
+               sec:authorize="hasRole('ADMIN')">
+
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
+
+            </a>
+
+            <!-- NOTIFICACIONES -->
+            <a class="nb"
+               th:href="@{/notificaciones}">
+
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+
+                <span class="notif-count"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas}">
+                </span>
+
+            </a>
+
+            <!-- PERFIL -->
+            <a class="nb"
+               th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+
+            </a>
+
+        </nav>
+
+        <!-- =================================================
+             ADMINISTRADOR ACTUAL
+             ================================================= -->
+
+        <a class="sb-user sb-user-clickable"
+           th:href="@{/perfil}">
+
+            <div class="avatar">
+                <i class="bx bx-user"></i>
+            </div>
+
+            <div class="u-info">
+
+                <div class="u-nm"
+                     th:text="${#authentication.name}">
+                    admin
+                </div>
+
+                <div class="u-rl">
+                    Administrador
+                </div>
+
+            </div>
+
+        </a>
+
+        <!-- =================================================
+             CERRAR SESIÓN
+             ================================================= -->
+
+        <form th:action="@{/logout}"
+              method="post">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <button type="submit"
+                    class="logout-link"
+                    style="width:calc(100% - 24px);
+                           background:transparent;">
+
+                <i class="bx bx-log-out"></i>
+                <span>Salir</span>
+
+            </button>
+
+        </form>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <header>
+
+            <div class="h-title">
+                Panel Administrativo
+            </div>
+
+        </header>
+
+        <div class="main-inner">
+
+            <!-- =================================================
+                 ENCABEZADO
+                 ================================================= -->
+
+            <section class="admin-page-header">
+
+                <div>
+
+                    <div class="admin-eyebrow">
+
+                        <i class="bx bx-shield-quarter"></i>
+                        Administración del sistema
+
+                    </div>
+
+                    <h1>
+                        Panel de administración
+                    </h1>
+
+                    <p>
+                        Gestiona los principales módulos,
+                        usuarios, información clínica y
+                        recursos de ClinGuard.
+                    </p>
+
+                </div>
+
+                <div class="admin-header-icon">
+                    <i class="bx bx-shield-quarter"></i>
+                </div>
+
+            </section>
+
+            <!-- =================================================
+                 RESUMEN GENERAL
+                 ================================================= -->
+
+            <section class="admin-summary">
+
+                <!-- USUARIOS -->
+                <article class="admin-stat-card">
+
+                    <div class="admin-stat-icon blue">
+                        <i class="bx bx-group"></i>
+                    </div>
+
+                    <div>
+
+                        <span>Usuarios</span>
+
+                        <strong th:text="${totalUsuarios != null ? totalUsuarios : 0}">
+                            0
+                        </strong>
+
+                        <small>
+                            Registrados en el sistema
+                        </small>
+
+                    </div>
+
+                </article>
+
+                <!-- PACIENTES -->
+                <article class="admin-stat-card">
+
+                    <div class="admin-stat-icon green">
+                        <i class="bx bx-user-plus"></i>
+                    </div>
+
+                    <div>
+
+                        <span>Pacientes</span>
+
+                        <strong th:text="${totalPacientes != null ? totalPacientes : 0}">
+                            0
+                        </strong>
+
+                        <small>
+                            Pacientes registrados
+                        </small>
+
+                    </div>
+
+                </article>
+
+                <!-- CITAS -->
+                <article class="admin-stat-card">
+
+                    <div class="admin-stat-icon purple">
+                        <i class="bx bx-calendar-check"></i>
+                    </div>
+
+                    <div>
+
+                        <span>Citas</span>
+
+                        <strong th:text="${totalCitas != null ? totalCitas : 0}">
+                            0
+                        </strong>
+
+                        <small>
+                            Citas registradas
+                        </small>
+
+                    </div>
+
+                </article>
+
+                <!-- HISTORIALES -->
+                <article class="admin-stat-card">
+
+                    <div class="admin-stat-icon orange">
+                        <i class="bx bx-notepad"></i>
+                    </div>
+
+                    <div>
+
+                        <span>Historiales</span>
+
+                        <strong th:text="${totalHistoriales != null ? totalHistoriales : 0}">
+                            0
+                        </strong>
+
+                        <small>
+                            Registros clínicos
+                        </small>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+            <!-- =================================================
+                 GESTIÓN DEL SISTEMA
+                 ================================================= -->
+
+            <section class="admin-section">
+
+                <div class="admin-section-header">
+
+                    <div>
+
+                        <h2>Gestión del sistema</h2>
+
+                        <p>
+                            Accede rápidamente a las principales
+                            funciones administrativas.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="admin-modules-grid">
+
+                    <!-- =========================================
+                         REGISTRAR USUARIO - NUEVO
+                         ========================================= -->
+
+                    <a class="admin-module-card"
+                       th:href="@{/admin/usuarios/nuevo}"
+                       sec:authorize="hasRole('ADMIN')">
+
+                        <div class="admin-module-icon">
+                            <i class="bx bx-user-plus"></i>
+                        </div>
+
+                        <div class="admin-module-content">
+
+                            <h3>Registrar usuario</h3>
+
+                            <p>
+                                Crea cuentas para médicos,
+                                enfermeros, recepcionistas,
+                                usuarios y administradores.
+                            </p>
+
+                        </div>
+
+                        <i class="bx bx-chevron-right admin-arrow"></i>
+
+                    </a>
+
+                    <!-- =========================================
+                         PACIENTES
+                         ========================================= -->
+
+                    <a class="admin-module-card"
+                       th:href="@{/pacientes}">
+
+                        <div class="admin-module-icon">
+                            <i class="bx bx-user"></i>
+                        </div>
+
+                        <div class="admin-module-content">
+
+                            <h3>Gestión de pacientes</h3>
+
+                            <p>
+                                Consulta, registra, edita y
+                                administra los pacientes de ClinGuard.
+                            </p>
+
+                        </div>
+
+                        <i class="bx bx-chevron-right admin-arrow"></i>
+
+                    </a>
+
+                    <!-- =========================================
+                         CITAS
+                         ========================================= -->
+
+                    <a class="admin-module-card"
+                       th:href="@{/citas}">
+
+                        <div class="admin-module-icon">
+                            <i class="bx bx-calendar"></i>
+                        </div>
+
+                        <div class="admin-module-content">
+
+                            <h3>Gestión de citas</h3>
+
+                            <p>
+                                Administra las citas médicas y
+                                el seguimiento de las consultas.
+                            </p>
+
+                        </div>
+
+                        <i class="bx bx-chevron-right admin-arrow"></i>
+
+                    </a>
+
+                    <!-- =========================================
+                         HISTORIALES
+                         ========================================= -->
+
+                    <a class="admin-module-card"
+                       th:href="@{/historial}">
+
+                        <div class="admin-module-icon">
+                            <i class="bx bx-notepad"></i>
+                        </div>
+
+                        <div class="admin-module-content">
+
+                            <h3>Historial médico</h3>
+
+                            <p>
+                                Consulta y administra los
+                                historiales clínicos registrados.
+                            </p>
+
+                        </div>
+
+                        <i class="bx bx-chevron-right admin-arrow"></i>
+
+                    </a>
+
+                    <!-- =========================================
+                         MEDICAMENTOS
+                         ========================================= -->
+
+                    <a class="admin-module-card"
+                       th:href="@{/medicamentos}">
+
+                        <div class="admin-module-icon">
+                            <i class="bx bx-capsule"></i>
+                        </div>
+
+                        <div class="admin-module-content">
+
+                            <h3>Medicamentos</h3>
+
+                            <p>
+                                Accede a las herramientas
+                                relacionadas con medicamentos
+                                y cálculos médicos.
+                            </p>
+
+                        </div>
+
+                        <i class="bx bx-chevron-right admin-arrow"></i>
+
+                    </a>
+
+                    <!-- =========================================
+                         ANÁLISIS
+                         ========================================= -->
+
+                    <a class="admin-module-card"
+                       th:href="@{/analisis}">
+
+                        <div class="admin-module-icon">
+                            <i class="bx bx-line-chart"></i>
+                        </div>
+
+                        <div class="admin-module-content">
+
+                            <h3>Análisis</h3>
+
+                            <p>
+                                Consulta indicadores y datos
+                                generales del funcionamiento
+                                de ClinGuard.
+                            </p>
+
+                        </div>
+
+                        <i class="bx bx-chevron-right admin-arrow"></i>
+
+                    </a>
+
+                    <!-- =========================================
+                         REPORTES
+                         ========================================= -->
+
+                    <a class="admin-module-card"
+                       th:href="@{/reportes}">
+
+                        <div class="admin-module-icon">
+                            <i class="bx bx-file"></i>
+                        </div>
+
+                        <div class="admin-module-content">
+
+                            <h3>Reportes</h3>
+
+                            <p>
+                                Accede al módulo de reportes
+                                y consulta información del sistema.
+                            </p>
+
+                        </div>
+
+                        <i class="bx bx-chevron-right admin-arrow"></i>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+            <!-- =================================================
+                 USUARIOS Y ROLES
+                 ================================================= -->
+
+            <section class="admin-section">
+
+                <div class="admin-section-header">
+
+                    <div>
+
+                        <h2>Usuarios y roles</h2>
+
+                        <p>
+                            Distribución de los cinco perfiles
+                            de acceso disponibles en ClinGuard.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="admin-role-grid">
+
+                    <!-- =========================================
+                         ADMINISTRADOR
+                         ========================================= -->
+
+                    <article class="admin-role-card">
+
+                        <div class="admin-role-icon admin">
+                            <i class="bx bx-shield-quarter"></i>
+                        </div>
+
+                        <div>
+
+                            <span>Administradores</span>
+
+                            <strong th:text="${totalAdmins != null ? totalAdmins : 0}">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </article>
+
+                    <!-- =========================================
+                         MÉDICO
+                         ========================================= -->
+
+                    <article class="admin-role-card">
+
+                        <div class="admin-role-icon medico">
+                            <i class="bx bx-plus-medical"></i>
+                        </div>
+
+                        <div>
+
+                            <span>Médicos</span>
+
+                            <strong th:text="${totalMedicos != null ? totalMedicos : 0}">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </article>
+
+                    <!-- =========================================
+                         ENFERMERO
+                         ========================================= -->
+
+                    <article class="admin-role-card">
+
+                        <div class="admin-role-icon enfermero">
+                            <i class="bx bx-health"></i>
+                        </div>
+
+                        <div>
+
+                            <span>Enfermeros</span>
+
+                            <strong th:text="${totalEnfermeros != null ? totalEnfermeros : 0}">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </article>
+
+                    <!-- =========================================
+                         RECEPCIONISTA - NUEVO
+                         ========================================= -->
+
+                    <article class="admin-role-card">
+
+                        <div class="admin-role-icon recepcionista">
+                            <i class="bx bx-id-card"></i>
+                        </div>
+
+                        <div>
+
+                            <span>Recepcionistas</span>
+
+                            <strong th:text="${totalRecepcionistas != null ? totalRecepcionistas : 0}">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </article>
+
+                    <!-- =========================================
+                         USUARIO
+                         ========================================= -->
+
+                    <article class="admin-role-card">
+
+                        <div class="admin-role-icon usuario">
+                            <i class="bx bx-user"></i>
+                        </div>
+
+                        <div>
+
+                            <span>Usuarios</span>
+
+                            <strong th:text="${totalUsuariosRol != null ? totalUsuariosRol : 0}">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+            <!-- =================================================
+                 SEGURIDAD
+                 ================================================= -->
+
+            <section class="admin-security-card">
+
+                <div class="admin-security-icon">
+                    <i class="bx bx-lock-alt"></i>
+                </div>
+
+                <div>
+
+                    <h3>Administración protegida</h3>
+
+                    <p>
+                        Esta sección está disponible únicamente
+                        para usuarios con el rol ADMIN.
+                        La gestión de cuentas, asignación de roles
+                        y demás operaciones administrativas
+                        están sujetas a los controles de
+                        seguridad de ClinGuard.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

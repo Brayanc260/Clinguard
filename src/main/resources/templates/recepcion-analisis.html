@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es"
+      data-theme="dark"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ClinGuard | Análisis de recepción</title>
+
+    <!-- CSS GENERAL -->
+    <link rel="stylesheet"
+          th:href="@{/css/styles.css}">
+
+    <!-- ICONOS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- CHART.JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- MODO CLARO / OSCURO -->
+    <script th:src="@{/js/theme.js}"></script>
+    <!-- Ajustes visuales compartidos del rol de recepción -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <!-- Contador global de notificaciones de Recepción -->
+    <style>
+      body .cg-recep-notif-badge {
+        margin-left: auto;
+        min-width: 23px;
+        height: 22px;
+        padding: 2px 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #fff;
+        background: #006d7c;
+        border: 1px solid #50c3cb;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+    </style>
+</head>
+
+<body data-page="recepcion-analisis">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside id="sidebar">
+
+        <!-- LOGO -->
+        <div class="sb-brand">
+            <div class="sb-logo">
+
+                <img th:src="@{/img/logo-claro.png}"
+                     class="clinguard-logo logo-claro"
+                     alt="ClinGuard">
+
+                <img th:src="@{/img/logo-oscuro.png}"
+                     class="clinguard-logo logo-oscuro"
+                     alt="ClinGuard">
+
+            </div>
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <nav class="sb-nav"
+             aria-label="Navegación de recepción">
+
+            <!-- DASHBOARD -->
+            <a class="nb"
+               th:href="@{/recepcionista/dashboard}">
+
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+
+            </a>
+
+            <!-- PACIENTES -->
+            <a class="nb"
+               th:href="@{/recepcion/pacientes}">
+
+                <i class="bx bx-group"></i>
+                <span>Pacientes</span>
+
+            </a>
+
+            <!-- CITAS MÉDICAS -->
+            <a class="nb"
+               th:href="@{/recepcion/citas}">
+
+                <i class="bx bx-calendar"></i>
+                <span>Citas médicas</span>
+
+            </a>
+
+            <!-- AGENDA MÉDICA -->
+            <a class="nb"
+               th:href="@{/recepcion/agenda}">
+
+                <i class="bx bx-calendar-check"></i>
+                <span>Agenda médica</span>
+
+            </a>
+
+            <!-- ANÁLISIS -->
+            <a class="nb active"
+               th:href="@{/recepcion/analisis}"
+               aria-current="page">
+
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+
+            </a>
+
+            <!-- NOTIFICACIONES -->
+            <a class="nb"
+               th:href="@{/recepcion/notificaciones}">
+
+                <i class="bx bx-bell"></i>
+                <span>Notificaciones</span>
+                <span class="cg-recep-notif-badge"
+                      th:if="${noLeidas != null and noLeidas > 0}"
+                      th:text="${noLeidas > 99 ? '99+' : noLeidas}"
+                      th:attr="aria-label=|${noLeidas} notificaciones sin leer|">0</span>
+
+            </a>
+
+            <!-- REPORTES -->
+            <a class="nb"
+               th:href="@{/recepcion/reportes}">
+
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+
+            </a>
+
+            <!-- MI PERFIL -->
+            <a class="nb"
+               th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+
+            </a>
+
+        </nav>
+
+        <!-- =================================================
+             PERFIL INFERIOR
+             ================================================= -->
+
+        <!-- PERFIL UNIFICADO DEL RECEPCIONISTA -->
+        <div class="sb-bottom recep-sidebar-footer">
+            <div class="sb-user recep-user-card">
+                <div class="avatar recep-user-avatar" aria-hidden="true">
+                    <i class="bx bx-user"></i>
+                </div>
+                <div class="u-info recep-user-info">
+                    <div class="u-nm" th:text="${#authentication.name}">Usuario</div>
+                    <div class="u-rl">Recepcionista</div>
+                </div>
+            </div>
+            <form class="sb-logout-form" th:action="@{/logout}" method="post">
+                <button class="logout-link recep-logout-button" type="submit">
+                    <i class="bx bx-log-out" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <div id="main-content">
+
+        <!-- ENCABEZADO -->
+        <header>
+            <div class="h-title">
+                Análisis de recepción
+            </div>
+        </header>
+
+        <main class="main-inner">
+
+            <div class="page active">
+
+                <!-- =========================================
+                     PRESENTACIÓN
+                     ========================================= -->
+
+                <section class="card analysis-intro">
+
+                    <div>
+
+                        <h1>Análisis administrativo</h1>
+
+                        <p>
+                            Consulta estadísticas, indicadores
+                            y tendencias de las citas médicas
+                            y los pacientes registrados
+                            en ClinGuard.
+                        </p>
+
+                    </div>
+
+                    <span class="analysis-demo-badge">
+
+                        <i class="bx bx-data"></i>
+                        Datos de MongoDB
+
+                    </span>
+
+                </section>
+
+                <!-- =========================================
+                     INDICADORES PRINCIPALES
+                     ========================================= -->
+
+                <section class="grid-4">
+
+                    <!-- TOTAL PACIENTES -->
+                    <article class="m-card analysis-kpi">
+
+                        <div class="analysis-kpi-icon">
+                            <i class="bx bx-group"></i>
+                        </div>
+
+                        <div>
+
+                            <div class="m-lbl">
+                                Pacientes registrados
+                            </div>
+
+                            <div class="m-val"
+                                 th:text="${totalPacientes != null ? totalPacientes : 0}">
+                                0
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- TOTAL DE CITAS -->
+                    <article class="m-card analysis-kpi">
+
+                        <div class="analysis-kpi-icon">
+                            <i class="bx bx-calendar"></i>
+                        </div>
+
+                        <div>
+
+                            <div class="m-lbl">
+                                Total de citas
+                            </div>
+
+                            <div class="m-val"
+                                 th:text="${totalCitas != null ? totalCitas : 0}">
+                                0
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- CITAS PENDIENTES -->
+                    <article class="m-card analysis-kpi">
+
+                        <div class="analysis-kpi-icon">
+                            <i class="bx bx-time-five"></i>
+                        </div>
+
+                        <div>
+
+                            <div class="m-lbl">
+                                Citas pendientes
+                            </div>
+
+                            <div class="m-val"
+                                 th:text="${citasPendientes != null ? citasPendientes : 0}">
+                                0
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- CITAS CONFIRMADAS -->
+                    <article class="m-card analysis-kpi">
+
+                        <div class="analysis-kpi-icon">
+                            <i class="bx bx-check-circle"></i>
+                        </div>
+
+                        <div>
+
+                            <div class="m-lbl">
+                                Citas confirmadas
+                            </div>
+
+                            <div class="m-val"
+                                 th:text="${citasConfirmadas != null ? citasConfirmadas : 0}">
+                                0
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- CITAS CANCELADAS -->
+                    <article class="m-card analysis-kpi">
+
+                        <div class="analysis-kpi-icon">
+                            <i class="bx bx-x-circle"></i>
+                        </div>
+
+                        <div>
+
+                            <div class="m-lbl">
+                                Citas canceladas
+                            </div>
+
+                            <div class="m-val"
+                                 th:text="${citasCanceladas != null ? citasCanceladas : 0}">
+                                0
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    <!-- PORCENTAJE CANCELACIÓN -->
+                    <article class="m-card analysis-kpi">
+
+                        <div class="analysis-kpi-icon">
+                            <i class="bx bx-trending-down"></i>
+                        </div>
+
+                        <div>
+
+                            <div class="m-lbl">
+                                Tasa de cancelación
+                            </div>
+
+                            <div class="m-val">
+
+                                <span th:text="${porcentajeCancelacion != null ? porcentajeCancelacion : 0}">
+                                    0
+                                </span>%
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+                <!-- =========================================
+                     GRÁFICAS
+                     ========================================= -->
+
+                <div class="ra-analysis-grid">
+
+                    <!-- CITAS POR MÉDICO -->
+                    <section class="card analysis-chart-card">
+
+                        <div class="analysis-card-head">
+
+                            <div>
+
+                                <h2>Citas por médico</h2>
+
+                                <p>
+                                    Distribución de citas
+                                    no canceladas por médico.
+                                </p>
+
+                            </div>
+
+                            <i class="bx bx-bar-chart-alt-2"></i>
+
+                        </div>
+
+                        <div class="ra-chart-container">
+
+                            <canvas id="graficaMedicos"
+                                    role="img"
+                                    aria-label="Citas por médico">
+                            </canvas>
+
+                        </div>
+
+                    </section>
+
+                    <!-- CITAS POR HORARIO -->
+                    <section class="card analysis-chart-card">
+
+                        <div class="analysis-card-head">
+
+                            <div>
+
+                                <h2>Citas por horario</h2>
+
+                                <p>
+                                    Horarios con mayor
+                                    número de citas registradas.
+                                </p>
+
+                            </div>
+
+                            <i class="bx bx-time-five"></i>
+
+                        </div>
+
+                        <div class="ra-chart-container">
+
+                            <canvas id="graficaHorarios"
+                                    role="img"
+                                    aria-label="Citas por horario">
+                            </canvas>
+
+                        </div>
+
+                    </section>
+
+                    <!-- CITAS POR FECHA -->
+                    <section class="card analysis-chart-card ra-chart-wide">
+
+                        <div class="analysis-card-head">
+
+                            <div>
+
+                                <h2>Distribución de citas por fecha</h2>
+
+                                <p>
+                                    Evolución de la programación
+                                    médica a través del tiempo.
+                                </p>
+
+                            </div>
+
+                            <i class="bx bx-line-chart"></i>
+
+                        </div>
+
+                        <div class="ra-chart-container ra-chart-container-wide">
+
+                            <canvas id="graficaFechas"
+                                    role="img"
+                                    aria-label="Citas por fecha">
+                            </canvas>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+                <!-- =========================================
+                     RESUMEN DE ESTADOS
+                     ========================================= -->
+
+                <section class="card ra-analysis-summary">
+
+                    <div class="analysis-card-head">
+
+                        <div>
+
+                            <h2>Resumen de estados</h2>
+
+                            <p>
+                                Estado general de las citas
+                                registradas en ClinGuard.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="ra-summary-grid">
+
+                        <!-- PENDIENTES -->
+                        <div class="ra-summary-item">
+
+                            <span class="ra-summary-dot ra-pending-dot"></span>
+
+                            <div>
+
+                                <span>Pendientes</span>
+
+                                <strong th:text="${citasPendientes != null ? citasPendientes : 0}">
+                                    0
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CONFIRMADAS -->
+                        <div class="ra-summary-item">
+
+                            <span class="ra-summary-dot ra-confirmed-dot"></span>
+
+                            <div>
+
+                                <span>Confirmadas</span>
+
+                                <strong th:text="${citasConfirmadas != null ? citasConfirmadas : 0}">
+                                    0
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CANCELADAS -->
+                        <div class="ra-summary-item">
+
+                            <span class="ra-summary-dot ra-cancelled-dot"></span>
+
+                            <div>
+
+                                <span>Canceladas</span>
+
+                                <strong th:text="${citasCanceladas != null ? citasCanceladas : 0}">
+                                    0
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- NOTA -->
+                <p class="ra-analysis-note">
+
+                    <i class="bx bx-info-circle"></i>
+
+                    Los indicadores corresponden a registros
+                    almacenados en MongoDB. Las gráficas de
+                    médicos, fechas y horarios excluyen
+                    las citas canceladas.
+
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- =====================================================
+         DATOS PROVENIENTES DE THYMELEAF
+         ===================================================== -->
+
+    <script id="datos-medicos"
+            type="application/json"
+            th:inline="javascript">/*[[${citasPorMedico}]]*/ []</script>
+
+    <script id="datos-horarios"
+            type="application/json"
+            th:inline="javascript">/*[[${citasPorHora}]]*/ []</script>
+
+    <script id="datos-fechas"
+            type="application/json"
+            th:inline="javascript">/*[[${citasPorFecha}]]*/ []</script>
+
+    <!-- =====================================================
+         GRÁFICAS CHART.JS
+         ===================================================== -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            if (typeof Chart === "undefined") {
+                console.error("No se pudo cargar Chart.js.");
+                return;
+            }
+
+            // =========================================
+            // LEER DATOS JSON
+            // =========================================
+
+            function leerDatos(id) {
+
+                try {
+
+                    const elemento = document.getElementById(id);
+
+                    if (!elemento) {
+                        return [];
+                    }
+
+                    const datos = JSON.parse(elemento.textContent);
+
+                    return Array.isArray(datos) ? datos : [];
+
+                } catch (error) {
+
+                    console.error("Error al leer " + id, error);
+
+                    return [];
+                }
+            }
+
+            const datosMedicos = leerDatos("datos-medicos");
+            const datosHorarios = leerDatos("datos-horarios");
+            const datosFechas = leerDatos("datos-fechas");
+
+            // =========================================
+            // COLORES SEGÚN EL TEMA
+            // =========================================
+
+            function obtenerColor(variable, alternativa) {
+
+                const valor = getComputedStyle(document.documentElement)
+                    .getPropertyValue(variable)
+                    .trim();
+
+                return valor || alternativa;
+            }
+
+            const colorPrincipal = obtenerColor("--accent", "#37C9DE");
+            const colorTexto = obtenerColor("--text2", "#A0C3C8");
+            const colorBorde = obtenerColor("--border", "#38606A");
+
+            Chart.defaults.color = colorTexto;
+            Chart.defaults.borderColor = colorBorde;
+
+            Chart.defaults.font.family =
+                "'Plus Jakarta Sans', sans-serif";
+
+            // =========================================
+            // CREAR GRÁFICA
+            // =========================================
+
+            function crearGrafica(id, tipo, registros) {
+
+                const canvas = document.getElementById(id);
+
+                if (!canvas) {
+                    return;
+                }
+
+                const nombres = registros.map(item => item.nombre);
+                const cantidades = registros.map(item => item.cantidad);
+
+                new Chart(canvas, {
+
+                    type: tipo,
+
+                    data: {
+
+                        labels: nombres,
+
+                        datasets: [{
+
+                            label: "Cantidad de citas",
+
+                            data: cantidades,
+
+                            backgroundColor: colorPrincipal,
+                            borderColor: colorPrincipal,
+
+                            borderWidth: tipo === "line" ? 3 : 1,
+
+                            borderRadius: tipo === "bar" ? 6 : 0,
+
+                            fill: false,
+                            tension: 0.3
+                        }]
+                    },
+
+                    options: {
+
+                        responsive: true,
+                        maintainAspectRatio: false,
+
+                        plugins: {
+
+                            legend: {
+                                display: false
+                            },
+
+                            tooltip: {
+                                enabled: true
+                            }
+                        },
+
+                        scales: {
+
+                            y: {
+
+                                beginAtZero: true,
+
+                                ticks: {
+                                    precision: 0,
+                                    color: colorTexto
+                                },
+
+                                grid: {
+                                    color: colorBorde
+                                }
+                            },
+
+                            x: {
+
+                                ticks: {
+                                    color: colorTexto,
+                                    maxRotation: 45,
+                                    minRotation: 0
+                                },
+
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // =========================================
+            // GRÁFICA DE MÉDICOS
+            // =========================================
+
+            crearGrafica(
+                "graficaMedicos",
+                "bar",
+                datosMedicos
+            );
+
+            // =========================================
+            // GRÁFICA POR HORARIO
+            // =========================================
+
+            crearGrafica(
+                "graficaHorarios",
+                "bar",
+                datosHorarios
+            );
+
+            // =========================================
+            // GRÁFICA POR FECHA
+            // =========================================
+
+            crearGrafica(
+                "graficaFechas",
+                "line",
+                datosFechas
+            );
+
+        });
+    </script>
+
+</body>
+</html>

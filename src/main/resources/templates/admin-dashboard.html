@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <title>
+        ClinGuard — Administración
+    </title>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script th:src="@{/js/theme.js}"></script>
+
+</head>
+
+
+<body data-page="dashboard">
+
+
+    <!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+    <aside id="sidebar">
+
+
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+            </div>
+        </div>
+
+
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+
+            <!-- DASHBOARD -->
+            <a class="nb active" th:href="@{/dashboard}">
+
+                <i class="bx bx-grid-alt"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- ANALISIS -->
+            <a class="nb" th:href="@{/analisis}">
+
+                <i class="bx bx-line-chart"></i>
+
+                <span>
+                    Análisis
+                </span>
+
+            </a>
+
+
+            <!-- CONVERSIONES -->
+            <a class="nb" th:href="@{/conversiones}">
+
+                <i class="bx bx-transfer"></i>
+
+                <span>
+                    Conversiones Médicas
+                </span>
+
+            </a>
+
+
+            <!-- PACIENTES -->
+            <a class="nb" th:href="@{/pacientes}">
+
+                <i class="bx bx-user"></i>
+
+                <span>
+                    Pacientes
+                </span>
+
+            </a>
+
+
+            <!-- CITAS -->
+            <a class="nb" th:href="@{/citas}">
+
+                <i class="bx bx-calendar"></i>
+
+                <span>
+                    Citas
+                </span>
+
+            </a>
+
+
+            <!-- HISTORIAL -->
+            <a class="nb" th:href="@{/historial}">
+
+                <i class="bx bx-notepad"></i>
+
+                <span>
+                    Historial Médico
+                </span>
+
+            </a>
+
+
+            <!-- MEDICAMENTOS -->
+            <a class="nb" th:href="@{/medicamentos}">
+
+                <i class="bx bx-capsule"></i>
+
+                <span>
+                    Medicamentos
+                </span>
+
+            </a>
+
+
+            <!-- REPORTES -->
+            <a class="nb" th:href="@{/reportes}">
+
+                <i class="bx bx-file"></i>
+
+                <span>
+                    Reportes
+                </span>
+
+            </a>
+
+
+            <!-- ADMIN -->
+            <a class="nb" th:href="@{/admin}">
+
+                <i class="bx bx-shield-quarter"></i>
+
+                <span>
+                    Panel Admin
+                </span>
+
+            </a>
+
+
+
+
+            <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
+                <i class='bx bx-bell'></i>
+                <span>Notificaciones</span>
+                <span class="notif-count" th:if="${noLeidas != null and noLeidas > 0}" th:text="${noLeidas}">
+                </span>
+            </a>
+
+
+
+            <!-- PERFIL -->
+            <a class="nb" th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+
+                <span>
+                    Mi Perfil
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+        <!-- =====================================================
+         USUARIO
+    ====================================================== -->
+
+        <a class="sb-user sb-user-clickable" th:href="@{/perfil}">
+
+
+            <div class="avatar">
+
+                <i class="bx bx-shield-quarter"></i>
+
+            </div>
+
+
+            <div class="u-info">
+
+
+                <div class="u-nm" th:text="${#authentication.name}">
+
+                    admin
+
+                </div>
+
+
+                <div class="u-rl">
+
+                    Administrador
+
+                </div>
+
+
+            </div>
+
+
+        </a>
+
+
+        <!-- =====================================================
+         LOGOUT
+    ====================================================== -->
+
+        <form th:action="@{/logout}" method="post">
+
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+
+            <button type="submit" class="logout-link" style="
+                width: calc(100% - 24px);
+                background: transparent;
+            ">
+
+                <i class="bx bx-log-out"></i>
+
+                Salir
+
+            </button>
+
+
+        </form>
+
+
+    </aside>
+
+
+
+    <!-- =========================================================
+     CONTENIDO
+========================================================= -->
+
+    <div id="main-content">
+
+
+        <header>
+
+
+            <div class="h-title">
+
+                Panel de Administración
+
+            </div>
+
+
+        </header>
+
+
+
+        <div class="main-inner">
+
+
+            <div class="page active">
+
+
+                <!-- =================================================
+                 BIENVENIDA
+            ================================================== -->
+
+                <div class="card">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h2 class="section-title-compact">
+
+                                Bienvenido, Administrador
+
+                            </h2>
+
+
+                            <p class="muted-text-sm">
+
+                                Gestiona usuarios, personal médico,
+                                pacientes y recursos de ClinGuard.
+
+                            </p>
+
+
+                        </div>
+
+
+                        <div class="cita-stat-icon cita-stat-purple">
+
+                            <i class="bx bx-shield-quarter"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 ESTADÍSTICAS
+            ================================================== -->
+
+                <div class="grid-4" style="margin-top: 25px;">
+
+
+                    <!-- USUARIOS -->
+                    <div class="m-card">
+
+                        <div>
+
+                            <div class="m-val">
+
+                                <i class="bx bx-group"></i>
+                                <span th:text="${totalUsuarios != null ? totalUsuarios : 'SIN DATO'}">0</span>
+
+                            </div>
+
+                            <div class="m-lbl">
+
+                                Usuarios
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MEDICOS -->
+                    <div class="m-card">
+
+                        <div>
+
+                            <div class="m-val">
+
+                                <i class="bx bx-plus-medical"></i>
+                                <span th:text="${totalMedicos != null ? totalMedicos : 'SIN DATO'}">0</span>
+
+                            </div>
+
+                            <div class="m-lbl">
+
+                                Médicos
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ENFERMEROS -->
+                    <div class="m-card">
+
+                        <div>
+
+                            <div class="m-val">
+
+                                <i class="bx bx-health"></i>
+                                <span th:text="${totalEnfermeros != null ? totalEnfermeros : 'SIN DATO'}">0</span>
+
+                            </div>
+
+                            <div class="m-lbl">
+
+                                Enfermeros
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PACIENTES -->
+                    <div class="m-card">
+
+                        <div>
+
+                            <div class="m-val">
+
+                                <i class="bx bx-user"></i>
+                                <span th:text="${totalPacientes != null ? totalPacientes : 'SIN DATO'}">0</span>
+
+                            </div>
+
+                            <div class="m-lbl">
+
+                                Pacientes
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 ADMINISTRACIÓN
+            ================================================== -->
+
+                <div class="card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h3 class="section-title-compact">
+
+                                Administración del sistema
+
+                            </h3>
+
+
+                            <p class="muted-text-sm">
+
+                                Accede a las principales herramientas
+                                administrativas de ClinGuard.
+
+                            </p>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns:
+                            repeat(3, minmax(0, 1fr));
+                        gap: 18px;
+                        margin-top: 20px;
+                    ">
+
+
+                        <!-- PANEL ADMIN -->
+                        <a th:href="@{/admin}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-purple">
+
+                                <i class="bx bx-shield-quarter"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Panel Admin
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Gestiona usuarios y permisos del sistema.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- PACIENTES -->
+                        <a th:href="@{/pacientes}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-blue">
+
+                                <i class="bx bx-user"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Pacientes
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Gestiona los pacientes registrados.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- CITAS -->
+                        <a th:href="@{/citas}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-green">
+
+                                <i class="bx bx-calendar"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Citas
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Administra las citas médicas.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- HISTORIAL -->
+                        <a th:href="@{/historial}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-orange">
+
+                                <i class="bx bx-notepad"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Historial Médico
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Consulta y administra historiales.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- MEDICAMENTOS -->
+                        <a th:href="@{/medicamentos}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-blue">
+
+                                <i class="bx bx-capsule"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Medicamentos
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Accede al módulo de medicamentos.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- CONVERSIONES -->
+                        <a th:href="@{/conversiones}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-green">
+
+                                <i class="bx bx-transfer"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Conversiones
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Accede al conversor médico.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- ANALISIS -->
+                        <a th:href="@{/analisis}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-purple">
+
+                                <i class="bx bx-line-chart"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Análisis
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Consulta estadísticas del sistema.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- REPORTES -->
+                        <a th:href="@{/reportes}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-orange">
+
+                                <i class="bx bx-file"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Reportes
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Genera y consulta reportes.
+
+                            </p>
+
+
+                        </a>
+
+
+                        <!-- PERFIL -->
+                        <a th:href="@{/perfil}" class="card" style="text-decoration:none;">
+
+
+                            <div class="cita-stat-icon cita-stat-blue">
+
+                                <i class="bx bx-user-circle"></i>
+
+                            </div>
+
+
+                            <h4>
+
+                                Mi Perfil
+
+                            </h4>
+
+
+                            <p class="muted-text-sm">
+
+                                Consulta los datos de tu cuenta.
+
+                            </p>
+
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>

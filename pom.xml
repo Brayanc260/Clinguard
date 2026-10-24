@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -14,11 +14,20 @@
   <artifactId>clinica</artifactId>
   <version>2.0.0</version>
   <name>clinica</name>
-  <description>Sistema Clínico de Conversión de Unidades</description>
+  <description>Sistema ClÃ­nico de ConversiÃ³n de Unidades</description>
   <properties>
     <java.version>21</java.version>
   </properties>
   <dependencies>
+    <!-- Thymeleaf para renderizar las vistas visuales -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf.extras</groupId>
+      <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+    </dependency>
     <!-- Web REST -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

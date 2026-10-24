@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <title>
+        ClinGuard — Medicamentos
+    </title>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script th:src="@{/js/theme.js}"></script>
+
+</head>
+
+
+<body data-page="medicamentos">
+
+
+    <!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+    <aside id="sidebar">
+
+
+        <!-- LOGO -->
+
+        <div class="sb-brand">
+
+            <div class="sb-logo">
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+         NAVEGACIÓN
+    ====================================================== -->
+
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+
+            <!-- DASHBOARD -->
+
+            <a class="nb" th:href="@{/dashboard}">
+
+                <i class="bx bx-grid-alt"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+
+            <!-- ANÁLISIS -->
+
+            <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-line-chart"></i>
+
+                <span>
+                    Análisis
+                </span>
+
+            </a>
+
+
+
+            <!-- CONVERSIONES -->
+
+            <a class="nb" th:href="@{/conversiones}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-transfer"></i>
+
+                <span>
+                    Conversiones Médicas
+                </span>
+
+            </a>
+
+
+
+            <!-- PACIENTES -->
+
+            <a class="nb" th:href="@{/pacientes}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-user"></i>
+
+                <span>
+                    Pacientes
+                </span>
+
+            </a>
+
+
+
+            <!-- CITAS -->
+
+            <a class="nb" th:href="@{/citas}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-calendar"></i>
+
+                <span>
+                    Citas
+                </span>
+
+            </a>
+
+
+
+            <!-- HISTORIAL -->
+
+            <a class="nb" th:href="@{/historial}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-notepad"></i>
+
+                <span>
+                    Historial Médico
+                </span>
+
+            </a>
+
+
+
+            <!-- MEDICAMENTOS -->
+
+            <a class="nb active" th:href="@{/medicamentos}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+
+                <i class="bx bx-capsule"></i>
+
+                <span>
+                    Medicamentos
+                </span>
+
+            </a>
+
+
+
+            <!-- REPORTES -->
+
+            <a class="nb" th:href="@{/reportes}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+
+                <i class="bx bx-file"></i>
+
+                <span>
+                    Reportes
+                </span>
+
+            </a>
+
+
+
+            <!-- ADMIN -->
+
+            <a class="nb" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">
+
+                <i class="bx bx-shield-quarter"></i>
+
+                <span>
+                    Panel Admin
+                </span>
+
+            </a>
+
+
+
+
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i><span>Registrar usuario</span>
+            </a>
+            <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
+                <i class='bx bx-bell'></i>
+                <span>Notificaciones</span>
+                <span class="notif-count" th:if="${noLeidas != null and noLeidas > 0}" th:text="${noLeidas}">
+                </span>
+            </a>
+
+
+
+
+            <!-- PERFIL -->
+
+            <a class="nb" th:href="@{/perfil}">
+
+                <i class="bx bx-user-circle"></i>
+
+                <span>
+                    Mi Perfil
+                </span>
+
+            </a>
+
+        </nav>
+
+
+
+        <!-- USUARIO -->
+
+        <a class="sb-user sb-user-clickable" th:href="@{/perfil}">
+
+
+            <div class="avatar">
+
+                <i class="bx bx-user"></i>
+
+            </div>
+
+
+            <div class="u-info">
+
+
+                <div class="u-nm" th:text="${#authentication.name}">
+
+                    Usuario
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('ADMIN')">
+
+                    Administrador
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('MEDICO')">
+
+                    Médico
+
+                </div>
+
+
+                <div class="u-rl" sec:authorize="hasRole('ENFERMERO')">
+
+                    Enfermero
+
+                </div>
+
+
+            </div>
+
+
+        </a>
+
+
+
+        <!-- LOGOUT -->
+
+        <form th:action="@{/logout}" method="post">
+
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+
+            <button type="submit" class="logout-link" style="
+                width: calc(100% - 24px);
+                background: transparent;
+            ">
+
+                <i class="bx bx-log-out"></i>
+
+                Salir
+
+            </button>
+
+
+        </form>
+
+
+    </aside>
+
+
+
+    <!-- =========================================================
+     CONTENIDO
+========================================================= -->
+
+    <div id="main-content">
+
+
+        <header>
+
+            <div class="h-title">
+
+                Medicamentos
+
+            </div>
+
+        </header>
+
+
+
+        <div class="main-inner">
+
+
+            <div class="page active">
+
+
+                <!-- =================================================
+                 MENSAJES
+            ================================================== -->
+
+                <div class="cita-alert cita-alert-success" th:if="${exito}">
+
+                    <i class="bx bx-check-circle"></i>
+
+                    <span th:text="${exito}">
+                        Operación realizada correctamente.
+                    </span>
+
+                </div>
+
+
+                <div class="cita-alert cita-alert-error" th:if="${error}">
+
+                    <i class="bx bx-error-circle"></i>
+
+                    <span th:text="${error}">
+                        Ocurrió un error.
+                    </span>
+
+                </div>
+
+
+
+                <!-- =================================================
+                 CABECERA
+            ================================================== -->
+
+                <div class="card">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+
+                            <h2 class="section-title-compact">
+
+                                Gestión de medicamentos
+
+                            </h2>
+
+
+                            <p class="muted-text-sm">
+
+                                Administra los medicamentos
+                                registrados en ClinGuard.
+
+                            </p>
+
+
+                        </div>
+
+
+
+                        <button type="button" class="btn-primary" sec:authorize="hasAnyRole('ADMIN','MEDICO')"
+                            onclick="abrirFormularioMedicamento()">
+
+                            <i class="bx bx-plus"></i>
+
+                            Nuevo medicamento
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 RESUMEN
+            ================================================== -->
+
+                <div class="grid-4">
+
+
+                    <!-- TOTAL -->
+
+                    <div class="m-card">
+
+                        <div>
+
+                            <div class="m-val" id="totalMedicamentos">
+
+                                0
+
+                            </div>
+
+                            <div class="m-lbl">
+
+                                Medicamentos registrados
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ACTIVOS -->
+
+                    <div class="m-card">
+
+                        <div>
+
+                            <div class="m-val" id="totalActivos">
+
+                                0
+
+                            </div>
+
+                            <div class="m-lbl">
+
+                                Medicamentos activos
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- STOCK BAJO -->
+
+                    <div class="m-card">
+
+                        <div>
+
+                            <div class="m-val" id="totalStockBajo">
+
+                                0
+
+                            </div>
+
+                            <div class="m-lbl">
+
+                                Stock bajo
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- CÁLCULOS -->
+
+                    <div class="m-card">
+
+                        <div>
+
+                            <div class="m-val">
+
+                                <i class="bx bx-calculator"></i>
+
+                            </div>
+
+                            <div class="m-lbl">
+
+                                Cálculos de dosis
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 LISTA
+            ================================================== -->
+
+                <div class="card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+                            <h3 class="section-title-compact">
+
+                                Lista de medicamentos
+
+                            </h3>
+
+                            <p class="muted-text-sm">
+
+                                Consulta los medicamentos
+                                almacenados en ClinGuard.
+
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                     BUSCADOR
+                ================================================== -->
+
+                    <div class="citas-toolbar">
+
+
+                        <div class="citas-search-box">
+
+
+                            <i class="bx bx-search"></i>
+
+
+                            <input type="text" id="buscar-medicamento" placeholder="Buscar en esta página...">
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                     TABLA
+                ================================================== -->
+
+                    <div class="table-container">
+
+
+                        <table>
+
+
+                            <thead>
+
+
+                                <tr>
+
+                                    <th>
+                                        Medicamento
+                                    </th>
+
+                                    <th>
+                                        Principio activo
+                                    </th>
+
+                                    <th>
+                                        Presentación
+                                    </th>
+
+                                    <th>
+                                        Concentración
+                                    </th>
+
+                                    <th>
+                                        Vía
+                                    </th>
+
+                                    <th>
+                                        Stock
+                                    </th>
+
+                                    <th>
+                                        Estado
+                                    </th>
+
+                                    <th>
+                                        Acciones
+                                    </th>
+
+                                </tr>
+
+
+                            </thead>
+
+
+
+                            <tbody id="medicamentos-tbody">
+
+
+                                <tr th:each="med : ${medicamentos}" class="medicamento-row">
+
+
+                                    <!-- MEDICAMENTO -->
+
+                                    <td>
+
+
+                                        <div class="cita-paciente-cell">
+
+
+                                            <div class="cita-avatar medicamento-avatar">
+
+                                                <i class="bx bx-capsule"></i>
+
+                                            </div>
+
+
+                                            <div>
+
+
+                                                <strong th:text="${med.nombre}">
+
+                                                    Amoxicilina
+
+                                                </strong>
+
+
+                                                <div class="muted-text-sm" th:text="${med.viaAdministracion != null
+                                                    ? med.viaAdministracion
+                                                    : 'Sin vía registrada'}">
+
+                                                    Oral
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </td>
+
+
+
+                                    <!-- PRINCIPIO ACTIVO -->
+
+                                    <td th:text="${med.principioActivo != null
+                                        ? med.principioActivo
+                                        : 'Sin registrar'}">
+
+                                        Amoxicilina
+
+                                    </td>
+
+
+
+                                    <!-- PRESENTACIÓN -->
+
+                                    <td th:text="${med.presentacion != null
+                                        ? med.presentacion
+                                        : 'Sin registrar'}">
+
+                                        Suspensión
+
+                                    </td>
+
+
+
+                                    <!-- CONCENTRACIÓN -->
+
+                                    <td>
+
+
+                                        <span th:text="${med.cantidadMedicamento != null
+                                            ? med.cantidadMedicamento
+                                            : '-'}">
+
+                                            250
+
+                                        </span>
+
+                                        <span th:text="${med.unidadMedicamento != null
+                                            ? med.unidadMedicamento
+                                            : ''}">
+
+                                            mg
+
+                                        </span>
+
+
+                                        <span th:if="${med.cantidadVehiculo != null
+                                            and med.cantidadVehiculo > 0}">
+
+                                            /
+
+                                            <span th:text="${med.cantidadVehiculo}">
+
+                                                5
+
+                                            </span>
+
+                                            <span th:text="${med.unidadVehiculo}">
+
+                                                mL
+
+                                            </span>
+
+                                        </span>
+
+
+                                    </td>
+
+
+
+                                    <!-- VÍA -->
+
+                                    <td th:text="${med.viaAdministracion != null
+                                        ? med.viaAdministracion
+                                        : 'Sin registrar'}">
+
+                                        Oral
+
+                                    </td>
+
+
+
+                                    <!-- STOCK -->
+
+                                    <td>
+
+
+                                        <span class="med-stock" th:classappend="${med.stock != null and med.stock <= 10}
+                                            ? ' med-stock-low'
+                                            : ''" th:text="${med.stock != null ? med.stock : 0}">
+
+                                            30
+
+                                        </span>
+
+
+                                    </td>
+
+
+
+                                    <!-- ESTADO -->
+
+                                    <td>
+
+
+                                        <span class="med-status" th:classappend="${med.estado == 'ACTIVO'}
+                                            ? ' med-status-active'
+                                            : ' med-status-inactive'" th:text="${med.estado != null
+                                            ? med.estado
+                                            : 'INACTIVO'}">
+
+                                            ACTIVO
+
+                                        </span>
+
+
+                                    </td>
+
+
+
+                                    <!-- ACCIONES -->
+
+                                    <td>
+
+
+                                        <div class="cita-actions">
+
+
+                                            <!-- EDITAR -->
+
+                                            <button type="button" class="cita-action-btn cita-action-edit"
+                                                sec:authorize="hasAnyRole('ADMIN','MEDICO')" th:data-id="${med.id}"
+                                                th:data-nombre="${med.nombre}"
+                                                th:data-principio="${med.principioActivo}"
+                                                th:data-presentacion="${med.presentacion}"
+                                                th:data-cantidad="${med.cantidadMedicamento}"
+                                                th:data-unidad="${med.unidadMedicamento}"
+                                                th:data-vehiculo="${med.cantidadVehiculo}"
+                                                th:data-unidad-vehiculo="${med.unidadVehiculo}"
+                                                th:data-via="${med.viaAdministracion}" th:data-stock="${med.stock}"
+                                                th:data-estado="${med.estado}" onclick="editarMedicamento(this)"
+                                                title="Editar medicamento">
+
+                                                <i class="bx bx-edit-alt"></i>
+
+                                            </button>
+
+
+
+                                            <!-- ELIMINAR -->
+
+                                            <form th:action="@{/medicamentos/eliminar/{id}(id=${med.id})}" method="post"
+                                                sec:authorize="hasRole('ADMIN')" onsubmit="return confirm(
+                                                '¿Deseas eliminar este medicamento?'
+                                            );">
+
+
+                                                <input type="hidden" th:name="${_csrf.parameterName}"
+                                                    th:value="${_csrf.token}">
+
+
+                                                <button type="submit" class="cita-action-btn cita-action-delete"
+                                                    title="Eliminar medicamento">
+
+                                                    <i class="bx bx-trash"></i>
+
+                                                </button>
+
+
+                                            </form>
+
+
+                                        </div>
+
+
+                                    </td>
+
+
+                                </tr>
+
+
+
+                                <!-- SIN RESULTADOS -->
+
+                                <tr th:if="${medicamentos == null
+                                    or #lists.isEmpty(medicamentos)}">
+
+
+                                    <td colspan="8">
+
+
+                                        <div class="citas-empty-content">
+
+
+                                            <div class="citas-empty-icon">
+
+                                                <i class="bx bx-capsule"></i>
+
+                                            </div>
+
+
+                                            <h4>
+
+                                                No hay medicamentos registrados
+
+                                            </h4>
+
+
+                                            <p>
+
+                                                Los medicamentos aparecerán aquí
+                                                cuando sean registrados.
+
+                                            </p>
+
+
+                                        </div>
+
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                 HERRAMIENTAS DE DOSIS
+            ================================================== -->
+
+                <div class="card medicamentos-tools-card" style="margin-top: 25px;">
+
+
+                    <div class="card-toolbar">
+
+
+                        <div>
+
+                            <h3 class="section-title-compact">
+
+                                Herramientas de medicamentos
+
+                            </h3>
+
+                            <p class="muted-text-sm">
+
+                                Realiza cálculos de dosis y
+                                volumen de administración.
+
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- TABS -->
+
+                    <div class="med-tabs">
+
+
+                        <button type="button" class="med-tab active" onclick="mostrarMedTab('dosis', this)">
+
+                            <i class="bx bx-calculator"></i>
+
+                            Cálculo de dosis
+
+                        </button>
+
+
+                        <button type="button" class="med-tab" onclick="mostrarMedTab('volumen', this)">
+
+                            <i class="bx bx-vial"></i>
+
+                            Volumen a administrar
+
+                        </button>
+
+
+                    </div>
+
+
+
+                    <!-- DOSIS -->
+
+                    <div id="med-tab-dosis" class="med-tab-content">
+
+
+                        <div class="med-form-grid">
+
+
+                            <div class="med-form-group">
+
+                                <label for="medicamentoCalculo">
+
+                                    Medicamento
+
+                                </label>
+
+
+                                <select id="medicamentoCalculo" onchange="seleccionarMedicamento(this)">
+
+
+                                    <option value="">
+
+                                        Seleccionar medicamento
+
+                                    </option>
+
+
+                                    <option th:each="med : ${medicamentos}" th:value="${med.id}"
+                                        th:data-nombre="${med.nombre}" th:data-cantidad="${med.cantidadMedicamento}"
+                                        th:data-unidad="${med.unidadMedicamento}"
+                                        th:data-vehiculo="${med.cantidadVehiculo}"
+                                        th:data-unidad-vehiculo="${med.unidadVehiculo}" th:text="${med.nombre
+                                        + ' - '
+                                        + med.cantidadMedicamento
+                                        + ' '
+                                        + med.unidadMedicamento}">
+
+                                    </option>
+
+
+                                </select>
+
+
+                            </div>
+
+
+
+                            <div class="med-form-group">
+
+                                <label for="pesoPaciente">
+
+                                    Peso del paciente (kg)
+
+                                </label>
+
+
+                                <input type="number" id="pesoPaciente" min="0" step="0.01" placeholder="Ej: 12">
+
+
+                            </div>
+
+
+
+                            <div class="med-form-group">
+
+                                <label for="dosisIndicada">
+
+                                    Dosis indicada (mg/kg)
+
+                                </label>
+
+
+                                <input type="number" id="dosisIndicada" min="0" step="0.01" placeholder="Ej: 21">
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="med-calculator-actions">
+
+
+                            <button type="button" class="btn-primary" onclick="calcularDosis()">
+
+                                <i class="bx bx-calculator"></i>
+
+                                Calcular dosis
+
+                            </button>
+
+
+                        </div>
+
+
+
+                        <div id="resultadoDosis" class="med-result" style="display:none;">
+
+
+                            <div>
+
+                                <span>
+                                    Dosis total calculada
+                                </span>
+
+                                <strong id="dosisTotal">
+                                    0 mg
+                                </strong>
+
+                            </div>
+
+
+                            <div id="resultadoVolumenAutomatico" style="display:none;">
+
+                                <span>
+                                    Volumen a administrar
+                                </span>
+
+                                <strong id="volumenAutomatico">
+                                    0 mL
+                                </strong>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- VOLUMEN -->
+
+                    <div id="med-tab-volumen" class="med-tab-content" style="display:none;">
+
+
+                        <div class="med-form-grid">
+
+
+                            <div class="med-form-group">
+
+                                <label for="dosisDeseada">
+
+                                    Dosis deseada (mg)
+
+                                </label>
+
+
+                                <input type="number" id="dosisDeseada" min="0" step="0.01" placeholder="Ej: 500">
+
+
+                            </div>
+
+
+
+                            <div class="med-form-group">
+
+                                <label for="dosisDisponible">
+
+                                    Dosis disponible (mg)
+
+                                </label>
+
+
+                                <input type="number" id="dosisDisponible" min="0" step="0.01" placeholder="Ej: 250">
+
+
+                            </div>
+
+
+
+                            <div class="med-form-group">
+
+                                <label for="volumenDisponible">
+
+                                    Volumen disponible (mL)
+
+                                </label>
+
+
+                                <input type="number" id="volumenDisponible" min="0" step="0.01" placeholder="Ej: 5">
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="med-calculator-actions">
+
+
+                            <button type="button" class="btn-primary" onclick="calcularVolumen()">
+
+                                <i class="bx bx-vial"></i>
+
+                                Calcular volumen
+
+                            </button>
+
+
+                        </div>
+
+
+
+                        <div id="resultadoVolumen" class="med-result" style="display:none;">
+
+
+                            <div>
+
+                                <span>
+                                    Volumen calculado
+                                </span>
+
+                                <strong id="resultadoVolumenValor">
+
+                                    0 mL
+
+                                </strong>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================================
+     MODAL MEDICAMENTO
+========================================================= -->
+
+    <div id="modalMedicamento" class="med-modal-overlay" style="display:none;">
+
+
+        <div class="med-modal">
+
+
+            <div class="med-modal-header">
+
+
+                <div>
+
+                    <h3 id="tituloModalMedicamento">
+
+                        Nuevo medicamento
+
+                    </h3>
+
+                    <p>
+
+                        Registra la información del medicamento.
+
+                    </p>
+
+                </div>
+
+
+                <button type="button" class="med-modal-close" onclick="cerrarFormularioMedicamento()">
+
+                    <i class="bx bx-x"></i>
+
+                </button>
+
+
+            </div>
+
+
+
+            <form id="formMedicamento" th:action="@{/medicamentos/guardar}" method="post">
+
+
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+
+                <div class="med-modal-grid">
+
+
+                    <div class="med-form-group">
+
+                        <label for="nombre">
+                            Nombre
+                        </label>
+
+                        <input type="text" id="nombre" name="nombre" required>
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="principioActivo">
+                            Principio activo
+                        </label>
+
+                        <input type="text" id="principioActivo" name="principioActivo" required>
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="presentacion">
+                            Presentación
+                        </label>
+
+                        <select id="presentacion" name="presentacion" required>
+
+                            <option value="">
+                                Seleccionar
+                            </option>
+
+                            <option value="Tableta">
+                                Tableta
+                            </option>
+
+                            <option value="Cápsula">
+                                Cápsula
+                            </option>
+
+                            <option value="Suspensión">
+                                Suspensión
+                            </option>
+
+                            <option value="Jarabe">
+                                Jarabe
+                            </option>
+
+                            <option value="Solución">
+                                Solución
+                            </option>
+
+                            <option value="Ampolla">
+                                Ampolla
+                            </option>
+
+                            <option value="Inyectable">
+                                Inyectable
+                            </option>
+
+                            <option value="Crema">
+                                Crema
+                            </option>
+
+                            <option value="Gotas">
+                                Gotas
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="viaAdministracion">
+                            Vía de administración
+                        </label>
+
+                        <select id="viaAdministracion" name="viaAdministracion" required>
+
+                            <option value="">
+                                Seleccionar
+                            </option>
+
+                            <option value="Oral">
+                                Oral
+                            </option>
+
+                            <option value="Intravenosa">
+                                Intravenosa
+                            </option>
+
+                            <option value="Intramuscular">
+                                Intramuscular
+                            </option>
+
+                            <option value="Subcutánea">
+                                Subcutánea
+                            </option>
+
+                            <option value="Tópica">
+                                Tópica
+                            </option>
+
+                            <option value="Oftálmica">
+                                Oftálmica
+                            </option>
+
+                            <option value="Ótica">
+                                Ótica
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="cantidadMedicamento">
+                            Concentración
+                        </label>
+
+                        <input type="number" id="cantidadMedicamento" name="cantidadMedicamento" min="0" step="0.01"
+                            required>
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="unidadMedicamento">
+                            Unidad
+                        </label>
+
+                        <select id="unidadMedicamento" name="unidadMedicamento" required>
+
+                            <option value="mg">
+                                mg
+                            </option>
+
+                            <option value="g">
+                                g
+                            </option>
+
+                            <option value="mcg">
+                                mcg
+                            </option>
+
+                            <option value="UI">
+                                UI
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="cantidadVehiculo">
+                            Volumen
+                        </label>
+
+                        <input type="number" id="cantidadVehiculo" name="cantidadVehiculo" min="0" step="0.01">
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="unidadVehiculo">
+                            Unidad de volumen
+                        </label>
+
+                        <select id="unidadVehiculo" name="unidadVehiculo">
+
+                            <option value="mL">
+                                mL
+                            </option>
+
+                            <option value="L">
+                                L
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="stock">
+                            Stock
+                        </label>
+
+                        <input type="number" id="stock" name="stock" min="0" value="0">
+
+                    </div>
+
+
+
+                    <div class="med-form-group">
+
+                        <label for="estado">
+                            Estado
+                        </label>
+
+                        <select id="estado" name="estado">
+
+                            <option value="ACTIVO">
+                                ACTIVO
+                            </option>
+
+                            <option value="INACTIVO">
+                                INACTIVO
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="med-modal-actions">
+
+
+                    <button type="button" class="med-btn-secondary" onclick="cerrarFormularioMedicamento()">
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button type="submit" class="btn-primary">
+
+                        <i class="bx bx-save"></i>
+
+                        Guardar medicamento
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+    <script>
+
+
+        let medicamentoSeleccionado = null;
+
+
+        /* =========================================================
+           BUSCADOR
+        ========================================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+
+                const buscador =
+                    document.getElementById(
+                        "buscar-medicamento"
+                    );
+
+
+                if (buscador) {
+
+
+                    buscador.addEventListener(
+                        "input",
+                        function () {
+
+
+                            const texto =
+                                buscador.value
+                                    .toLowerCase()
+                                    .trim();
+
+
+                            const filas =
+                                document.querySelectorAll(
+                                    ".medicamento-row"
+                                );
+
+
+                            filas.forEach(
+                                function (fila) {
+
+
+                                    const contenido =
+                                        fila.textContent
+                                            .toLowerCase();
+
+
+                                    if (
+                                        contenido.includes(texto)
+                                        ||
+                                        texto === ""
+                                    ) {
+
+                                        fila.style.display = "";
+
+                                    }
+
+                                    else {
+
+                                        fila.style.display = "none";
+
+                                    }
+
+
+                                }
+                            );
+
+
+                        }
+                    );
+
+
+                }
+
+
+
+                /* CONTADORES */
+
+                const filas =
+                    document.querySelectorAll(
+                        ".medicamento-row"
+                    );
+
+
+                let activos = 0;
+                let stockBajo = 0;
+
+
+                filas.forEach(
+                    function (fila) {
+
+
+                        const estado =
+                            fila.querySelector(
+                                ".med-status"
+                            );
+
+
+                        const stock =
+                            fila.querySelector(
+                                ".med-stock"
+                            );
+
+
+                        if (
+                            estado
+                            &&
+                            estado.textContent
+                                .trim()
+                                .toUpperCase()
+                            === "ACTIVO"
+                        ) {
+
+                            activos++;
+
+                        }
+
+
+                        if (stock) {
+
+
+                            const valor =
+                                parseInt(
+                                    stock.textContent.trim()
+                                ) || 0;
+
+
+                            if (valor <= 10) {
+
+                                stockBajo++;
+
+                            }
+
+
+                        }
+
+
+                    }
+                );
+
+
+                document.getElementById(
+                    "totalMedicamentos"
+                ).textContent =
+                    filas.length;
+
+
+                document.getElementById(
+                    "totalActivos"
+                ).textContent =
+                    activos;
+
+
+                document.getElementById(
+                    "totalStockBajo"
+                ).textContent =
+                    stockBajo;
+
+
+            }
+        );
+
+
+
+        /* =========================================================
+           MODAL
+        ========================================================= */
+
+        function abrirFormularioMedicamento() {
+
+
+            const form =
+                document.getElementById(
+                    "formMedicamento"
+                );
+
+
+            form.reset();
+
+
+            form.action =
+                "/medicamentos/guardar";
+
+
+            document.getElementById(
+                "tituloModalMedicamento"
+            ).textContent =
+                "Nuevo medicamento";
+
+
+            document.getElementById(
+                "modalMedicamento"
+            ).style.display =
+                "flex";
+
+
+        }
+
+
+
+        function cerrarFormularioMedicamento() {
+
+
+            document.getElementById(
+                "modalMedicamento"
+            ).style.display =
+                "none";
+
+
+        }
+
+
+
+        /* =========================================================
+           EDITAR
+        ========================================================= */
+
+        function editarMedicamento(button) {
+
+
+            const form =
+                document.getElementById(
+                    "formMedicamento"
+                );
+
+
+            form.action =
+                "/medicamentos/editar/"
+                + button.dataset.id;
+
+
+            document.getElementById(
+                "tituloModalMedicamento"
+            ).textContent =
+                "Editar medicamento";
+
+
+            document.getElementById(
+                "nombre"
+            ).value =
+                button.dataset.nombre || "";
+
+
+            document.getElementById(
+                "principioActivo"
+            ).value =
+                button.dataset.principio || "";
+
+
+            document.getElementById(
+                "presentacion"
+            ).value =
+                button.dataset.presentacion || "";
+
+
+            document.getElementById(
+                "cantidadMedicamento"
+            ).value =
+                button.dataset.cantidad || "";
+
+
+            document.getElementById(
+                "unidadMedicamento"
+            ).value =
+                button.dataset.unidad || "mg";
+
+
+            document.getElementById(
+                "cantidadVehiculo"
+            ).value =
+                button.dataset.vehiculo || "";
+
+
+            document.getElementById(
+                "unidadVehiculo"
+            ).value =
+                button.dataset.unidadVehiculo || "mL";
+
+
+            document.getElementById(
+                "viaAdministracion"
+            ).value =
+                button.dataset.via || "";
+
+
+            document.getElementById(
+                "stock"
+            ).value =
+                button.dataset.stock || 0;
+
+
+            document.getElementById(
+                "estado"
+            ).value =
+                button.dataset.estado || "ACTIVO";
+
+
+            document.getElementById(
+                "modalMedicamento"
+            ).style.display =
+                "flex";
+
+
+        }
+
+
+
+        /* =========================================================
+           TABS
+        ========================================================= */
+
+        function mostrarMedTab(
+            nombre,
+            boton
+        ) {
+
+
+            document
+                .querySelectorAll(
+                    ".med-tab-content"
+                )
+                .forEach(
+                    function (contenido) {
+
+                        contenido.style.display =
+                            "none";
+
+                    }
+                );
+
+
+            document
+                .querySelectorAll(
+                    ".med-tab"
+                )
+                .forEach(
+                    function (tab) {
+
+                        tab.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+            document.getElementById(
+                "med-tab-" + nombre
+            ).style.display =
+                "block";
+
+
+            boton.classList.add(
+                "active"
+            );
+
+
+        }
+
+
+
+        /* =========================================================
+           SELECCIONAR MEDICAMENTO
+        ========================================================= */
+
+        function seleccionarMedicamento(
+            select
+        ) {
+
+
+            const option =
+                select.options[
+                select.selectedIndex
+                ];
+
+
+            if (!option.value) {
+
+                medicamentoSeleccionado =
+                    null;
+
+                return;
+
+            }
+
+
+            medicamentoSeleccionado = {
+
+                cantidad:
+                    parseFloat(
+                        option.dataset.cantidad
+                    ) || 0,
+
+                unidad:
+                    option.dataset.unidad
+                    || "mg",
+
+                vehiculo:
+                    parseFloat(
+                        option.dataset.vehiculo
+                    ) || 0,
+
+                unidadVehiculo:
+                    option.dataset.unidadVehiculo
+                    || "mL"
+
+            };
+
+
+        }
+
+
+
+        /* =========================================================
+           DOSIS
+        ========================================================= */
+
+
+        // Registrar cálculos sin guardar nombres ni datos identificativos de pacientes.
+        async function registrarCalculoMedicamento(datos, destino) {
+            let mensaje = destino.querySelector('.estado-calculo');
+            if (!mensaje) {
+                mensaje = document.createElement('p');
+                mensaje.className = 'muted-text-sm estado-calculo';
+                mensaje.setAttribute('role', 'status');
+                mensaje.style.marginTop = '10px';
+                destino.appendChild(mensaje);
+            }
+            mensaje.style.color = '';
+            mensaje.textContent = 'Guardando cálculo...';
+            const csrf = document.querySelector('input[name="_csrf"]');
+            const meta = document.querySelector('meta[name="_csrf"]');
+            const metaCabecera = document.querySelector('meta[name="_csrf_header"]');
+            const token = csrf?.value || meta?.content;
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[metaCabecera?.content || 'X-CSRF-TOKEN'] = token;
+            try {
+                const respuesta = await fetch('/medicamentos/calculos', {
+                    method: 'POST', credentials: 'same-origin', headers,
+                    body: JSON.stringify(datos)
+                });
+                const json = await respuesta.json().catch(() => ({}));
+                if (!respuesta.ok || json.guardado !== true) {
+                    throw new Error(json.error || `Error HTTP ${respuesta.status}`);
+                }
+                mensaje.textContent = 'Cálculo guardado correctamente.';
+                mensaje.style.color = '#4e8b70';
+                return json;
+            } catch (error) {
+                mensaje.textContent = 'Cálculo realizado, pero NO guardado: ' + error.message;
+                mensaje.style.color = '#b85d5d';
+                return null;
+            }
+        }
+
+        async function calcularDosis() {
+            const peso = Number(document.getElementById('pesoPaciente').value);
+            const dosis = Number(document.getElementById('dosisIndicada').value);
+            const seleccion = document.getElementById('medicamentoCalculo');
+            if (!Number.isFinite(peso) || !Number.isFinite(dosis) || peso <= 0 || dosis <= 0) {
+                alert('Ingresa un peso y una dosis positivos y válidos.');
+                return;
+            }
+            const resultado = document.getElementById('resultadoDosis');
+            const total = peso * dosis;
+            document.getElementById('dosisTotal').textContent = total.toFixed(2) + ' mg';
+            resultado.style.display = 'grid';
+            // No mostrar volumen automático sin unidad y concentración validadas por servidor.
+            document.getElementById('resultadoVolumenAutomatico').style.display = 'none';
+            const respuesta = await registrarCalculoMedicamento({
+                tipo: 'dosis', peso, dosisIndicada: dosis,
+                medicamentoId: seleccion?.value || null
+            }, resultado);
+            if (respuesta) {
+                document.getElementById('dosisTotal').textContent =
+                    Number(respuesta.resultado).toFixed(2) + ' mg';
+                if (respuesta.volumenCalculadoMl !== undefined) {
+                    document.getElementById('volumenAutomatico').textContent =
+                        Number(respuesta.volumenCalculadoMl).toFixed(2) + ' mL';
+                    document.getElementById('resultadoVolumenAutomatico').style.display = 'flex';
+                }
+            }
+        }
+
+        /* =========================================================
+           VOLUMEN
+        ========================================================= */
+
+        async function calcularVolumen() {
+            const deseada = Number(document.getElementById('dosisDeseada').value);
+            const disponible = Number(document.getElementById('dosisDisponible').value);
+            const volumen = Number(document.getElementById('volumenDisponible').value);
+            if (![deseada, disponible, volumen].every(n => Number.isFinite(n) && n > 0)) {
+                alert('Ingresa valores positivos y válidos.');
+                return;
+            }
+            const resultado = deseada * volumen / disponible;
+            const bloque = document.getElementById('resultadoVolumen');
+            document.getElementById('resultadoVolumenValor').textContent = resultado.toFixed(2) + ' mL';
+            bloque.style.display = 'grid';
+            const respuesta = await registrarCalculoMedicamento({
+                tipo: 'volumen', dosisDeseada: deseada,
+                dosisDisponible: disponible, volumenDisponible: volumen
+            }, bloque);
+            if (respuesta) {
+                document.getElementById('resultadoVolumenValor').textContent =
+                    Number(respuesta.resultado).toFixed(2) + ' mL';
+            }
+        }
+
+        /* =========================================================
+           CERRAR MODAL
+        ========================================================= */
+
+        window.addEventListener(
+            "click",
+            function (event) {
+
+
+                const modal =
+                    document.getElementById(
+                        "modalMedicamento"
+                    );
+
+
+                if (
+                    event.target
+                    === modal
+                ) {
+
+                    cerrarFormularioMedicamento();
+
+                }
+
+
+            }
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>

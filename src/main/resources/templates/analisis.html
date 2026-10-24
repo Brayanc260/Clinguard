@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinGuard — Análisis</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:src="@{/js/theme.js}" defer></script>
+
+    <style>
+        .analisis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .analisis-chart {
+            height: 310px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .analisis-chart canvas {
+            max-width: 100%;
+        }
+
+        .analisis-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .analisis-empty {
+            text-align: center;
+            color: #94a3b8;
+            padding: 30px 10px;
+        }
+
+        .analisis-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .analisis-note>i {
+            font-size: 26px;
+            color: #3b82f6;
+        }
+
+        .analisis-section {
+            margin-top: 24px;
+        }
+
+        .analisis-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            border: 1px solid rgba(148, 163, 184, .28);
+            background: transparent;
+            color: inherit;
+            padding: 9px 14px;
+            border-radius: 9px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .analisis-refresh:hover {
+            background: rgba(148, 163, 184, .12);
+        }
+
+        @media (max-width: 900px) {
+            .analisis-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .grid-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .analisis-chart {
+                height: 270px;
+            }
+        }
+    </style>
+</head>
+
+<body data-page="analisis">
+
+    <!-- ===================================== -->
+    <!-- SIDEBAR -->
+    <!-- ===================================== -->
+
+    <aside id="sidebar">
+
+        <div class="sb-brand">
+            <div class="sb-logo">
+                <img th:src="@{/img/logo-claro.png}" alt="ClinGuard" class="clinguard-logo logo-claro">
+
+                <img th:src="@{/img/logo-oscuro.png}" alt="ClinGuard" class="clinguard-logo logo-oscuro">
+            </div>
+        </div>
+
+        <nav class="sb-nav" aria-label="Navegación principal">
+
+            <a class="nb" th:href="@{/dashboard}">
+                <i class="bx bx-grid-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nb active" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-line-chart"></i>
+                <span>Análisis</span>
+            </a>
+
+            <a class="nb" th:href="@{/conversiones}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-transfer"></i>
+                <span>Conversiones Médicas</span>
+            </a>
+
+            <a class="nb" th:href="@{/pacientes}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-user"></i>
+                <span>Pacientes</span>
+            </a>
+
+            <a class="nb" th:href="@{/citas}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-calendar"></i>
+                <span>Citas</span>
+            </a>
+
+            <a class="nb" th:href="@{/historial}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-notepad"></i>
+                <span>Historial Médico</span>
+            </a>
+
+            <a class="nb" th:href="@{/medicamentos}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
+                <i class="bx bx-capsule"></i>
+                <span>Medicamentos</span>
+            </a>
+
+            <a class="nb" th:href="@{/reportes}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
+                <i class="bx bx-file"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a class="nb" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-shield-quarter"></i>
+                <span>Panel Admin</span>
+            </a>
+
+
+            <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
+                <i class='bx bx-bell'></i>
+                <span>Notificaciones</span>
+                <span class="notif-count" th:if="${noLeidas != null and noLeidas > 0}" th:text="${noLeidas}">
+                </span>
+            </a>
+
+
+            <a class="nb" th:href="@{/perfil}">
+                <i class="bx bx-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+
+        </nav>
+
+        <!-- USUARIO ACTUAL -->
+
+        <a class="sb-user sb-user-clickable" th:href="@{/perfil}">
+
+            <div class="avatar">
+                <i class="bx bx-user"></i>
+            </div>
+
+            <div class="u-info">
+
+                <div class="u-nm" th:text="${#authentication.name}">
+                    Usuario
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('ADMIN')">
+                    Administrador
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('MEDICO')">
+                    Médico
+                </div>
+
+                <div class="u-rl" sec:authorize="hasRole('ENFERMERO')">
+                    Enfermero
+                </div>
+
+            </div>
+        </a>
+
+        <!-- CERRAR SESIÓN -->
+
+        <form th:action="@{/logout}" method="post">
+
+            <button type="submit" class="logout-link" style="width:calc(100% - 24px);background:transparent;">
+
+                <i class="bx bx-log-out"></i>
+                Salir
+
+            </button>
+        </form>
+
+    </aside>
+
+
+    <!-- ===================================== -->
+    <!-- CONTENIDO PRINCIPAL -->
+    <!-- ===================================== -->
+
+    <div id="main-content">
+
+        <header>
+            <div class="h-title">Análisis</div>
+        </header>
+
+        <div class="main-inner">
+
+            <div class="page active" id="page-analisis">
+
+                <!-- CABECERA -->
+
+                <div class="card">
+
+                    <div class="card-toolbar analisis-toolbar">
+
+                        <div>
+                            <h2 class="section-title-compact">
+                                Análisis clínico y operativo
+                            </h2>
+
+                            <p class="muted-text-sm">
+                                Indicadores obtenidos de los registros
+                                almacenados en ClinGuard.
+                            </p>
+                        </div>
+
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+
+                            <span class="cita-status cita-status-confirmada">
+                                <i class="bx bx-data"></i>
+                                Datos del sistema
+                            </span>
+
+                            <button class="analisis-refresh" type="button" onclick="window.location.reload()">
+                                <i class="bx bx-refresh"></i>
+                                Actualizar
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- INDICADORES PRINCIPALES -->
+                <!-- ================================= -->
+
+                <div class="grid-4 analisis-section">
+
+                    <!-- PACIENTES -->
+
+                    <div class="m-card">
+                        <div>
+                            <div class="m-val">
+                                <span id="totalPacientes" th:text="${totalPacientes != null ? totalPacientes : 0}">
+                                    0
+                                </span>
+                            </div>
+
+                            <div class="m-lbl">
+                                Pacientes
+                            </div>
+                        </div>
+
+                        <i class="bx bx-user"></i>
+                    </div>
+
+
+                    <!-- CITAS -->
+
+                    <div class="m-card">
+                        <div>
+                            <div class="m-val">
+                                <span id="totalCitas" th:text="${totalCitas != null ? totalCitas : 0}">
+                                    0
+                                </span>
+                            </div>
+
+                            <div class="m-lbl">
+                                Citas
+                            </div>
+                        </div>
+
+                        <i class="bx bx-calendar"></i>
+                    </div>
+
+
+                    <!-- HISTORIALES -->
+
+                    <div class="m-card">
+                        <div>
+                            <div class="m-val">
+                                <span id="totalHistoriales"
+                                    th:text="${totalHistoriales != null ? totalHistoriales : 0}">
+                                    0
+                                </span>
+                            </div>
+
+                            <div class="m-lbl">
+                                Historiales médicos
+                            </div>
+                        </div>
+
+                        <i class="bx bx-notepad"></i>
+                    </div>
+
+
+                    <!-- MEDICAMENTOS -->
+
+                    <div class="m-card">
+                        <div>
+                            <div class="m-val">
+                                <span id="totalMedicamentos"
+                                    th:text="${totalMedicamentos != null ? totalMedicamentos : 0}">
+                                    0
+                                </span>
+                            </div>
+
+                            <div class="m-lbl">
+                                Medicamentos
+                            </div>
+                        </div>
+
+                        <i class="bx bx-capsule"></i>
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- PRIMERA FILA DE GRÁFICAS -->
+                <!-- ================================= -->
+
+                <div class="analisis-grid">
+
+                    <!-- ACTIVIDAD SEMANAL -->
+
+                    <div class="card">
+
+                        <div class="card-toolbar">
+
+                            <div>
+                                <h3 class="section-title-compact">
+                                    Actividad semanal
+                                </h3>
+
+                                <p class="muted-text-sm">
+                                    Citas e historiales registrados
+                                    durante los últimos siete días.
+                                </p>
+                            </div>
+
+                            <div class="cita-stat-icon cita-stat-blue">
+                                <i class="bx bx-line-chart"></i>
+                            </div>
+
+                        </div>
+
+                        <div class="analisis-chart">
+                            <canvas id="graficoActividad"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <!-- CITAS POR ESTADO -->
+
+                    <div class="card">
+
+                        <div class="card-toolbar">
+
+                            <div>
+                                <h3 class="section-title-compact">
+                                    Estado de las citas
+                                </h3>
+
+                                <p class="muted-text-sm">
+                                    Distribución de las citas médicas
+                                    según su estado actual.
+                                </p>
+                            </div>
+
+                            <div class="cita-stat-icon cita-stat-purple">
+                                <i class="bx bx-pie-chart-alt-2"></i>
+                            </div>
+
+                        </div>
+
+                        <div class="analisis-chart">
+                            <canvas id="graficoCitas"></canvas>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- SEGUNDA FILA DE GRÁFICAS -->
+                <!-- ================================= -->
+
+                <div class="analisis-grid">
+
+                    <!-- PACIENTES POR MES -->
+
+                    <div class="card">
+
+                        <div class="card-toolbar">
+
+                            <div>
+                                <h3 class="section-title-compact">
+                                    Nuevos pacientes
+                                </h3>
+
+                                <p class="muted-text-sm">
+                                    Pacientes registrados durante
+                                    los últimos seis meses.
+                                </p>
+                            </div>
+
+                            <div class="cita-stat-icon cita-stat-green">
+                                <i class="bx bx-user-plus"></i>
+                            </div>
+
+                        </div>
+
+                        <div class="analisis-chart">
+                            <canvas id="graficoPacientes"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <!-- HISTORIALES POR MES -->
+
+                    <div class="card">
+
+                        <div class="card-toolbar">
+
+                            <div>
+                                <h3 class="section-title-compact">
+                                    Registros clínicos
+                                </h3>
+
+                                <p class="muted-text-sm">
+                                    Historiales médicos registrados
+                                    durante los últimos seis meses.
+                                </p>
+                            </div>
+
+                            <div class="cita-stat-icon cita-stat-orange">
+                                <i class="bx bx-notepad"></i>
+                            </div>
+
+                        </div>
+
+                        <div class="analisis-chart">
+                            <canvas id="graficoHistoriales"></canvas>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- RESUMEN DE CITAS -->
+                <!-- ================================= -->
+
+                <div class="card analisis-section">
+
+                    <div class="card-toolbar">
+
+                        <div>
+                            <h3 class="section-title-compact">
+                                Resumen de citas
+                            </h3>
+
+                            <p class="muted-text-sm">
+                                Cantidad de citas registradas por estado.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="grid-4">
+
+                        <!-- PROGRAMADAS -->
+
+                        <div class="m-card">
+                            <div>
+                                <div class="m-val" id="citasProgramadas"
+                                    th:text="${citasProgramadas != null ? citasProgramadas : 0}">
+                                    0
+                                </div>
+
+                                <div class="m-lbl">
+                                    Programadas
+                                </div>
+                            </div>
+
+                            <i class="bx bx-time-five"></i>
+                        </div>
+
+
+                        <!-- CONFIRMADAS -->
+
+                        <div class="m-card">
+                            <div>
+                                <div class="m-val" id="citasConfirmadas"
+                                    th:text="${citasConfirmadas != null ? citasConfirmadas : 0}">
+                                    0
+                                </div>
+
+                                <div class="m-lbl">
+                                    Confirmadas
+                                </div>
+                            </div>
+
+                            <i class="bx bx-calendar-check"></i>
+                        </div>
+
+
+                        <!-- ATENDIDAS -->
+
+                        <div class="m-card">
+                            <div>
+                                <div class="m-val" id="citasAtendidas"
+                                    th:text="${citasAtendidas != null ? citasAtendidas : 0}">
+                                    0
+                                </div>
+
+                                <div class="m-lbl">
+                                    Atendidas
+                                </div>
+                            </div>
+
+                            <i class="bx bx-check-double"></i>
+                        </div>
+
+
+                        <!-- CANCELADAS -->
+
+                        <div class="m-card">
+                            <div>
+                                <div class="m-val" id="citasCanceladas"
+                                    th:text="${citasCanceladas != null ? citasCanceladas : 0}">
+                                    0
+                                </div>
+
+                                <div class="m-lbl">
+                                    Canceladas
+                                </div>
+                            </div>
+
+                            <i class="bx bx-calendar-x"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- TABLA DE RESUMEN -->
+                <!-- ================================= -->
+
+                <div class="card analisis-section">
+
+                    <div class="card-toolbar">
+
+                        <div>
+                            <h3 class="section-title-compact">
+                                Resumen general
+                            </h3>
+
+                            <p class="muted-text-sm">
+                                Principales indicadores del sistema.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Indicador</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <!-- PACIENTES -->
+
+                                <tr>
+                                    <td>
+                                        <div class="cita-paciente-cell">
+                                            <div class="cita-avatar">
+                                                <i class="bx bx-user"></i>
+                                            </div>
+
+                                            <strong>
+                                                Pacientes registrados
+                                            </strong>
+                                        </div>
+                                    </td>
+
+                                    <td th:text="${totalPacientes != null ? totalPacientes : 0}">
+                                        0
+                                    </td>
+
+                                    <td>
+                                        <span class="cita-status cita-status-confirmada">
+                                            Registrado
+                                        </span>
+                                    </td>
+                                </tr>
+
+
+                                <!-- CITAS -->
+
+                                <tr>
+                                    <td>
+                                        <div class="cita-paciente-cell">
+                                            <div class="cita-avatar">
+                                                <i class="bx bx-calendar"></i>
+                                            </div>
+
+                                            <strong>
+                                                Citas médicas
+                                            </strong>
+                                        </div>
+                                    </td>
+
+                                    <td th:text="${totalCitas != null ? totalCitas : 0}">
+                                        0
+                                    </td>
+
+                                    <td>
+                                        <span class="cita-status cita-status-confirmada">
+                                            Registrado
+                                        </span>
+                                    </td>
+                                </tr>
+
+
+                                <!-- HISTORIALES -->
+
+                                <tr>
+                                    <td>
+                                        <div class="cita-paciente-cell">
+                                            <div class="cita-avatar">
+                                                <i class="bx bx-notepad"></i>
+                                            </div>
+
+                                            <strong>
+                                                Historiales médicos
+                                            </strong>
+                                        </div>
+                                    </td>
+
+                                    <td th:text="${totalHistoriales != null ? totalHistoriales : 0}">
+                                        0
+                                    </td>
+
+                                    <td>
+                                        <span class="cita-status cita-status-confirmada">
+                                            Registrado
+                                        </span>
+                                    </td>
+                                </tr>
+
+
+                                <!-- MEDICAMENTOS -->
+
+                                <tr>
+                                    <td>
+                                        <div class="cita-paciente-cell">
+                                            <div class="cita-avatar">
+                                                <i class="bx bx-capsule"></i>
+                                            </div>
+
+                                            <strong>
+                                                Medicamentos
+                                            </strong>
+                                        </div>
+                                    </td>
+
+                                    <td th:text="${totalMedicamentos != null ? totalMedicamentos : 0}">
+                                        0
+                                    </td>
+
+                                    <td>
+                                        <span class="cita-status cita-status-confirmada">
+                                            Registrado
+                                        </span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- INFORMACIÓN -->
+                <!-- ================================= -->
+
+                <div class="card analisis-section" style="margin-bottom:25px;">
+
+                    <div class="analisis-note">
+
+                        <i class="bx bx-info-circle"></i>
+
+                        <div>
+                            <h3 class="section-title-compact">
+                                Información del análisis
+                            </h3>
+
+                            <p class="muted-text-sm">
+                                Los indicadores se actualizan al recargar
+                                la página con los datos proporcionados
+                                por el servidor de ClinGuard.
+                                Los gráficos sin datos disponibles
+                                permanecen vacíos.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ======================================== -->
+    <!-- DATOS PROPORCIONADOS POR SPRING BOOT -->
+    <!-- ======================================== -->
+
+    <script th:inline="javascript">
+
+        const datosAnalisis = {
+
+            actividadDias:
+            /*[[${actividadDias}]]*/[],
+
+            actividadCitas:
+            /*[[${actividadCitas}]]*/[],
+
+            actividadHistoriales:
+            /*[[${actividadHistoriales}]]*/[],
+
+            citasPorEstado:
+            /*[[${citasPorEstado}]]*/ {},
+
+            meses:
+            /*[[${meses}]]*/[],
+
+            pacientesPorMes:
+            /*[[${pacientesPorMes}]]*/[],
+
+            historialesPorMes:
+            /*[[${historialesPorMes}]]*/[]
+
+        };
+
+    </script>
+
+
+    <!-- ======================================== -->
+    <!-- GRÁFICAS DINÁMICAS -->
+    <!-- ======================================== -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            if (typeof Chart === "undefined") {
+                console.error("No se pudo cargar Chart.js");
+                return;
+            }
+
+            // =====================================
+            // CONFIGURACIÓN GENERAL
+            // =====================================
+
+            Chart.defaults.color = "#9ca3af";
+
+            Chart.defaults.borderColor =
+                "rgba(148, 163, 184, 0.12)";
+
+            Chart.defaults.font.family =
+                "Inter, Arial, sans-serif";
+
+
+            // =====================================
+            // FUNCIONES AUXILIARES
+            // =====================================
+
+            function arreglo(valor) {
+                return Array.isArray(valor) ? valor : [];
+            }
+
+            function mapa(valor) {
+                return valor && typeof valor === "object"
+                    && !Array.isArray(valor)
+                    ? valor
+                    : {};
+            }
+
+            function numero(valor) {
+                const n = Number(valor);
+                return Number.isFinite(n) ? n : 0;
+            }
+
+            function serieNumerica(valor) {
+                return arreglo(valor).map(numero);
+            }
+
+            function tieneDatos(...series) {
+                return series.some(serie =>
+                    serie.some(valor => numero(valor) !== 0)
+                );
+            }
+
+            function mostrarSinDatos(id) {
+
+                const canvas = document.getElementById(id);
+
+                if (!canvas) return;
+
+                canvas.style.display = "none";
+
+                const aviso = document.createElement("div");
+
+                aviso.className = "analisis-empty";
+
+                aviso.textContent =
+                    "No hay registros disponibles para este período.";
+
+                canvas.parentElement.appendChild(aviso);
+            }
+
+            function crearGrafica(id, configuracion, hayDatos) {
+
+                const canvas = document.getElementById(id);
+
+                if (!canvas) return;
+
+                if (!hayDatos) {
+                    mostrarSinDatos(id);
+                    return;
+                }
+
+                new Chart(canvas, configuracion);
+            }
+
+
+            // =====================================
+            // 1. ACTIVIDAD SEMANAL
+            // =====================================
+
+            const dias = arreglo(
+                datosAnalisis.actividadDias
+            );
+
+            const citasSemana = serieNumerica(
+                datosAnalisis.actividadCitas
+            );
+
+            const historialesSemana = serieNumerica(
+                datosAnalisis.actividadHistoriales
+            );
+
+            crearGrafica(
+                "graficoActividad",
+                {
+                    type: "line",
+
+                    data: {
+                        labels: dias,
+
+                        datasets: [
+                            {
+                                label: "Citas",
+
+                                data: citasSemana,
+
+                                borderColor: "#3b82f6",
+
+                                backgroundColor:
+                                    "rgba(59,130,246,0.12)",
+
+                                fill: true,
+
+                                tension: 0.4,
+
+                                borderWidth: 3,
+
+                                pointRadius: 4,
+
+                                pointHoverRadius: 6
+                            },
+
+                            {
+                                label: "Historias clínicas",
+
+                                data: historialesSemana,
+
+                                borderColor: "#8b5cf6",
+
+                                backgroundColor:
+                                    "rgba(139,92,246,0.08)",
+
+                                fill: true,
+
+                                tension: 0.4,
+
+                                borderWidth: 3,
+
+                                pointRadius: 4,
+
+                                pointHoverRadius: 6
+                            }
+                        ]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+
+                        interaction: {
+                            intersect: false,
+                            mode: "index"
+                        },
+
+                        plugins: {
+                            legend: {
+                                position: "top",
+                                align: "end",
+
+                                labels: {
+                                    usePointStyle: true,
+                                    boxWidth: 8,
+                                    padding: 18
+                                }
+                            }
+                        },
+
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            },
+
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                },
+                dias.length > 0 &&
+                tieneDatos(citasSemana, historialesSemana)
+            );
+
+
+            // =====================================
+            // 2. CITAS POR ESTADO
+            // =====================================
+
+            const estados = mapa(
+                datosAnalisis.citasPorEstado
+            );
+
+            const etiquetasEstados =
+                Object.keys(estados);
+
+            const valoresEstados =
+                Object.values(estados).map(numero);
+
+            const coloresEstados =
+                etiquetasEstados.map(estado => {
+
+                    const clave = String(estado)
+                        .toUpperCase()
+                        .trim();
+
+                    if (clave.includes("PROGRAM") ||
+                        clave.includes("PENDIENT")) {
+                        return "#f59e0b";
+                    }
+
+                    if (clave.includes("CONFIRM")) {
+                        return "#3b82f6";
+                    }
+
+                    if (clave.includes("ATEND") ||
+                        clave.includes("COMPLET") ||
+                        clave.includes("FINALIZ")) {
+                        return "#10b981";
+                    }
+
+                    if (clave.includes("CANCEL")) {
+                        return "#ef4444";
+                    }
+
+                    return "#64748b";
+                });
+
+            crearGrafica(
+                "graficoCitas",
+                {
+                    type: "doughnut",
+
+                    data: {
+                        labels: etiquetasEstados,
+
+                        datasets: [{
+                            data: valoresEstados,
+
+                            backgroundColor: coloresEstados,
+
+                            borderWidth: 0,
+
+                            hoverOffset: 8
+                        }]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: "68%",
+
+                        plugins: {
+                            legend: {
+                                position: "bottom",
+
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            }
+                        }
+                    }
+                },
+                tieneDatos(valoresEstados)
+            );
+
+
+            // =====================================
+            // ACTUALIZAR RESUMEN POR ESTADO
+            // =====================================
+
+            function contarEstados(fragmentos) {
+
+                return Object.entries(estados)
+                    .filter(([clave]) =>
+                        fragmentos.some(fragmento =>
+                            clave.toUpperCase()
+                                .includes(fragmento)
+                        )
+                    )
+                    .reduce(
+                        (total, [, valor]) =>
+                            total + numero(valor),
+                        0
+                    );
+            }
+
+            function actualizarContador(id, valor) {
+
+                const elemento =
+                    document.getElementById(id);
+
+                if (elemento && etiquetasEstados.length > 0) {
+                    elemento.textContent = valor;
+                }
+            }
+
+            actualizarContador(
+                "citasProgramadas",
+                contarEstados(["PROGRAM", "PENDIENT"])
+            );
+
+            actualizarContador(
+                "citasConfirmadas",
+                contarEstados(["CONFIRM"])
+            );
+
+            actualizarContador(
+                "citasAtendidas",
+                contarEstados(["ATEND", "COMPLET", "FINALIZ"])
+            );
+
+            actualizarContador(
+                "citasCanceladas",
+                contarEstados(["CANCEL"])
+            );
+
+
+            // =====================================
+            // 3. PACIENTES POR MES
+            // =====================================
+
+            const meses = arreglo(
+                datosAnalisis.meses
+            );
+
+            const pacientesMes = serieNumerica(
+                datosAnalisis.pacientesPorMes
+            );
+
+            crearGrafica(
+                "graficoPacientes",
+                {
+                    type: "bar",
+
+                    data: {
+                        labels: meses,
+
+                        datasets: [{
+                            label: "Nuevos pacientes",
+
+                            data: pacientesMes,
+
+                            backgroundColor: "#10b981",
+
+                            borderRadius: 7,
+
+                            borderSkipped: false
+                        }]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+
+                                ticks: {
+                                    precision: 0
+                                }
+                            },
+
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                },
+                meses.length > 0 &&
+                tieneDatos(pacientesMes)
+            );
+
+
+            // =====================================
+            // 4. HISTORIALES POR MES
+            // =====================================
+
+            const historialesMes = serieNumerica(
+                datosAnalisis.historialesPorMes
+            );
+
+            crearGrafica(
+                "graficoHistoriales",
+                {
+                    type: "bar",
+
+                    data: {
+                        labels: meses,
+
+                        datasets: [{
+                            label: "Registros clínicos",
+
+                            data: historialesMes,
+
+                            backgroundColor: "#8b5cf6",
+
+                            borderRadius: 7,
+
+                            borderSkipped: false
+                        }]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+
+                                ticks: {
+                                    precision: 0
+                                }
+                            },
+
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                },
+                meses.length > 0 &&
+                tieneDatos(historialesMes)
+            );
+
+        });
+
+    </script>
+
+</body>
+
+</html>

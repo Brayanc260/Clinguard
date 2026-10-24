@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description"
+    content="ClinGuard reúne pacientes, citas, historias clínicas, medicamentos y conversiones en una plataforma de gestión clínica.">
+
+  <title>ClinGuard | Gestión clínica</title>
+
+  <link rel="stylesheet" href="/css/landing.css" th:href="@{/css/landing.css}">
+
+  <script src="/js/theme.js" th:src="@{/js/theme.js}"></script>
+</head>
+
+<body>
+
+  <a class="skip-link" href="#contenido">
+    Saltar al contenido
+  </a>
+
+  <!-- NAVEGACIÓN -->
+  <header class="header">
+    <nav class="navbar container" aria-label="Navegación principal">
+
+      <a class="logo" href="/" th:href="@{/}" aria-label="ClinGuard, inicio">
+
+        <img class="landing-logo logo-claro" src="/img/logo-claro.png" th:src="@{/img/logo-claro.png}" alt="ClinGuard">
+
+        <img class="landing-logo logo-oscuro" src="/img/logo-oscuro.png" th:src="@{/img/logo-oscuro.png}"
+          alt="ClinGuard">
+      </a>
+
+      <div class="nav-links">
+        <a href="#funcionalidades">Funcionalidades</a>
+        <a href="#seguridad">Seguridad</a>
+        <a href="#nosotros">Nosotros</a>
+      </div>
+
+      <a class="btn btn-primary nav-login" href="/login" th:href="@{/login}">
+        Iniciar sesión
+        <span aria-hidden="true">↗</span>
+      </a>
+
+    </nav>
+  </header>
+
+  <main id="contenido">
+
+    <!-- PRESENTACIÓN -->
+    <section class="hero container" id="inicio" aria-labelledby="hero-title">
+
+      <div class="hero-content">
+
+        <p class="eyebrow">
+          <span class="status-dot" aria-hidden="true"></span>
+          TU GESTIÓN CLÍNICA, EN UN SOLO LUGAR
+        </p>
+
+        <h1 id="hero-title">
+          Más orden.<br>
+          Más tiempo para<br>
+          <span>cuidar.</span>
+        </h1>
+
+        <p class="hero-description">
+          La información que necesitas, cuando la necesitas.
+          Organiza pacientes, citas e historias clínicas con
+          ClinGuard y simplifica el trabajo de cada día.
+        </p>
+
+        <div class="hero-buttons">
+
+          <a class="btn btn-primary" href="/login" th:href="@{/login}">
+            Entrar a ClinGuard
+            <span aria-hidden="true">→</span>
+          </a>
+
+          <a class="btn btn-secondary" href="#funcionalidades">
+            Conocer la plataforma
+          </a>
+
+        </div>
+
+        <p class="hero-kicker">Organización clínica para cada integrante del equipo.</p>
+
+        <div class="hero-features">
+          <span>✓ Información centralizada</span>
+          <span>✓ Acceso por roles</span>
+        </div>
+
+      </div>
+
+      <!-- PANEL ILUSTRATIVO -->
+      <div class="hero-visual">
+
+        <div class="preview-caption">
+          <span class="status-dot" aria-hidden="true"></span>
+          Un vistazo a tu espacio de trabajo
+        </div>
+
+        <div class="dashboard-preview"
+          aria-label="Vista del panel clínico; cifras reales únicamente para administradores autenticados">
+
+          <div class="preview-header">
+
+            <div class="preview-brand">
+              <img class="landing-logo logo-claro" src="/img/logo-claro.png" th:src="@{/img/logo-claro.png}"
+                alt="ClinGuard">
+
+              <img class="landing-logo logo-oscuro" src="/img/logo-oscuro.png" th:src="@{/img/logo-oscuro.png}"
+                alt="ClinGuard">
+            </div>
+
+            <span class="preview-tag" th:text="${datosReales} ? 'Datos de MongoDB' : 'Vista de ejemplo'">Vista de
+              ejemplo</span>
+
+          </div>
+
+          <div class="preview-welcome">
+            <span class="small-label">RESUMEN GENERAL</span>
+            <h2>Todo en orden, para empezar.</h2>
+            <p>Tu información clínica, conectada.</p>
+          </div>
+
+          <div class="preview-cards">
+
+            <div class="preview-card">
+              <span class="small-label">Pacientes</span>
+              <strong th:text="${datosReales} ? ${totalPacientesLanding} : '—'">—</strong>
+              <span>Registrados</span>
+            </div>
+
+            <div class="preview-card">
+              <span class="small-label">Citas</span>
+              <strong th:text="${datosReales} ? ${totalCitasLanding} : '—'">—</strong>
+              <span>Registradas</span>
+            </div>
+
+            <div class="preview-card">
+              <span class="small-label">Historiales</span>
+              <strong th:text="${datosReales} ? ${totalHistorialesLanding} : '—'">—</strong>
+              <span>Disponibles</span>
+            </div>
+
+          </div>
+
+          <div class="landing-mini-summary" th:if="${datosReales}">
+            <span class="mini-summary-icon" aria-hidden="true">✚</span>
+            <span><strong th:text="${totalMedicamentosLanding}">0</strong> medicamentos registrados</span>
+            <span class="mini-summary-tag">Inventario</span>
+          </div>
+
+          <div class="preview-content">
+
+            <h3 th:text="${datosReales} ? 'Resumen de operaciones' : 'Así se organiza tu trabajo'">Así se organiza tu
+              trabajo</h3>
+
+            <div class="activity-row">
+              <span class="activity-icon" aria-hidden="true">✓</span>
+
+              <div>
+                <strong>Historial médico</strong>
+                <p>Seguimiento y observaciones en un mismo lugar</p>
+              </div>
+            </div>
+
+            <div class="activity-row">
+              <span class="activity-icon" aria-hidden="true">+</span>
+
+              <div>
+                <strong>Gestión de citas</strong>
+                <p>Fecha, hora y personal asignado</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="preview-footer">
+            <p class="demo-note" th:if="${datosReales}">Indicadores agregados de MongoDB · Al cargar la página</p>
+            <p class="demo-note" th:unless="${datosReales}">Vista ilustrativa · Inicia sesión como administrador para
+              ver cifras reales</p>
+            <span class="live-indicator" th:if="${datosReales}"><span class="live-dot"></span> Conectado</span>
+          </div>
+
+        </div>
+
+        <div class="visual-note">
+          <span aria-hidden="true">✦</span>
+          Menos pasos. Información más organizada.
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- NOSOTROS -->
+    <section class="intro" id="nosotros" aria-labelledby="about-title">
+
+      <div class="container intro-inner">
+
+        <p class="eyebrow">ACERCA DE CLINGUARD</p>
+
+        <div>
+          <h2 id="about-title">
+            Una plataforma que acompaña<br>
+            tu trabajo diario.
+          </h2>
+
+          <p>
+            ClinGuard reúne las tareas de gestión clínica en un
+            espacio sencillo de consultar. Cada perfil accede a
+            las herramientas que le corresponden, desde la
+            administración hasta la consulta de citas e
+            historial personal.
+          </p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- FUNCIONALIDADES -->
+    <section class="features container" id="funcionalidades" aria-labelledby="features-title">
+
+      <div class="section-heading">
+        <p class="eyebrow">HERRAMIENTAS CONECTADAS</p>
+
+        <h2 id="features-title">
+          Cada tarea, en su lugar.
+        </h2>
+
+        <p>
+          Consulta y administra la información según los
+          permisos de tu perfil.
+        </p>
+      </div>
+
+      <div class="features-grid">
+
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">01</span>
+          <h3>Pacientes</h3>
+
+          <p>
+            Registra datos personales, contacto e información
+            básica de cada paciente.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">02</span>
+          <h3>Citas</h3>
+
+          <p>
+            Organiza fechas, horarios, motivos de consulta
+            y personal asignado.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">03</span>
+          <h3>Historias clínicas</h3>
+
+          <p>
+            Consulta motivos de atención, diagnósticos,
+            tratamientos y observaciones.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">04</span>
+          <h3>Medicamentos</h3>
+
+          <p>
+            Mantén organizado el catálogo de medicamentos
+            y sus presentaciones.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">05</span>
+          <h3>Conversiones</h3>
+
+          <p>
+            Accede a las herramientas de cálculo y conversión
+            para el personal autorizado.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">06</span>
+          <h3>Análisis</h3>
+
+          <p>
+            Consulta el panel de gráficos para explorar
+            la información del sistema.
+          </p>
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- SEGURIDAD -->
+    <section class="security container" id="seguridad" aria-labelledby="security-title">
+
+      <div class="security-panel">
+
+        <div class="security-content">
+
+          <p class="eyebrow">ACCESO Y SEGURIDAD</p>
+
+          <h2 id="security-title">
+            La información correcta.<br>
+            Para el perfil correcto.
+          </h2>
+
+          <p>
+            El acceso a ClinGuard requiere autenticación.
+            Los permisos de cada rol organizan las funciones
+            disponibles para administradores, médicos,
+            enfermeros, recepcionistas y usuarios.
+          </p>
+
+          <ul class="security-list">
+
+            <li>
+              <strong>Contraseñas protegidas</strong>
+              <span>Almacenamiento mediante BCrypt.</span>
+            </li>
+
+            <li>
+              <strong>Permisos por rol</strong>
+              <span>
+                Acceso a las funciones según el perfil de la cuenta.
+              </span>
+            </li>
+
+            <li>
+              <strong>Control de sesiones</strong>
+              <span>
+                Inicio, cierre y expiración de la sesión.
+              </span>
+            </li>
+
+          </ul>
+
+        </div>
+
+        <div class="roles-card">
+
+          <span class="roles-symbol" aria-hidden="true">+</span>
+
+          <h3>Un equipo. Distintos perfiles.</h3>
+          <p>Cada persona tiene su espacio dentro de ClinGuard.</p>
+
+          <div class="role-row">
+            <span>Administrador</span>
+            <span>Gestión</span>
+          </div>
+
+          <div class="role-row">
+            <span>Médico</span>
+            <span>Atención</span>
+          </div>
+
+          <div class="role-row">
+            <span>Enfermero</span>
+            <span>Seguimiento</span>
+          </div>
+
+          <div class="role-row">
+            <span>Recepcionista</span>
+            <span>Agenda y admisión</span>
+          </div>
+
+          <div class="role-row">
+            <span>Usuario</span>
+            <span>Consulta personal</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ACCESO -->
+    <section class="cta container" aria-labelledby="cta-title">
+
+      <div>
+        <p class="eyebrow">EMPIEZA POR LO ESENCIAL</p>
+
+        <h2 id="cta-title">
+          Tu próximo paso, más organizado.
+        </h2>
+
+        <p>
+          Ingresa con tu cuenta y accede a tu espacio de trabajo.
+        </p>
+      </div>
+
+      <a class="btn btn-primary" href="/login" th:href="@{/login}">
+        Iniciar sesión
+        <span aria-hidden="true">→</span>
+      </a>
+
+    </section>
+
+  </main>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="footer container">
+
+    <a class="logo" href="/" th:href="@{/}" aria-label="ClinGuard, inicio">
+
+      <img class="landing-logo logo-claro" src="/img/logo-claro.png" th:src="@{/img/logo-claro.png}" alt="ClinGuard">
+
+      <img class="landing-logo logo-oscuro" src="/img/logo-oscuro.png" th:src="@{/img/logo-oscuro.png}" alt="ClinGuard">
+    </a>
+
+    <p>Gestión clínica en un solo lugar.</p>
+    <p>© 2026 ClinGuard</p>
+
+  </footer>
+
+</body>
+
+</html>
