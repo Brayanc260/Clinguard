@@ -7,6 +7,13 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.List;
+
+import com.mycompany.clinica.entity.Paciente;
 import java.util.Objects;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -63,7 +70,7 @@ public class DashboardController {
     }
 
     // =====================================================
-    // DASHBOARD SEGÃšN EL ROL
+    // DASHBOARD SEGÚN EL ROL
     // =====================================================
 
     @GetMapping("/dashboard")
@@ -73,7 +80,7 @@ public class DashboardController {
             Model model) {
 
         // =============================================
-        // VALIDAR AUTENTICACIÃ“N
+        // VALIDAR AUTENTICACIÓN
         // =============================================
 
         if (authentication == null
@@ -128,7 +135,7 @@ public class DashboardController {
         }
 
         // =============================================
-        // DASHBOARD MÃ‰DICO
+        // DASHBOARD MÉDICO
         // =============================================
 
         if (esMedico) {
@@ -141,6 +148,7 @@ public class DashboardController {
         // =============================================
 
         if (esEnfermero) {
+            cargarEstadisticasEnfermero(model, username);
             return "enfermero-dashboard";
         }
 
@@ -158,7 +166,7 @@ public class DashboardController {
 
         if (esUsuario) {
 
-            // Consultar Ãºnicamente los registros
+            // Consultar únicamente los registros
             // del usuario autenticado.
 
             var citas = citaService.buscarPorUsuario(
@@ -176,7 +184,7 @@ public class DashboardController {
             LocalDate hoy = LocalDate.now(zona);
             LocalTime horaActual = LocalTime.now(zona);
 
-            // Ordenar prÃ³ximas citas por fecha y hora.
+            // Ordenar próximas citas por fecha y hora.
 
             var proximasCitas = citas
                     .stream()
@@ -231,14 +239,14 @@ public class DashboardController {
     }
 
     // =====================================================
-    // PANEL MÃ‰DICO: DATOS DEL MÃ‰DICO AUTENTICADO
+    // PANEL MÉDICO: DATOS DEL MÉDICO AUTENTICADO
     // =====================================================
     private void cargarEstadisticasMedico(Model model, String medicoUsername) {
         ZoneId zona = ZoneId.of("America/Bogota");
         LocalDate hoy = LocalDate.now(zona);
         LocalTime horaActual = LocalTime.now(zona);
 
-        // Filtrado por mÃ©dico desde los mÃ©todos ya existentes.
+        // Filtrado por médico desde los métodos ya existentes.
         var citasMedico = citaRepository.findByMedicoUsername(medicoUsername);
         var historialesMedico = historialRepository.findByMedicoUsername(medicoUsername);
 
@@ -261,7 +269,7 @@ public class DashboardController {
                 .limit(5)
                 .toList();
 
-        // Pacientes Ãºnicos con historia registrada por este mÃ©dico.
+        // Pacientes únicos con historia registrada por este médico.
         long pacientesConHistorial = historialesMedico.stream()
                 .map(h -> h.getPacienteId())
                 .filter(Objects::nonNull)
@@ -278,6 +286,82 @@ public class DashboardController {
         model.addAttribute("pacientesConHistorial", pacientesConHistorial);
         model.addAttribute("proximasCitas", proximasCitas);
         model.addAttribute("totalProximas", proximasCitas.size());
+    }
+
+    // =====================================================
+    // PANEL ENFERMERO: SOLO CITAS ASIGNADAS
+    // =====================================================
+    private void cargarEstadisticasEnfermero(Model model, String enfermeroUsername) {
+        ZoneId zona = ZoneId.of("America/Bogota");
+        LocalDate hoy = LocalDate.now(zona);
+        LocalTime ahora = LocalTime.now(zona);
+
+        List<Cita> citas = citaService.buscarPorEnfermero(enfermeroUsername);
+        long citasHoy = citas.stream()
+                .filter(c -> hoy.toString().equals(c.getFecha()))
+                .count();
+        long citasPendientes = citas.stream()
+                .filter(c -> "PROGRAMADA".equalsIgnoreCase(c.getEstado())
+                        || "PENDIENTE".equalsIgnoreCase(c.getEstado()))
+                .count();
+        long citasAtendidas = citas.stream()
+                .filter(c -> "ATENDIDA".equalsIgnoreCase(c.getEstado()))
+                .count();
+
+        List<Cita> proximas = citas.stream()
+                .filter(c -> esProximaCita(c, hoy, ahora))
+                .sorted(Comparator.comparing(Cita::getFecha)
+                        .thenComparing(Cita::getHora,
+                                Comparator.nullsLast(Comparator.naturalOrder())))
+                .limit(5)
+                .toList();
+
+        // Resolver pacientes por ID o documento exacto, nunca por nombre parecido.
+        Map<String, Paciente> porReferencia = new HashMap<>();
+        Set<String> ambiguas = new HashSet<>();
+        for (Paciente paciente : pacienteRepository.findAll()) {
+            String id = paciente.getId();
+            if (id != null && !id.isBlank()) {
+                registrarReferencia(porReferencia, ambiguas, id.trim(), paciente);
+            }
+            String documento = paciente.getDocumento();
+            if (documento != null && !documento.isBlank()) {
+                registrarReferencia(porReferencia, ambiguas, documento.trim(), paciente);
+            }
+        }
+
+        Map<String, String> nombres = new HashMap<>();
+        for (Cita cita : proximas) {
+            if (cita.getId() == null) continue;
+            String referencia = cita.getPacienteId();
+            if (referencia == null || referencia.isBlank()) {
+                referencia = cita.getUsuarioUsername();
+            }
+            if (referencia == null || referencia.isBlank()) continue;
+            referencia = referencia.trim();
+            if (ambiguas.contains(referencia)) continue;
+            Paciente paciente = porReferencia.get(referencia);
+            if (paciente == null) continue;
+            String nombre = ((paciente.getNombres() == null ? "" : paciente.getNombres())
+                    + " " + (paciente.getApellidos() == null ? "" : paciente.getApellidos())).trim();
+            if (!nombre.isBlank()) nombres.put(cita.getId(), nombre);
+        }
+
+        model.addAttribute("citasHoy", citasHoy);
+        model.addAttribute("citasPendientes", citasPendientes);
+        model.addAttribute("citasAtendidas", citasAtendidas);
+        model.addAttribute("totalCitas", citas.size());
+        model.addAttribute("proximasCitas", proximas);
+        model.addAttribute("nombresPacientesPorCita", nombres);
+    }
+
+    private void registrarReferencia(Map<String, Paciente> mapa,
+                                     Set<String> ambiguas,
+                                     String clave, Paciente paciente) {
+        Paciente anterior = mapa.putIfAbsent(clave, paciente);
+        if (anterior != null && !Objects.equals(anterior.getId(), paciente.getId())) {
+            ambiguas.add(clave);
+        }
     }
 
     // =====================================================
@@ -299,7 +383,7 @@ public class DashboardController {
     }
 
     // =====================================================
-    // COMPROBAR SI UNA CITA ESTÃ PRÃ“XIMA
+    // COMPROBAR SI UNA CITA ESTÁ PRÓXIMA
     // =====================================================
 
     private boolean esProximaCita(
@@ -332,13 +416,13 @@ public class DashboardController {
                     cita.getFecha()
             );
 
-            // Cita en un dÃ­a posterior.
+            // Cita en un día posterior.
 
             if (fecha.isAfter(hoy)) {
                 return true;
             }
 
-            // Excluir dÃ­as anteriores.
+            // Excluir días anteriores.
 
             if (!fecha.equals(hoy)) {
                 return false;
@@ -421,4 +505,3 @@ public class DashboardController {
         return "redirect:/dashboard";
     }
 }
-

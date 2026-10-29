@@ -158,6 +158,12 @@
                 <span>Panel Admin</span>
             </a>
 
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
+            </a>
+
 
             <a th:href="@{/notificaciones}" href="/notificaciones" class="nb">
                 <i class='bx bx-bell'></i>

@@ -27,6 +27,10 @@ public interface HistorialRepository
             Pageable pageable
     );
 
+    // Consultas por ID real del paciente: evita asociar mediante nombres o documentos.
+    List<Historial> findByPacienteId(String pacienteId);
+    Page<Historial> findByPacienteId(String pacienteId, Pageable pageable);
+
     // =========================================
     // HISTORIALES DE UN MÃ‰DICO
     // =========================================

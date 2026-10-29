@@ -6,7 +6,7 @@
 <head>
 
     <title>
-        ClinGuard â€” Conversiones MÃ©dicas
+        ClinGuard — Conversiones Médicas
     </title>
 
     <meta charset="utf-8">
@@ -168,10 +168,10 @@
 
 
         <!-- =====================================================
-         NAVEGACIÃ“N
+         NAVEGACIÓN
     ====================================================== -->
 
-        <nav class="sb-nav" aria-label="NavegaciÃ³n principal">
+        <nav class="sb-nav" aria-label="Navegación principal">
 
 
             <!-- DASHBOARD -->
@@ -186,13 +186,13 @@
             </a>
 
 
-            <!-- ANÃLISIS -->
+            <!-- ANÁLISIS -->
             <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
 
                 <i class="bx bx-line-chart"></i>
 
                 <span>
-                    AnÃ¡lisis
+                    Análisis
                 </span>
 
             </a>
@@ -204,7 +204,7 @@
                 <i class="bx bx-transfer"></i>
 
                 <span>
-                    Conversiones MÃ©dicas
+                    Conversiones Médicas
                 </span>
 
             </a>
@@ -240,7 +240,7 @@
                 <i class="bx bx-notepad"></i>
 
                 <span>
-                    Historial MÃ©dico
+                    Historial Médico
                 </span>
 
             </a>
@@ -279,6 +279,12 @@
                     Panel Admin
                 </span>
 
+            </a>
+
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
             </a>
 
 
@@ -340,7 +346,7 @@
 
                 <div class="u-rl" sec:authorize="hasRole('MEDICO')">
 
-                    MÃ©dico
+                    Médico
 
                 </div>
 
@@ -402,7 +408,7 @@
 
             <div class="h-title">
 
-                Conversiones MÃ©dicas
+                Conversiones Médicas
 
             </div>
 
@@ -431,7 +437,7 @@
 
                             <h2 class="section-title-compact">
 
-                                Conversor de unidades mÃ©dicas
+                                Conversor de unidades médicas
 
                             </h2>
 
@@ -440,22 +446,22 @@
 
                                 Realiza conversiones de unidades
                                 utilizadas en procedimientos y
-                                cÃ¡lculos clÃ­nicos.
+                                cálculos clínicos.
 
                             </p>
 
 
                             <p class="muted-text-sm" sec:authorize="hasRole('ENFERMERO')">
 
-                                Utiliza las herramientas de conversiÃ³n
-                                como apoyo en procedimientos de enfermerÃ­a.
+                                Utiliza las herramientas de conversión
+                                como apoyo en procedimientos de enfermería.
 
                             </p>
 
 
                             <p class="muted-text-sm" sec:authorize="hasRole('ADMIN')">
 
-                                Accede a las herramientas de conversiÃ³n
+                                Accede a las herramientas de conversión
                                 disponibles en ClinGuard.
 
                             </p>
@@ -560,7 +566,7 @@
 
                             <div class="m-lbl">
 
-                                DosificaciÃ³n
+                                Dosificación
 
                             </div>
 
@@ -574,7 +580,7 @@
 
 
                 <!-- =================================================
-                 SELECCIONAR CONVERSIÃ“N
+                 SELECCIONAR CONVERSIÓN
             ================================================== -->
 
                 <div class="card" style="margin-top: 25px;">
@@ -588,14 +594,14 @@
 
                             <h3 class="section-title-compact">
 
-                                Selecciona una conversiÃ³n
+                                Selecciona una conversión
 
                             </h3>
 
 
                             <p class="muted-text-sm">
 
-                                Haz clic sobre la operaciÃ³n
+                                Haz clic sobre la operación
                                 que deseas realizar.
 
                             </p>
@@ -633,10 +639,10 @@
                         <!-- G A MG -->
                         <div class="copt sel" data-op="g-mg">
 
-                            Gramos â†’ Miligramos
+                            Gramos → Miligramos
 
                             <span class="muted-text-sm">
-                                g â†’ mg
+                                g → mg
                             </span>
 
                         </div>
@@ -645,10 +651,10 @@
                         <!-- MG A G -->
                         <div class="copt" data-op="mg-g">
 
-                            Miligramos â†’ Gramos
+                            Miligramos → Gramos
 
                             <span class="muted-text-sm">
-                                mg â†’ g
+                                mg → g
                             </span>
 
                         </div>
@@ -657,10 +663,10 @@
                         <!-- UG A MG -->
                         <div class="copt" data-op="ug-mg">
 
-                            Microgramos â†’ Miligramos
+                            Microgramos → Miligramos
 
                             <span class="muted-text-sm">
-                                Âµg â†’ mg
+                                µg → mg
                             </span>
 
                         </div>
@@ -669,10 +675,10 @@
                         <!-- KG A G -->
                         <div class="copt" data-op="kg-g">
 
-                            Kilogramos â†’ Gramos
+                            Kilogramos → Gramos
 
                             <span class="muted-text-sm">
-                                kg â†’ g
+                                kg → g
                             </span>
 
                         </div>
@@ -681,10 +687,10 @@
                         <!-- G A KG -->
                         <div class="copt" data-op="g-kg">
 
-                            Gramos â†’ Kilogramos
+                            Gramos → Kilogramos
 
                             <span class="muted-text-sm">
-                                g â†’ kg
+                                g → kg
                             </span>
 
                         </div>
@@ -693,10 +699,10 @@
                         <!-- MG A KG -->
                         <div class="copt" data-op="mg-kg">
 
-                            Miligramos â†’ Kilogramos
+                            Miligramos → Kilogramos
 
                             <span class="muted-text-sm">
-                                mg â†’ kg
+                                mg → kg
                             </span>
 
                         </div>
@@ -731,10 +737,10 @@
                         <!-- ML A L -->
                         <div class="copt" data-op="ml-l">
 
-                            Mililitros â†’ Litros
+                            Mililitros → Litros
 
                             <span class="muted-text-sm">
-                                mL â†’ L
+                                mL → L
                             </span>
 
                         </div>
@@ -743,10 +749,10 @@
                         <!-- L A ML -->
                         <div class="copt" data-op="l-ml">
 
-                            Litros â†’ Mililitros
+                            Litros → Mililitros
 
                             <span class="muted-text-sm">
-                                L â†’ mL
+                                L → mL
                             </span>
 
                         </div>
@@ -757,7 +763,7 @@
 
 
                     <!-- =================================================
-                     DOSIFICACIÃ“N
+                     DOSIFICACIÓN
                 ================================================== -->
 
                     <h4 style="margin-top: 30px;">
@@ -784,7 +790,7 @@
                             Calcular mg/kg
 
                             <span class="muted-text-sm">
-                                dosis total Ã· peso
+                                dosis total ÷ peso
                             </span>
 
                         </div>
@@ -793,10 +799,10 @@
                         <!-- UG/KG -->
                         <div class="copt" data-op="dosis-ug-kg">
 
-                            Calcular Âµg/kg
+                            Calcular µg/kg
 
                             <span class="muted-text-sm">
-                                dosis total Ã· peso
+                                dosis total ÷ peso
                             </span>
 
                         </div>
@@ -808,7 +814,7 @@
                             Calcular dosis total
 
                             <span class="muted-text-sm">
-                                dosis/kg Ã— peso
+                                dosis/kg × peso
                             </span>
 
                         </div>
@@ -820,7 +826,7 @@
                             Volumen a administrar
 
                             <span class="muted-text-sm">
-                                dosis requerida y presentaciÃ³n
+                                dosis requerida y presentación
                             </span>
 
                         </div>
@@ -834,7 +840,7 @@
 
 
                 <!-- =================================================
-                 ÃREA DEL CÃLCULO
+                 ÁREA DEL CÁLCULO
             ================================================== -->
 
                 <div style="
@@ -861,7 +867,7 @@
 
                                 <h3 class="section-title-compact">
 
-                                    Datos de conversiÃ³n
+                                    Datos de conversión
 
                                 </h3>
 
@@ -918,7 +924,7 @@
 
                             <span class="muted-text-sm">
 
-                                Solo se utiliza en cÃ¡lculos
+                                Solo se utiliza en cálculos
                                 relacionados con dosis por peso.
 
                             </span>
@@ -979,7 +985,7 @@
 
 
                         <!-- =================================================
-                         BOTÃ“N
+                         BOTÓN
                     ================================================== -->
 
                         <button type="button" class="btn-primary conversion-submit" style="
@@ -1021,7 +1027,7 @@
 
                                 <p class="muted-text-sm">
 
-                                    Resultado de la operaciÃ³n
+                                    Resultado de la operación
                                     seleccionada.
 
                                 </p>
@@ -1064,7 +1070,7 @@
                                 margin-bottom: 10px;
                             ">
 
-                                â€”
+                                —
 
                             </div>
 
@@ -1072,7 +1078,7 @@
                             <div id="semaforo-observacion" class="semaforo-obs"></div>
                             <div class="res-sub" id="res-unit">
 
-                                Selecciona una conversiÃ³n
+                                Selecciona una conversión
                                 e ingresa un valor.
 
                             </div>
@@ -1089,9 +1095,9 @@
 
 
 
-                <!-- VINCULACIÃ“N OPCIONAL A PACIENTE Y GUARDADO EN MONGODB -->
+                <!-- VINCULACIÓN OPCIONAL A PACIENTE Y GUARDADO EN MONGODB -->
                 <div class="card conv-patient-panel" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')">
-                    <h3 class="section-title-compact"><i class="bx bx-user-check"></i> Vincular conversiÃ³n a paciente
+                    <h3 class="section-title-compact"><i class="bx bx-user-check"></i> Vincular conversión a paciente
                     </h3>
                     <p class="muted-text-sm">Puedes calcular sin seleccionar un paciente. Para guardar el resultado,
                         selecciona un paciente registrado.</p>
@@ -1100,9 +1106,6 @@
                               <label for="conv-medicamento">Farmaco / Medicamento de control</label>
                               <select id="conv-medicamento">
                                   <option value="">Seleccionar medicamento del vademecum</option>
-                                  <option th:each="m : " th:value=""
-                                      th:data-min="" th:data-max=""
-                                      th:text=""></option>
                               </select>
                           </div>
                         <div class="form-group">
@@ -1117,22 +1120,22 @@
                             <select id="conv-paciente">
                                 <option value="">Seleccionar paciente</option>
                                 <option th:each="p : ${pacientesConversion}" th:value="${p.id}"
-                                    th:text="${p.nombre + ' Â· ' + p.documento}" th:data-peso="${p.pesoKg}">Paciente de ejemplo</option>
+                                    th:text="${p.nombre + ' · ' + p.documento}" th:data-peso="${p.pesoKg}">Paciente de ejemplo</option>
                             </select>
                         </div>
                     </div>
                     <div class="conv-save-row">
                         <button class="btn-primary" id="conv-guardar" type="button" disabled>
-                            <i class="bx bx-save"></i> Guardar conversiÃ³n
+                            <i class="bx bx-save"></i> Guardar conversión
                         </button>
                         <span id="conv-estado-guardado" class="conv-save-msg" role="status" aria-live="polite"></span>
                     </div>
-                    <p class="muted-text-sm" style="margin-top:12px">Los cÃ¡lculos de dosificaciÃ³n son orientativos;
-                        verifica la prescripciÃ³n y los datos clÃ­nicos antes de su uso.</p>
+                    <p class="muted-text-sm" style="margin-top:12px">Los cálculos de dosificación son orientativos;
+                        verifica la prescripción y los datos clínicos antes de su uso.</p>
                 </div>
 
                 <!-- =================================================
-                 GUÃA DOSIFICACIÃ“N
+                 GUÍA DOSIFICACIÓN
             ================================================== -->
 
                 <div class="card" style="margin-top: 25px;">
@@ -1146,7 +1149,7 @@
 
                             <h3 class="section-title-compact">
 
-                                Â¿CÃ³mo usar los cÃ¡lculos de dosis?
+                                ¿Cómo usar los cálculos de dosis?
 
                             </h3>
 
@@ -1172,15 +1175,15 @@
 
                             <strong>
 
-                                Calcular mg/kg o Âµg/kg
+                                Calcular mg/kg o µg/kg
 
                             </strong>
 
 
                             <p class="muted-text-sm">
 
-                                En â€œValorâ€ escribe la dosis total
-                                y en â€œPeso del pacienteâ€ escribe
+                                En “Valor” escribe la dosis total
+                                y en “Peso del paciente” escribe
                                 el peso correspondiente.
 
                             </p>
@@ -1201,7 +1204,7 @@
 
                             <p class="muted-text-sm">
 
-                                En â€œValorâ€ escribe la dosis indicada
+                                En “Valor” escribe la dosis indicada
                                 por kilogramo y registra el peso
                                 del paciente.
 
@@ -1223,7 +1226,7 @@
 
                             <p class="muted-text-sm">
 
-                                En â€œValorâ€ escribe la dosis requerida.
+                                En “Valor” escribe la dosis requerida.
                                 Luego completa dosis disponible
                                 y volumen disponible.
 
@@ -1247,7 +1250,7 @@
 
                                 Para gramos, miligramos, kilogramos,
                                 litros o mililitros solo debes utilizar
-                                el campo â€œValorâ€.
+                                el campo “Valor”.
 
                             </p>
 
@@ -1301,7 +1304,7 @@
                                 Verifica siempre las unidades,
                                 concentraciones y valores utilizados
                                 antes de aplicar cualquier resultado
-                                en un procedimiento clÃ­nico.
+                                en un procedimiento clínico.
 
                             </p>
 
@@ -1343,39 +1346,10 @@
             const resultado = document.getElementById('res-val');
             const unidad = document.getElementById('res-unit');
             if (!select || !btn) return;
-            // Mantener una copia de todas las opciones. En algunos navegadores
-            // option.hidden NO oculta de forma fiable las entradas de un select.
-            const pacientes = Array.from(select.options).slice(1).map(op => ({
-                id: op.value,
-                label: op.textContent.trim(),
-                search: op.textContent.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim()
-            }));
-            const estadoBusqueda = document.getElementById('conv-busqueda-estado');
             let calculoVigente = false;
             const msg = (texto, tipo = '') => { estado.textContent = texto; estado.dataset.kind = tipo; };
             const actualizarBoton = () => { btn.disabled = !select.value || !calculoVigente; };
-            const normalizar = texto => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
-            function filtrarPacientes() {
-                const q = normalizar(filtro.value);
-                const anterior = select.value;
-                const coincidencias = pacientes.filter(p => p.search.includes(q));
-                select.replaceChildren(new Option(
-                    coincidencias.length ? 'Seleccionar paciente' : 'No se encontraron pacientes', ''
-                ));
-                coincidencias.forEach(p => select.add(new Option(p.label, p.id)));
-                if (coincidencias.some(p => p.id === anterior)) {
-                    select.value = anterior;
-                } else if (q && coincidencias.length === 1) {
-                    // SelecciÃ³n automÃ¡tica solo cuando hay un resultado inequÃ­voco.
-                    select.value = coincidencias[0].id;
-                }
-                estadoBusqueda.textContent = coincidencias.length === 0
-                    ? 'No hay pacientes que coincidan con la bÃºsqueda.'
-                    : `${coincidencias.length} paciente(s) encontrado(s).`;
-                actualizarBoton();
-            }
-            filtro.addEventListener('input', filtrarPacientes);
-            filtrarPacientes();
+            // El filtrado y la selección de pacientes los administra conversor.js.
             select.addEventListener('change', actualizarBoton);
             function invalidar() { calculoVigente = false; actualizarBoton(); msg(''); }
             for (const id of ['conv-val', 'pesoPaciente', 'dosisDisponible', 'volumenDisponible'])
@@ -1385,14 +1359,14 @@
                 // El conversor existente actualiza el resultado en su listener.
                 queueMicrotask(() => {
                     const t = (resultado?.textContent || '').trim();
-                    calculoVigente = t !== '' && t !== 'â€”' && !/error|invÃ¡lid|indefinid|nan|infinity/i.test(t);
+                    calculoVigente = t !== '' && t !== '—' && !/error|inválid|indefinid|nan|infinity/i.test(t);
                     actualizarBoton();
                 });
             });
             btn.addEventListener('click', async () => {
                 if (btn.disabled) return;
                 const op = document.querySelector('.copt.sel')?.dataset.op;
-                if (!op) { msg('Selecciona una operaciÃ³n de conversiÃ³n.', 'error'); return; }
+                if (!op) { msg('Selecciona una operación de conversión.', 'error'); return; }
                 const num = id => { const v = document.getElementById(id)?.value; return v === '' ? null : Number(v); };
                 const datos = {
                     pacienteId: select.value, operacion: op, valor: num('conv-val'),
@@ -1409,8 +1383,8 @@
                         body: JSON.stringify(datos)
                     });
                     const json = await res.json().catch(() => ({}));
-                    if (!res.ok) throw new Error(json.error || 'No se pudo guardar la conversiÃ³n');
-                    msg('ConversiÃ³n guardada correctamente en MongoDB.', 'ok');
+                    if (!res.ok) throw new Error(json.error || 'No se pudo guardar la conversión');
+                    msg('Conversión guardada correctamente en MongoDB.', 'ok');
                     calculoVigente = false;
                 } catch (err) { msg(err.message || 'Error al guardar', 'error'); actualizarBoton(); }
             });

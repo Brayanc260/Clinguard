@@ -281,122 +281,83 @@
 
 
                 <!-- =================================================
-                 TARJETAS
+                 INDICADORES DEL ENFERMERO
+                 Estos valores vienen del DashboardController.
+                 Si todavía no se cargaron, se muestra "—" (no cero).
             ================================================== -->
-
                 <div class="grid-4" style="margin-top: 25px;">
-
-
-                    <!-- PACIENTES -->
                     <div class="m-card">
-
-
                         <div>
-
-
-                            <div class="m-val">
-
-                                <i class="bx bx-user"></i>
-
-                            </div>
-
-
-                            <div class="m-lbl">
-
-                                Pacientes
-
-                            </div>
-
-
+                            <div class="m-val" th:text="${citasHoy != null ? citasHoy : '—'}">—</div>
+                            <div class="m-lbl">Mis citas de hoy</div>
+                            <p class="muted-text-sm">Citas asignadas para hoy</p>
                         </div>
-
-
+                        <i class="bx bx-calendar-check" aria-hidden="true" style="font-size:27px"></i>
                     </div>
-
-
-                    <!-- CITAS -->
                     <div class="m-card">
-
-
                         <div>
-
-
-                            <div class="m-val">
-
-                                <i class="bx bx-calendar"></i>
-
-                            </div>
-
-
-                            <div class="m-lbl">
-
-                                Citas
-
-                            </div>
-
-
+                            <div class="m-val" th:text="${citasPendientes != null ? citasPendientes : '—'}">—</div>
+                            <div class="m-lbl">Mis citas pendientes</div>
+                            <p class="muted-text-sm">Programadas o confirmadas</p>
                         </div>
-
-
+                        <i class="bx bx-time-five" aria-hidden="true" style="font-size:27px"></i>
                     </div>
-
-
-                    <!-- HISTORIAL -->
                     <div class="m-card">
-
-
                         <div>
-
-
-                            <div class="m-val">
-
-                                <i class="bx bx-notepad"></i>
-
-                            </div>
-
-
-                            <div class="m-lbl">
-
-                                Historiales
-
-                            </div>
-
-
+                            <div class="m-val" th:text="${citasAtendidas != null ? citasAtendidas : '—'}">—</div>
+                            <div class="m-lbl">Mis citas atendidas</div>
+                            <p class="muted-text-sm">Registradas como atendidas</p>
                         </div>
-
-
+                        <i class="bx bx-check-circle" aria-hidden="true" style="font-size:27px"></i>
                     </div>
-
-
-                    <!-- MEDICAMENTOS -->
                     <div class="m-card">
-
-
                         <div>
-
-
-                            <div class="m-val">
-
-                                <i class="bx bx-capsule"></i>
-
-                            </div>
-
-
-                            <div class="m-lbl">
-
-                                Medicamentos
-
-                            </div>
-
-
+                            <div class="m-val" th:text="${totalCitas != null ? totalCitas : '—'}">—</div>
+                            <div class="m-lbl">Total de mis citas</div>
+                            <p class="muted-text-sm">Asignadas a mi usuario</p>
                         </div>
-
-
+                        <i class="bx bx-calendar" aria-hidden="true" style="font-size:27px"></i>
                     </div>
-
-
                 </div>
 
+                <!-- Próximas citas: el controlador debe proporcionar proximasCitas
+                     filtradas por enfermero autenticado. -->
+                <div class="card" style="margin-top: 25px;">
+                    <div class="card-toolbar">
+                        <div>
+                            <h3 class="section-title-compact">Mis próximas citas</h3>
+                            <p class="muted-text-sm">Programación correspondiente a tu usuario.</p>
+                        </div>
+                        <a th:href="@{/citas}" class="btn-sec" style="text-decoration:none">Ver todas</a>
+                    </div>
+                    <div th:if="${proximasCitas == null}" class="muted-text-sm" style="margin-top:20px;">
+                        La agenda aparecerá cuando se conecte el dashboard con MongoDB.
+                    </div>
+                    <div th:if="${proximasCitas != null and #lists.isEmpty(proximasCitas)}"
+                         class="muted-text-sm" style="margin-top:20px;">
+                        No tienes próximas citas programadas.
+                    </div>
+                    <div th:if="${proximasCitas != null and !#lists.isEmpty(proximasCitas)}"
+                         style="overflow-x:auto; margin-top:20px;">
+                        <table style="width:100%;border-collapse:collapse;text-align:left;">
+                            <thead><tr>
+                                <th style="padding:12px">Fecha</th>
+                                <th style="padding:12px">Hora</th>
+                                <th style="padding:12px">Paciente</th>
+                                <th style="padding:12px">Estado</th>
+                            </tr></thead>
+                            <tbody>
+                                <tr th:each="cita : ${proximasCitas}">
+                                    <td style="padding:12px" th:text="${cita.fecha}">Fecha</td>
+                                    <td style="padding:12px" th:text="${cita.hora}">Hora</td>
+                                    <td style="padding:12px"
+                                        th:text="${nombresPacientesPorCita != null and nombresPacientesPorCita[cita.id] != null ? nombresPacientesPorCita[cita.id] : 'Paciente asignado'}">Paciente asignado</td>
+                                    <td style="padding:12px" th:text="${cita.estado}">Estado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
 
                 <!-- =================================================

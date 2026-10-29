@@ -579,7 +579,7 @@
                                 <!-- MÉDICO/ENFERMERO: no pueden reasignar una cita ajena. -->
                                 <div th:if="${cita.id != null}" sec:authorize="hasAnyRole('MEDICO','ENFERMERO')">
                                     <input type="text" readonly
-                                           th:value="${cita.pacienteId != null and !#strings.isEmpty(cita.pacienteId) ? 'Paciente registrado (asignación conservada)' : 'Paciente con cuenta (asignación conservada)'}">
+                                           th:value="${pacienteNombreDisplay}">
                                     <input type="hidden" th:field="*{pacienteId}">
                                 </div>
                                 <!-- Mantener el usuario de citas antiguas; no se solicita en nuevas citas. -->
@@ -600,9 +600,18 @@
                                 </label>
 
 
-                                <input type="text" id="medicoUsername" th:field="*{medicoUsername}"
-                                    placeholder="Username del médico" required>
-
+                                <select id="medicoUsername" th:field="*{medicoUsername}" required
+                                        th:disabled="${cita.id != null and !#authorization.expression('hasRole(''ADMIN'')')}">
+                                    <option value="">Selecciona un médico...</option>
+                                    <option th:each="medico : ${medicosRegistrados}"
+                                            th:value="${medico.username}"
+                                            th:text="${(medico.nombre != null ? medico.nombre : medico.username) + ' — ' + medico.username}">Médico</option>
+                                </select>
+                                <input th:if="${cita.id != null and !#authorization.expression('hasRole(''ADMIN'')')}"
+                                       type="hidden" th:field="*{medicoUsername}">
+                                <p class="muted-text-sm" th:if="${cita.id != null and !#authorization.expression('hasRole(''ADMIN'')')}">
+                                    Solo el administrador puede cambiar el médico asignado.
+                                </p>
 
                             </div>
 
@@ -621,16 +630,21 @@
                                 </label>
 
 
-                                <input type="text" id="enfermeroUsername" th:field="*{enfermeroUsername}"
-                                    placeholder="Username del enfermero">
-
-
-                                <p class="muted-text-sm">
-
-                                    Campo opcional.
-
+                                <select id="enfermeroUsername" th:field="*{enfermeroUsername}"
+                                        th:disabled="${cita.id != null and !#authorization.expression('hasRole(''ADMIN'')')}">
+                                    <option value="">Sin enfermero asignado</option>
+                                    <option th:each="enfermero : ${enfermerosRegistrados}"
+                                            th:value="${enfermero.username}"
+                                            th:text="${(enfermero.nombre != null ? enfermero.nombre : enfermero.username) + ' — ' + enfermero.username}">Enfermero</option>
+                                </select>
+                                <input th:if="${cita.id != null and !#authorization.expression('hasRole(''ADMIN'')')}"
+                                       type="hidden" th:field="*{enfermeroUsername}">
+                                <p class="muted-text-sm" th:if="${cita.id == null}" sec:authorize="hasRole('ENFERMERO')">
+                                    Al guardar, el sistema te asignará automáticamente como enfermero responsable.
                                 </p>
-
+                                <p class="muted-text-sm" th:if="${cita.id != null and !#authorization.expression('hasRole(''ADMIN'')')}">
+                                    Solo el administrador puede cambiar el enfermero asignado.
+                                </p>
 
                             </div>
 
@@ -799,9 +813,8 @@
 
                                 <p class="muted-text-sm">
 
-                                    Verifica que el username del paciente
-                                    y del personal asignado correspondan
-                                    a usuarios registrados en ClinGuard.
+                                    Selecciona un paciente activo y un médico registrado.
+                                    Las asignaciones se validan al guardar la cita.
 
                                 </p>
 
