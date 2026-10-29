@@ -3,7 +3,8 @@ package com.mycompany.clinica.dto;
 public class LoginResponse {
     private String token;
 
-    public LoginResponse() {}
+    public LoginResponse() {
+    }
 
     public LoginResponse(String token) {
         this.token = token;

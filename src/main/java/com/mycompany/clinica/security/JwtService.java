@@ -1,61 +1,110 @@
 package com.mycompany.clinica.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "9a4f2c3d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d1e2f";
+    private final SecretKey secretKey;
+    private final long expirationMillis;
+
+    public JwtService(
+            @Value("${app.jwt.secret}") String secret,
+            @Value("${app.jwt.expiration-ms}") long expirationMillis) {
+
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalArgumentException(
+                    "JWT_SECRET debe tener al menos 32 bytes UTF-8 para HS256");
+        }
+        if (expirationMillis <= 0) {
+            throw new IllegalArgumentException(
+                    "app.jwt.expiration-ms debe ser mayor que cero");
+        }
+
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.expirationMillis = expirationMillis;
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        if (userDetails == null || !userDetails.isEnabled()
+                || !userDetails.isAccountNonLocked()
+                || !userDetails.isAccountNonExpired()
+                || !userDetails.isCredentialsNonExpired()) {
+            throw new IllegalArgumentException("No se puede emitir JWT para este usuario");
+        }
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .distinct()
+                .toList();
+
+        String tokenId = UUID.randomUUID().toString();
+        Date now = new Date();
+        Date expiration = new Date(Math.addExact(now.getTime(), expirationMillis));
+
+        return Jwts.builder()
+                .id(tokenId)
+                .subject(userDetails.getUsername())
+                .claim("roles", roles)
+                .issuedAt(now)
+                .expiration(expiration)
+                .signWith(secretKey, Jwts.SIG.HS256)
+                .compact();
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+        return claimsResolver.apply(extractAllClaims(token));
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(getSignInKey())
-                .compact();
+    /** Identificador unico jti del token. Los tokens antiguos pueden no tenerlo. */
+    public String extractTokenId(String token) {
+        return extractClaim(token, Claims::getId);
+    }
+
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        if (token == null || token.isBlank() || userDetails == null) {
+            return false;
+        }
+        try {
+            Claims claims = extractAllClaims(token);
+            return userDetails.getUsername().equals(claims.getSubject())
+                    && claims.getExpiration() != null
+                    && claims.getExpiration().after(new Date())
+                    && userDetails.isEnabled()
+                    && userDetails.isAccountNonLocked()
+                    && userDetails.isAccountNonExpired()
+                    && userDetails.isCredentialsNonExpired();
+        } catch (JwtException | IllegalArgumentException ex) {
+            return false;
+        }
     }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(getSignInKey())
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

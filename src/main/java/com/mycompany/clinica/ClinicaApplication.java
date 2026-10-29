@@ -36,7 +36,7 @@ public class ClinicaApplication {
                 enfermero.setPassword(passwordEncoder.encode("enfermero123"));
                 enfermero.setRol(Rol.ENFERMERO);
                 usuarioRepository.save(enfermero);
-                
+
                 System.out.println("Usuarios por defecto creados en MongoDB (admin, medico, enfermero).");
             }
         };

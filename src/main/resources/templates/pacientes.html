@@ -37,6 +37,8 @@
       [data-theme="light"] .pacientes-search-clear { color: #557780; }
       .pacientes-page-counter { font-variant-numeric: tabular-nums; }
       #pacientes-tbody td { vertical-align: middle; }
+      .table-container { overflow-x: auto; }
+      .table-container table { min-width: 1100px; }
       #pacientes-tbody .cita-actions { display: flex; gap: 8px; align-items: center; }
       @media (max-width: 680px) { .pacientes-search-field { max-width: 100%; } }
     </style>
@@ -196,6 +198,12 @@
                     Panel Admin
                 </span>
 
+            </a>
+
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
             </a>
 
 
@@ -659,6 +667,10 @@
                                     </th>
 
 
+                                    <th>Peso (kg)</th>
+                                    <th>Estatura (cm)</th>
+                                    <th>IMC</th>
+
                                     <th>
                                         Acciones
                                     </th>
@@ -774,6 +786,11 @@
 
 
 
+                                    <!-- DATOS FÍSICOS DEL PACIENTE -->
+                                    <td th:text="${paciente.peso != null ? paciente.peso : '—'}">—</td>
+                                    <td th:text="${paciente.estatura != null ? paciente.estatura : '—'}">—</td>
+                                    <td th:text="${paciente.imc != null ? paciente.imc : '—'}">—</td>
+
                                     <!-- ACCIONES -->
 
                                     <td>
@@ -861,7 +878,7 @@
                                     or #lists.isEmpty(pacientes)}">
 
 
-                                    <td colspan="6">
+                                    <td colspan="9">
 
 
                                         <div class="citas-empty-content">

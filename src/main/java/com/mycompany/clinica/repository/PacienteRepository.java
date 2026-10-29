@@ -1,3 +1,4 @@
+
 package com.mycompany.clinica.repository;
 
 import com.mycompany.clinica.entity.Paciente;
@@ -8,17 +9,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PacienteRepository extends MongoRepository<Paciente, String> {
+public interface PacienteRepository
+        extends MongoRepository<Paciente, String> {
 
-    Optional<Paciente> findByIdentificacion(String identificacion);
-    boolean existsByIdentificacion(String identificacion);
-
-    boolean existsByDocumento(String documento);
+    // BUSCAR PACIENTE POR DOCUMENTO
     Optional<Paciente> findByDocumento(String documento);
 
+    // VERIFICAR SI EXISTE UN DOCUMENTO
+    boolean existsByDocumento(String documento);
+
+    // PACIENTES ACTIVOS
     List<Paciente> findByActivoTrue();
     long countByActivoTrue();
 
+    // PACIENTES INACTIVOS
     List<Paciente> findByActivoFalse();
     long countByActivoFalse();
 }

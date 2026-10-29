@@ -1,3 +1,4 @@
+
 package com.mycompany.clinica.config;
 
 import com.mycompany.clinica.repository.UsuarioRepository;
@@ -17,14 +18,14 @@ public class ApplicationConfig {
 
     private final UsuarioRepository repository;
 
-    // Constructor manual para evitar errores de inicialización
     public ApplicationConfig(UsuarioRepository repository) {
         this.repository = repository;
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByNombreUsuario(username)
+        return username -> repository.findByUsername(username)
+                .or(() -> repository.findByNombreUsuario(username))
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 
@@ -42,7 +43,8 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }

@@ -145,6 +145,12 @@
 
             </a>
 
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
+            </a>
+
 
 
 
@@ -676,6 +682,28 @@
                             </strong>
 
 
+                        </div>
+
+
+                        <!-- PESO -->
+                        <div>
+                            <span class="muted-text-sm">Peso</span>
+                            <strong style="display:block; margin-top:5px;"
+                                    th:text="${paciente.peso != null ? paciente.peso + ' kg' : 'Sin registrar'}">Sin registrar</strong>
+                        </div>
+
+                        <!-- ESTATURA -->
+                        <div>
+                            <span class="muted-text-sm">Estatura</span>
+                            <strong style="display:block; margin-top:5px;"
+                                    th:text="${paciente.estatura != null ? paciente.estatura + ' cm' : 'Sin registrar'}">Sin registrar</strong>
+                        </div>
+
+                        <!-- IMC -->
+                        <div>
+                            <span class="muted-text-sm">Índice de masa corporal (IMC)</span>
+                            <strong style="display:block; margin-top:5px;"
+                                    th:text="${paciente.imc != null ? paciente.imc + ' kg/m²' : 'Sin calcular'}">Sin calcular</strong>
                         </div>
 
 

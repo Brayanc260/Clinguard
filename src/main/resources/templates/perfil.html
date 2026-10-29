@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es"
       data-theme="dark"
@@ -129,6 +128,12 @@
                 <span>Panel Admin</span>
             </a>
 
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
+            </a>
+
             <a class="nb"
                th:href="@{/notificaciones}">
                 <i class="bx bx-bell"></i>
@@ -232,7 +237,8 @@
                 <div class="u-info">
 
                     <div class="u-nm"
-                         th:text="${usuario.nombre}">
+                         th:text="${usuario.nombre}"
+                          data-perfil-nombre>
                         Usuario
                     </div>
 
@@ -343,7 +349,7 @@
 
                     <div class="perfil-banner-info">
 
-                        <h2 th:text="${usuario.nombre}">
+                        <h2 th:text="${usuario.nombre}" data-perfil-nombre>
                             Nombre completo
                         </h2>
 
@@ -835,6 +841,40 @@
         </main>
 
     </div>
+
+    <!-- Corrige nombres que llegaron desde registros antiguos con caracteres mal codificados.
+         La solución permanente es corregir también el valor en MongoDB. -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            'use strict';
+            const nombreInput = document.getElementById('nombre');
+            if (!nombreInput) return;
+
+            function normalizarNombre(valor) {
+                if (!valor || !/[ÃÂâ]/.test(valor)) return valor;
+                const equivalencias = {
+                    'Ã¡': 'á', 'Ã©': 'é', 'Ã­': 'í', 'Ã³': 'ó', 'Ãº': 'ú',
+                    'Ã': 'Á', 'Ã‰': 'É', 'Ã': 'Í', 'Ã“': 'Ó', 'Ãš': 'Ú',
+                    'Ã±': 'ñ', 'Ã‘': 'Ñ', 'Ã¼': 'ü', 'Ãœ': 'Ü',
+                    'Â¿': '¿', 'Â¡': '¡', 'â€™': '’'
+                };
+                return valor.replace(/Ã.|Â.|â€™/g, secuencia => equivalencias[secuencia] || secuencia);
+            }
+
+            const nombreCorregido = normalizarNombre(nombreInput.value);
+            if (nombreCorregido !== nombreInput.value) {
+                nombreInput.value = nombreCorregido;
+            }
+            const nombreVisible = document.querySelectorAll('[data-perfil-nombre]');
+            function actualizarVista() {
+                nombreVisible.forEach(elemento => {
+                    elemento.textContent = nombreInput.value.trim() || 'Usuario';
+                });
+            }
+            actualizarVista();
+            nombreInput.addEventListener('input', actualizarVista);
+        });
+    </script>
 
 </body>
 </html>

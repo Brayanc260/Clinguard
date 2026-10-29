@@ -71,6 +71,16 @@ public class HistorialService {
         return historialRepository.findByUsuarioUsername(usuarioUsername, pageable);
     }
 
+    public List<Historial> buscarPorPacienteId(String pacienteId) {
+        if (pacienteId == null || pacienteId.isBlank()) return List.of();
+        return historialRepository.findByPacienteId(pacienteId);
+    }
+
+    public Page<Historial> buscarPorPacienteId(String pacienteId, Pageable pageable) {
+        if (pacienteId == null || pacienteId.isBlank()) return Page.empty(pageable);
+        return historialRepository.findByPacienteId(pacienteId, pageable);
+    }
+
     public List<Historial> buscarPorMedico(String medicoUsername) {
         return historialRepository.findByMedicoUsername(medicoUsername);
     }

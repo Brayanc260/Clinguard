@@ -44,4 +44,3 @@ public interface CitaRepository extends MongoRepository<Cita, String> {
 
         List<Cita> findByEstadoOrderByFechaAscHoraAsc(String estado);
 }
-

@@ -73,6 +73,8 @@ public class PageController {
                 String.valueOf(p.getOrDefault("documento", ""))
             );
 
+            Object peso = p.get("peso");
+            fila.put("pesoKg", peso == null ? "" : String.valueOf(peso));
             opciones.add(fila);
         }
 

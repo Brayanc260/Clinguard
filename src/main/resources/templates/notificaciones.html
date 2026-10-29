@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="es"
       data-theme="dark"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
@@ -61,7 +60,7 @@
 
         <!-- ANÁLISIS -->
         <a class="nb"
-           th:if="${esPersonalClinico == true}"
+           sec:authorize="hasAnyRole('ADMIN','MEDICO')"
            th:href="@{/analisis}">
             <i class="bx bx-line-chart" aria-hidden="true"></i>
             <span>Análisis</span>
@@ -111,7 +110,7 @@
 
         <!-- REPORTES -->
         <a class="nb"
-           th:if="${esPersonalClinico == true}"
+           sec:authorize="hasAnyRole('ADMIN','MEDICO')"
            th:href="@{/reportes}">
             <i class="bx bx-file" aria-hidden="true"></i>
             <span>Reportes</span>
@@ -124,6 +123,12 @@
             <i class="bx bx-shield-quarter" aria-hidden="true"></i>
             <span>Panel Admin</span>
         </a>
+
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" th:if="${esAdmin == true}">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
+            </a>
 
         <!-- NOTIFICACIONES -->
         <a class="nb active"
