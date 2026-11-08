@@ -78,10 +78,37 @@ public class PageController {
             opciones.add(fila);
         }
 
-        model.addAttribute("pacientesConversion", opciones);
+        model.addAttribute("pacientesConversion", opciones);  
+        // Medicamentos con rango de dosis para el semáforo
+List<Map<String, String>> meds = new ArrayList<>();
 
+List<Document> medicamentos = mongoTemplate.find(
+    new Query().with(Sort.by(Sort.Order.asc("nombre"))),
+    Document.class,
+    "medicamentos"
+);
+
+for (Document m : medicamentos) {
+    Object dosMin = m.get("dosisMinimaMgKg");
+    Object dosMax = m.get("dosisMaximaMgKg");
+
+    // Solo los que tienen rango definido
+    if (dosMin == null || dosMax == null) continue;
+
+    Map<String, String> med = new LinkedHashMap<>();
+    med.put("id", String.valueOf(m.get("_id")));
+    med.put("nombre", String.valueOf(m.getOrDefault("nombre", "")));
+    med.put("min", String.valueOf(dosMin));
+    med.put("max", String.valueOf(dosMax));
+    meds.add(med);
+}
+
+model.addAttribute("medicamentosConversion", meds);
         return "conversiones";
+        
     }
+    
+    
 
     // =========================================
     // ANÃƒÆ’Ã‚ÂLISIS

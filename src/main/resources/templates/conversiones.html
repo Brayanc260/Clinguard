@@ -1106,6 +1106,11 @@
                               <label for="conv-medicamento">Farmaco / Medicamento de control</label>
                               <select id="conv-medicamento">
                                   <option value="">Seleccionar medicamento del vademecum</option>
+                                  <option th:each="m : ${medicamentosConversion}"
+                                          th:value="${m.id}"
+                                          th:data-min="${m.min}"
+                                          th:data-max="${m.max}"
+                                          th:text="${m.nombre}">Medicamento</option>
                               </select>
                           </div>
                         <div class="form-group">
