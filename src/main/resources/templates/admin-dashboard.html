@@ -19,6 +19,35 @@
 
     <script th:src="@{/js/theme.js}"></script>
 
+    <style>
+        /* Estilos específicos para que las tarjetas de administración se vean como botones */
+        .admin-module-card {
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 140px;
+        }
+        
+        .admin-module-card:hover {
+            border-color: var(--primary, #00FFCC) !important;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-module-card h4 {
+            margin: 15px 0 5px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .admin-module-card p {
+            margin: 0;
+            line-height: 1.4;
+        }
+    </style>
+
 </head>
 
 
@@ -45,13 +74,13 @@
         <nav class="sb-nav" aria-label="Navegación principal">
 
 
-            <!-- DASHBOARD -->
+            <!-- DASHBOARD (AHORA PANEL ADMINISTRATIVO) -->
             <a class="nb active" th:href="@{/dashboard}">
 
                 <i class="bx bx-grid-alt"></i>
 
                 <span>
-                    Dashboard
+                    Panel Administrativo
                 </span>
 
             </a>
@@ -471,7 +500,7 @@
 
 
                         <!-- PANEL ADMIN -->
-                        <a th:href="@{/admin}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/admin}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-purple">
@@ -481,25 +510,17 @@
                             </div>
 
 
-                            <h4>
-
-                                Panel Admin
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Gestiona usuarios y permisos del sistema.
-
-                            </p>
+                            <div>
+                                <h4>Panel Admin</h4>
+                                <p class="muted-text-sm">Gestiona usuarios y permisos del sistema.</p>
+                            </div>
 
 
                         </a>
 
 
                         <!-- PACIENTES -->
-                        <a th:href="@{/pacientes}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/pacientes}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-blue">
@@ -509,25 +530,17 @@
                             </div>
 
 
-                            <h4>
-
-                                Pacientes
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Gestiona los pacientes registrados.
-
-                            </p>
+                            <div>
+                                <h4>Pacientes</h4>
+                                <p class="muted-text-sm">Gestiona los pacientes registrados.</p>
+                            </div>
 
 
                         </a>
 
 
                         <!-- CITAS -->
-                        <a th:href="@{/citas}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/citas}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-green">
@@ -537,25 +550,17 @@
                             </div>
 
 
-                            <h4>
-
-                                Citas
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Administra las citas médicas.
-
-                            </p>
+                            <div>
+                                <h4>Citas</h4>
+                                <p class="muted-text-sm">Administra las citas médicas.</p>
+                            </div>
 
 
                         </a>
 
 
                         <!-- HISTORIAL -->
-                        <a th:href="@{/historial}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/historial}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-orange">
@@ -565,25 +570,17 @@
                             </div>
 
 
-                            <h4>
-
-                                Historial Médico
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Consulta y administra historiales.
-
-                            </p>
+                            <div>
+                                <h4>Historial Médico</h4>
+                                <p class="muted-text-sm">Consulta y administra historiales.</p>
+                            </div>
 
 
                         </a>
 
 
                         <!-- MEDICAMENTOS -->
-                        <a th:href="@{/medicamentos}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/medicamentos}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-blue">
@@ -593,25 +590,17 @@
                             </div>
 
 
-                            <h4>
-
-                                Medicamentos
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Accede al módulo de medicamentos.
-
-                            </p>
+                            <div>
+                                <h4>Medicamentos</h4>
+                                <p class="muted-text-sm">Accede al módulo de medicamentos.</p>
+                            </div>
 
 
                         </a>
 
 
                         <!-- CONVERSIONES -->
-                        <a th:href="@{/conversiones}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/conversiones}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-green">
@@ -621,25 +610,17 @@
                             </div>
 
 
-                            <h4>
-
-                                Conversiones
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Accede al conversor médico.
-
-                            </p>
+                            <div>
+                                <h4>Conversiones</h4>
+                                <p class="muted-text-sm">Accede al conversor médico.</p>
+                            </div>
 
 
                         </a>
 
 
                         <!-- ANALISIS -->
-                        <a th:href="@{/analisis}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/analisis}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-purple">
@@ -649,25 +630,17 @@
                             </div>
 
 
-                            <h4>
-
-                                Análisis
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Consulta estadísticas del sistema.
-
-                            </p>
+                            <div>
+                                <h4>Análisis</h4>
+                                <p class="muted-text-sm">Consulta estadísticas del sistema.</p>
+                            </div>
 
 
                         </a>
 
 
                         <!-- REPORTES -->
-                        <a th:href="@{/reportes}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/reportes}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-orange">
@@ -677,25 +650,17 @@
                             </div>
 
 
-                            <h4>
-
-                                Reportes
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Genera y consulta reportes.
-
-                            </p>
+                            <div>
+                                <h4>Reportes</h4>
+                                <p class="muted-text-sm">Genera y consulta reportes.</p>
+                            </div>
 
 
                         </a>
 
 
                         <!-- PERFIL -->
-                        <a th:href="@{/perfil}" class="card" style="text-decoration:none;">
+                        <a th:href="@{/perfil}" class="card admin-module-card">
 
 
                             <div class="cita-stat-icon cita-stat-blue">
@@ -705,18 +670,10 @@
                             </div>
 
 
-                            <h4>
-
-                                Mi Perfil
-
-                            </h4>
-
-
-                            <p class="muted-text-sm">
-
-                                Consulta los datos de tu cuenta.
-
-                            </p>
+                            <div>
+                                <h4>Mi Perfil</h4>
+                                <p class="muted-text-sm">Consulta los datos de tu cuenta.</p>
+                            </div>
 
 
                         </a>
