@@ -630,7 +630,6 @@
 
                     </div>
 
-
                 </div>
 
 
@@ -671,8 +670,7 @@
 
                     <div class="reportes-categorias" style="
                         display: grid;
-                        grid-template-columns:
-                            repeat(3, minmax(0, 1fr));
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                         gap: 20px;
                         margin-top: 20px;
                     ">
@@ -682,7 +680,7 @@
                          PACIENTES
                     ================================================== -->
 
-                        <div class="card" sec:authorize="hasRole('ADMIN')">
+                        <div class="card reporte-card" sec:authorize="hasRole('ADMIN')">
 
 
                             <div style="
@@ -748,7 +746,7 @@
                          CITAS
                     ================================================== -->
 
-                        <div class="card">
+                        <div class="card reporte-card">
 
 
                             <div style="
@@ -782,7 +780,6 @@
 
                                     </span>
 
-
                                 </div>
 
 
@@ -814,7 +811,7 @@
                          HISTORIALES
                     ================================================== -->
 
-                        <div class="card">
+                        <div class="card reporte-card">
 
 
                             <div style="
@@ -876,7 +873,7 @@
 
 
                         <!-- REPORTE DE CONVERSIONES MÉDICAS -->
-                        <div class="card">
+                        <div class="card reporte-card">
                             <div style="display:flex;gap:15px;align-items:center;margin-bottom:18px;">
                                 <div class="cita-stat-icon cita-stat-blue">
                                     <i class="bx bx-transfer-alt"></i>
@@ -1367,6 +1364,23 @@
         #resultadoReporte table { width: 100%; }
         #resultadoReporte th, #resultadoReporte td { overflow-wrap: anywhere; }
         #estadoReporte:empty { display: none; }
+
+        /* ESTILOS PARA ALINEAR LAS TARJETAS DE REPORTES */
+        .reporte-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .reporte-card p {
+            flex-grow: 1; /* Hace que el texto ocupe el espacio disponible */
+            margin-bottom: 20px; /* Espacio antes del botón */
+        }
+
+        .reporte-card button {
+            margin-top: auto; /* Empuja el botón siempre hacia el fondo */
+            align-self: flex-start; /* Evita que el botón se estire al 100% */
+        }
 
         @media (max-width: 960px) {
             #page-reportes .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
