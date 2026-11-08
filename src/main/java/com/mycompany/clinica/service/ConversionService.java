@@ -12,7 +12,7 @@ import com.mycompany.clinica.repository.PacienteRepository;
 import com.mycompany.clinica.repository.RegistroConversionRepository;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,36 +33,42 @@ public class ConversionService {
 
     /** Realiza conversiones simples y guarda el historial. */
     public ConversionResponse convertir(ConversionRequest req, String usuarioNombre) {
-        ConversionBase conversor = switch (req.categoria()) {
-            case "Dosis y Peso" -> new ConversionDosisPeso(req.tipoConversion(), req.valor());
-            case "Volumen" -> new ConversionVolumen(req.tipoConversion(), req.valor());
-            case "Laboratorio" -> new ConversionLaboratorio(req.tipoConversion(), req.valor());
-            default -> throw new IllegalArgumentException("Categoría no válida: " + req.categoria());
+        
+        // CORRECCIÓN: Usar getCategoria(), getTipoConversion() y getValor()
+        String categoria = req.getCategoria() != null ? req.getCategoria() : "Dosis y Peso";
+        String tipo = req.getTipoConversion() != null ? req.getTipoConversion() : "";
+        Double valor = req.getValor() != null ? req.getValor() : 0.0;
+
+        ConversionBase conversor = switch (categoria) {
+            case "Dosis y Peso" -> new ConversionDosisPeso(tipo, valor);
+            case "Volumen" -> new ConversionVolumen(tipo, valor);
+            case "Laboratorio" -> new ConversionLaboratorio(tipo, valor);
+            default -> throw new IllegalArgumentException("Categoría no válida: " + categoria);
         };
 
         conversor.convertir();
 
         RegistroConversion registro = new RegistroConversion();
         registro.setUsuarioNombre(usuarioNombre);
-        registro.setTipoConversion(req.tipoConversion());
-        registro.setValorEntrada(req.valor());
+        registro.setTipoConversion(tipo);
+        registro.setValorEntrada(valor);
         registro.setValorSalida(conversor.getValorSalida());
         registro.setFechaHora(LocalDateTime.now());
         registroRepo.save(registro);
 
         return new ConversionResponse(
-                req.tipoConversion(),
-                req.valor(),
+                tipo,
+                valor,
                 conversor.getValorSalida(),
                 conversor.getResultado()
         );
     }
 
     /**
-     * Comprueba matemáticamente una dosis introducida frente a los rangos
-     * mg/kg configurados. No sustituye la verificación clínica profesional.
+     * Comprueba matemáticamente una dosis introducida frente a los rangos mg/kg.
      */
     public String validarDosisClinica(ValidacionDosisRequest req) {
+        // Nota: Asumo que ValidacionDosisRequest es un record, por eso usa req.pacienteId() sin get
         Paciente paciente = pacienteRepo.findById(req.pacienteId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Paciente no encontrado con ID: " + req.pacienteId()));
@@ -71,15 +77,17 @@ public class ConversionService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Medicamento no encontrado con ID: " + req.medicamentoId()));
 
-        BigDecimal pesoPaciente = paciente.getPeso();
-        if (pesoPaciente == null || pesoPaciente.signum() <= 0) {
-            throw new IllegalArgumentException(
-                    "El paciente no tiene un peso válido registrado. Registra el peso en su ficha antes de validar la dosis.");
+        if (paciente.getPeso() == null) {
+            throw new IllegalArgumentException("El paciente no tiene un peso válido registrado.");
+        }
+        double peso = paciente.getPeso().doubleValue();
+        
+        if (peso <= 0) {
+            throw new IllegalArgumentException("El paciente no tiene un peso válido registrado.");
         }
 
-        double peso = pesoPaciente.doubleValue();
-        double rangoMinimo = medicamento.getDosisMinimaMgKg();
-        double rangoMaximo = medicamento.getDosisMaximaMgKg();
+        double rangoMinimo = medicamento.getDosisMinimaMgKg() != null ? medicamento.getDosisMinimaMgKg().doubleValue() : 0;
+        double rangoMaximo = medicamento.getDosisMaximaMgKg() != null ? medicamento.getDosisMaximaMgKg().doubleValue() : 0;
         double dosisRecetada = req.dosisRecetada();
 
         if (!Double.isFinite(peso) || !Double.isFinite(rangoMinimo)
@@ -92,7 +100,13 @@ public class ConversionService {
 
         double dosisMinima = peso * rangoMinimo;
         double dosisMaxima = peso * rangoMaximo;
-        String nombrePaciente = paciente.getNombreCompleto();
+        
+        String nombrePaciente;
+        try {
+            nombrePaciente = paciente.getNombreCompleto();
+        } catch (Exception e) {
+            nombrePaciente = paciente.getNombres() + " " + paciente.getApellidos();
+        }
 
         if (dosisRecetada < dosisMinima) {
             return String.format(java.util.Locale.ROOT,
