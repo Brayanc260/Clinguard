@@ -201,7 +201,7 @@
         </div>
 
         <nav class="sb-nav" aria-label="Navegación principal">
-            <a class="nb" th:href="@{/dashboard}"><i class="bx bx-grid-alt"></i><span>Panel Administrativo</span></a>
+            </a>
             <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')"><i class="bx bx-line-chart"></i><span>Análisis</span></a>
             <a class="nb active" th:href="@{/conversiones}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')"><i class="bx bx-transfer"></i><span>Conversiones Médicas</span></a>
             <a class="nb" th:href="@{/pacientes}" sec:authorize="hasAnyRole('ADMIN','MEDICO','ENFERMERO')"><i class="bx bx-user"></i><span>Pacientes</span></a>
