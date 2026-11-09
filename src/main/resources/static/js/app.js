@@ -1,5 +1,5 @@
 // ==================== ESTADO GLOBAL ====================
-const API = 'http://localhost:8080/api';
+const API = '/api';
 let token = null, uRol = null, uName = null, darkMode = true;
 let curCat = 'Dosis y Peso', curTipo = 'Gramos a Miligramos';
 let allPacientes = [], allMedicamentos = [], listaPacientes = [];
