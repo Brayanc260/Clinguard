@@ -102,7 +102,8 @@ public class SecurityConfig {
                     }
                     String token = jwtService.generateToken(userDetails);
                     jwtCookieService.addJwtCookie(response, token);
-                    response.sendRedirect(request.getContextPath() + "/dashboard");
+                    // CORRECCIÓN: Redirección relativa pura para Codespaces
+                    response.sendRedirect("/dashboard");
                 })
                 .failureUrl("/login?error=true")
                 .permitAll()
@@ -123,6 +124,7 @@ public class SecurityConfig {
                     }
                     jwtCookieService.clearJwtCookie(response);
                 })
+                // CORRECCIÓN: Ruta relativa
                 .logoutSuccessUrl("/login?logout=true")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
@@ -130,8 +132,6 @@ public class SecurityConfig {
                 .permitAll()
             )
             .exceptionHandling(exception -> exception
-                // Responder directamente 403: un FORWARD de POST a /error/403
-                // generaba HttpRequestMethodNotSupportedException y terminaba en 500.
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Acceso denegado");
                 })
@@ -141,7 +141,8 @@ public class SecurityConfig {
                         response.setContentType("application/json;charset=UTF-8");
                         response.getWriter().write("{\"mensaje\":\"No autenticado\"}");
                     } else {
-                        response.sendRedirect(request.getContextPath() + "/login");
+                        // CORRECCIÓN: Ruta relativa
+                        response.sendRedirect("/login");
                     }
                 })
             )
