@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mycompany.clinica.entity.Cita;
+import com.mycompany.clinica.entity.Rol;
+import com.mycompany.clinica.entity.Usuario;
 import com.mycompany.clinica.entity.Paciente;
 import com.mycompany.clinica.repository.PacienteRepository;
+import com.mycompany.clinica.repository.UsuarioRepository;
 import com.mycompany.clinica.service.CitaService;
 import com.mycompany.clinica.service.NotificacionService;
 
@@ -34,19 +37,22 @@ public class CitaController {
     private final CitaService citaService;
     private final NotificacionService notificacionService;
     private final PacienteRepository pacienteRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public CitaController(
             CitaService citaService,
             NotificacionService notificacionService,
-            PacienteRepository pacienteRepository) {
+            PacienteRepository pacienteRepository,
+            UsuarioRepository usuarioRepository) {
 
         this.citaService = citaService;
         this.notificacionService = notificacionService;
         this.pacienteRepository = pacienteRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     // =====================================================
-    // MOSTRAR CITAS SEGÃšN EL ROL
+    // MOSTRAR CITAS SEGÚN EL ROL
     // =====================================================
 
     @GetMapping("/citas")
@@ -181,8 +187,9 @@ public class CitaController {
         model.addAttribute("cita", cita);
         model.addAttribute("estados", estados());
         // El formulario puede ofrecer un selector de pacientes registrados.
-        // La autorizaciÃ³n efectiva de cada operaciÃ³n se comprueba en el servidor.
+        // La autorización efectiva de cada operación se comprueba en el servidor.
         model.addAttribute("pacientesRegistrados", pacienteRepository.findAll());
+        cargarProfesionales(model);
 
         return "cita-form";
     }
@@ -202,7 +209,7 @@ public class CitaController {
         }
 
         // La identidad del profesional se establece en el servidor ANTES de validar.
-        // No se confÃ­a en el campo medicoUsername enviado por el navegador.
+        // No se confía en el campo medicoUsername enviado por el navegador.
         if (tieneRol(authentication, "ROLE_MEDICO")) {
             cita.setMedicoUsername(authentication.getName());
         }
@@ -224,7 +231,7 @@ public class CitaController {
 
             redirectAttributes.addFlashAttribute(
                 "error",
-                "El estado seleccionado no es vÃ¡lido."
+                "El estado seleccionado no es válido."
             );
 
             return "redirect:/citas/nueva";
@@ -258,7 +265,7 @@ public class CitaController {
     }
 
     // =====================================================
-    // FORMULARIO DE EDICIÃ“N
+    // FORMULARIO DE EDICIÓN
     // =====================================================
 
     @GetMapping("/citas/editar/{id}")
@@ -294,8 +301,10 @@ public class CitaController {
         model.addAttribute("cita", cita);
         model.addAttribute("estados", estados());
         // El formulario puede ofrecer un selector de pacientes registrados.
-        // La autorizaciÃ³n efectiva de cada operaciÃ³n se comprueba en el servidor.
+        // La autorización efectiva de cada operación se comprueba en el servidor.
         model.addAttribute("pacientesRegistrados", pacienteRepository.findAll());
+        cargarProfesionales(model);
+        model.addAttribute("pacienteNombreDisplay", obtenerPacienteNombreDisplay(cita));
 
         return "cita-form";
     }
@@ -349,14 +358,14 @@ public class CitaController {
 
             redirectAttributes.addFlashAttribute(
                 "error",
-                "Selecciona un estado vÃ¡lido."
+                "Selecciona un estado válido."
             );
 
             return "redirect:/citas/editar/" + id;
         }
 
         // =============================================
-        // CONSERVAR INFORMACIÃ“N ANTERIOR
+        // CONSERVAR INFORMACIÓN ANTERIOR
         // =============================================
 
         String fechaAnterior = cita.getFecha();
@@ -382,12 +391,12 @@ public class CitaController {
 
         // El administrador puede reasignar pacientes
         // y profesionales.
-        // MÃ©dicos y enfermeros conservan las
+        // Médicos y enfermeros conservan las
         // asignaciones existentes.
 
         if (tieneRol(authentication, "ROLE_ADMIN")) {
 
-            // Al editar Ãºnicamente la fecha/hora, el formulario puede omitir
+            // Al editar únicamente la fecha/hora, el formulario puede omitir
             // la referencia: conservamos el paciente original.
             if (citaActualizada.getPacienteId() != null
                     && !citaActualizada.getPacienteId().isBlank()) {
@@ -480,10 +489,10 @@ public class CitaController {
         }
 
         // =============================================
-        // GENERAR NOTIFICACIONES AUTOMÃTICAS
+        // GENERAR NOTIFICACIONES AUTOMÁTICAS
         // =============================================
 
-        // PRIORIDAD 1: CANCELACIÃ“N
+        // PRIORIDAD 1: CANCELACIÓN
         if (fueCancelada) {
 
             notificacionService.citaCancelada(
@@ -494,7 +503,7 @@ public class CitaController {
             );
         }
 
-        // PRIORIDAD 2: CONFIRMACIÃ“N
+        // PRIORIDAD 2: CONFIRMACIÓN
         else if (fueConfirmada) {
 
             notificacionService.citaConfirmada(
@@ -505,7 +514,7 @@ public class CitaController {
             );
         }
 
-        // PRIORIDAD 3: ATENCIÃ“N FINALIZADA
+        // PRIORIDAD 3: ATENCIÓN FINALIZADA
         else if (fueAtendida) {
 
             notificacionService.citaAtendida(
@@ -520,7 +529,7 @@ public class CitaController {
         else if (!"CANCELADA".equalsIgnoreCase(
                 cita.getEstado())) {
 
-            // ReprogramaciÃ³n
+            // Reprogramación
             if (cambioHorario) {
 
                 notificacionService.citaReprogramada(
@@ -567,7 +576,7 @@ public class CitaController {
     }
 
     // =====================================================
-    // ELIMINAR CITA â€” SOLO ADMIN
+    // ELIMINAR CITA — SOLO ADMIN
     // =====================================================
 
     @PostMapping("/citas/eliminar/{id}")
@@ -641,7 +650,17 @@ public class CitaController {
     }
 
     // =====================================================
-    // VALIDACIÃ“N DE DATOS
+    // PROFESIONALES REGISTRADOS PARA EL FORMULARIO
+    // =====================================================
+    private void cargarProfesionales(Model model) {
+        List<Usuario> medicos = usuarioRepository.findByRol(Rol.MEDICO);
+        List<Usuario> enfermeros = usuarioRepository.findByRol(Rol.ENFERMERO);
+        model.addAttribute("medicosRegistrados", medicos);
+        model.addAttribute("enfermerosRegistrados", enfermeros);
+    }
+
+    // =====================================================
+    // VALIDACIÓN DE DATOS
     // =====================================================
 
     private boolean datosValidos(
@@ -662,7 +681,7 @@ public class CitaController {
         if (cita.getMedicoUsername() == null
                 || cita.getMedicoUsername().isBlank()) {
             redirectAttributes.addFlashAttribute(
-                "error", "Debes indicar un mÃ©dico.");
+                "error", "Debes indicar un médico.");
             return false;
         }
 
@@ -701,8 +720,45 @@ public class CitaController {
             && estados().contains(estado);
     }
 
+    // Identificar al paciente por ID o documento, sin inferir por nombres similares.
+    private String obtenerPacienteNombreDisplay(Cita cita) {
+        String referencia = cita.getPacienteId();
+        if (referencia == null || referencia.isBlank()) {
+            referencia = cita.getUsuarioUsername();
+        }
+        if (referencia == null || referencia.isBlank()) {
+            return "Paciente sin referencia verificable";
+        }
+
+        String clave = referencia.trim();
+        Paciente encontrado = null;
+        for (Paciente paciente : pacienteRepository.findAll()) {
+            boolean coincideId = paciente.getId() != null && clave.equals(paciente.getId().trim());
+            boolean coincideDocumento = paciente.getDocumento() != null
+                    && clave.equals(paciente.getDocumento().trim());
+            if (coincideId || coincideDocumento) {
+                if (encontrado != null && !Objects.equals(encontrado.getId(), paciente.getId())) {
+                    return "Referencia de paciente ambigua (verificar en Pacientes)";
+                }
+                encontrado = paciente;
+            }
+        }
+        if (encontrado == null) {
+            return "Paciente no identificado (verificar referencia)";
+        }
+        String nombres = encontrado.getNombres() == null ? "" : encontrado.getNombres().trim();
+        String apellidos = encontrado.getApellidos() == null ? "" : encontrado.getApellidos().trim();
+        String nombre = (nombres + " " + apellidos).trim();
+        if (nombre.isBlank()) nombre = "Paciente registrado";
+        String documento = encontrado.getDocumento();
+        if (documento != null && !documento.isBlank()) {
+            nombre += " — " + documento.trim();
+        }
+        return nombre;
+    }
+
     // =====================================================
-    // AUTENTICACIÃ“N
+    // AUTENTICACIÓN
     // =====================================================
 
     private boolean estaAutenticado(
@@ -732,7 +788,7 @@ public class CitaController {
     }
 
     // =====================================================
-    // COMPROBAR ASIGNACIÃ“N DE LA CITA
+    // COMPROBAR ASIGNACIÓN DE LA CITA
     // =====================================================
 
     private boolean puedeModificarCita(
@@ -800,4 +856,3 @@ public class CitaController {
         );
     }
 }
-

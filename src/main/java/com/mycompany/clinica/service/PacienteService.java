@@ -5,165 +5,401 @@ import com.mycompany.clinica.repository.PacienteRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Criteria;
-import java.util.regex.Pattern;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Criteria;
+
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.regex.Pattern;
 
 @Service
 public class PacienteService {
 
-        private final PacienteRepository pacienteRepository;
-        private final MongoTemplate mongoTemplate;
+    private final PacienteRepository pacienteRepository;
+    private final MongoTemplate mongoTemplate;
 
-        public PacienteService(PacienteRepository pacienteRepository, MongoTemplate mongoTemplate) {
-                this.pacienteRepository = pacienteRepository;
-                this.mongoTemplate = mongoTemplate;
+    public PacienteService(
+            PacienteRepository pacienteRepository,
+            MongoTemplate mongoTemplate) {
+
+        this.pacienteRepository = pacienteRepository;
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    // ============================================
+    // LISTAR PACIENTES
+    // ============================================
+
+    public Page<Paciente> listarPacientes(
+            int pagina,
+            int cantidad) {
+
+        return listarPacientes(pagina, cantidad, null);
+    }
+
+    public Page<Paciente> listarPacientes(
+            int pagina,
+            int cantidad,
+            String buscar) {
+
+        int paginaSegura = Math.max(0, pagina);
+        int cantidadSegura = Math.max(1, Math.min(cantidad, 100));
+
+        Pageable pageable = PageRequest.of(
+                paginaSegura,
+                cantidadSegura,
+                Sort.by(
+                        Sort.Order.desc("fechaRegistro"),
+                        Sort.Order.desc("id")
+                )
+        );
+
+        String termino = buscar == null
+                ? ""
+                : buscar.trim();
+
+        if (termino.isEmpty()) {
+            return pacienteRepository.findAll(pageable);
         }
 
-        // Listar nuevos primero y buscar en toda la colecciÃ³n, no solo en la pÃ¡gina
-        // actual.
-        public Page<Paciente> listarPacientes(int pagina, int cantidad) {
-                return listarPacientes(pagina, cantidad, null);
+        String expresion =
+                ".*" + Pattern.quote(termino) + ".*";
+
+        Criteria filtro = new Criteria().orOperator(
+                Criteria.where("nombres").regex(expresion, "i"),
+                Criteria.where("apellidos").regex(expresion, "i"),
+                Criteria.where("documento").regex(expresion, "i"),
+                Criteria.where("correo").regex(expresion, "i"),
+                Criteria.where("telefono").regex(expresion, "i")
+        );
+
+        Query consulta = new Query(filtro);
+
+        long total = mongoTemplate.count(
+                consulta,
+                Paciente.class
+        );
+
+        consulta.with(pageable);
+
+        return new PageImpl<>(
+                mongoTemplate.find(consulta, Paciente.class),
+                pageable,
+                total
+        );
+    }
+
+    // ============================================
+    // BUSCAR PACIENTE POR ID
+    // ============================================
+
+    public Paciente buscarPorId(String id) {
+
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException(
+                    "El ID del paciente es obligatorio."
+            );
         }
 
-        public Page<Paciente> listarPacientes(int pagina, int cantidad, String buscar) {
-                int paginaSegura = Math.max(0, pagina);
-                int cantidadSegura = Math.max(1, Math.min(cantidad, 100));
-                Pageable pageable = PageRequest.of(paginaSegura, cantidadSegura,
-                                Sort.by(Sort.Order.desc("fechaRegistro"), Sort.Order.desc("id")));
-                String termino = buscar == null ? "" : buscar.trim();
-                if (termino.isEmpty()) {
-                        return pacienteRepository.findAll(pageable);
-                }
-                // Pattern.quote impide interpretar el texto introducido como regex.
-                String expresion = ".*" + Pattern.quote(termino) + ".*";
-                Criteria filtro = new Criteria().orOperator(
-                                Criteria.where("nombres").regex(expresion, "i"),
-                                Criteria.where("apellidos").regex(expresion, "i"),
-                                Criteria.where("documento").regex(expresion, "i"),
-                                Criteria.where("correo").regex(expresion, "i"),
-                                Criteria.where("telefono").regex(expresion, "i"));
-                Query consulta = new Query(filtro);
-                long total = mongoTemplate.count(consulta, Paciente.class);
-                consulta.with(pageable);
-                return new PageImpl<>(mongoTemplate.find(consulta, Paciente.class), pageable, total);
+        return pacienteRepository.findById(id.trim())
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Paciente no encontrado."
+                        )
+                );
+    }
+
+    // ============================================
+    // REGISTRAR PACIENTE
+    // ============================================
+
+    public Paciente guardarPaciente(Paciente paciente) {
+
+        if (paciente == null) {
+            throw new IllegalArgumentException(
+                    "Los datos del paciente son obligatorios."
+            );
         }
 
-        public Paciente buscarPorId(String id) {
-                if (id == null || id.isBlank()) {
-                        throw new IllegalArgumentException("El ID del paciente es obligatorio.");
-                }
-                return pacienteRepository.findById(id.trim())
-                                .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado."));
+        if (paciente.getId() != null
+                && !paciente.getId().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Para modificar un paciente existente debes utilizar actualizarPaciente."
+            );
         }
 
-        public Paciente guardarPaciente(Paciente paciente) {
-                if (paciente == null) {
-                        throw new IllegalArgumentException("Los datos del paciente son obligatorios.");
-                }
-                if (paciente.getId() != null && !paciente.getId().isBlank()) {
-                        throw new IllegalArgumentException(
-                                        "Para modificar un paciente existente debes utilizar el mÃ©todo actualizarPaciente.");
-                }
+        validarDatosPaciente(paciente);
+        validarDatosFisicos(paciente);
 
-                validarDatosPaciente(paciente);
-                String documento = normalizar(paciente.getDocumento());
-                if (pacienteRepository.existsByDocumento(documento)) {
-                        throw new IllegalArgumentException("Ya existe un paciente con ese documento.");
-                }
+        String documento = normalizar(
+                paciente.getDocumento()
+        );
 
-                paciente.setId(null);
-                paciente.setDocumento(documento);
-                paciente.setFechaRegistro(Instant.now());
-                paciente.setActivo(true);
-                return pacienteRepository.save(paciente);
+        if (pacienteRepository.existsByDocumento(documento)) {
+            throw new IllegalArgumentException(
+                    "Ya existe un paciente con ese documento."
+            );
         }
 
-        public Paciente actualizarPaciente(String id, Paciente datos) {
-                if (datos == null) {
-                        throw new IllegalArgumentException("Los datos del paciente son obligatorios.");
-                }
+        paciente.setId(null);
+        paciente.setDocumento(documento);
+        paciente.setFechaRegistro(Instant.now());
+        paciente.setActivo(true);
 
-                Paciente paciente = buscarPorId(id);
+        // El modelo incluye peso y estatura.
+        // MongoDB guardará ambos campos cuando se proporcionen.
 
-                // Si el formulario omite la fecha de nacimiento, conservar la ya registrada.
-                // Si se envÃ­a una fecha distinta, validarla y actualizarla normalmente.
-                if (datos.getFechaNacimiento() == null) {
-                        datos.setFechaNacimiento(paciente.getFechaNacimiento());
-                }
-                validarDatosPaciente(datos);
+        return pacienteRepository.save(paciente);
+    }
 
-                String documentoNuevo = normalizar(datos.getDocumento());
-                String documentoActual = normalizar(paciente.getDocumento());
-                if (!documentoNuevo.equals(documentoActual)
-                                && pacienteRepository.existsByDocumento(documentoNuevo)) {
-                        throw new IllegalArgumentException("Ya existe otro paciente con ese documento.");
-                }
+    // ============================================
+    // ACTUALIZAR PACIENTE
+    // ============================================
 
-                paciente.setTipoDocumento(normalizar(datos.getTipoDocumento()));
-                paciente.setDocumento(documentoNuevo);
-                paciente.setNombres(normalizar(datos.getNombres()));
-                paciente.setApellidos(normalizar(datos.getApellidos()));
-                paciente.setFechaNacimiento(datos.getFechaNacimiento());
-                paciente.setSexo(datos.getSexo());
-                paciente.setTipoSangre(datos.getTipoSangre());
-                paciente.setEps(normalizar(datos.getEps()));
-                paciente.setTelefono(normalizar(datos.getTelefono()));
-                paciente.setCorreo(normalizar(datos.getCorreo()));
-                paciente.setDireccion(normalizar(datos.getDireccion()));
-                paciente.setContactoEmergencia(normalizar(datos.getContactoEmergencia()));
-                paciente.setTelefonoEmergencia(normalizar(datos.getTelefonoEmergencia()));
+    public Paciente actualizarPaciente(
+            String id,
+            Paciente datos) {
 
-                // Aplicar el estado elegido explÃ­citamente en el formulario de ediciÃ³n.
-                // Asegurar que paciente-form.html envÃ­e siempre activo=true o activo=false
-                // mediante un <select th:field="*{activo}">.
-                paciente.setActivo(datos.isActivo());
-
-                return pacienteRepository.save(paciente);
+        if (datos == null) {
+            throw new IllegalArgumentException(
+                    "Los datos del paciente son obligatorios."
+            );
         }
 
-        private void validarDatosPaciente(Paciente paciente) {
-                if (paciente.getNombres() == null || paciente.getNombres().isBlank()) {
-                        throw new IllegalArgumentException("El nombre del paciente es obligatorio.");
-                }
-                if (paciente.getApellidos() == null || paciente.getApellidos().isBlank()) {
-                        throw new IllegalArgumentException("Los apellidos del paciente son obligatorios.");
-                }
-                if (paciente.getTipoDocumento() == null || paciente.getTipoDocumento().isBlank()) {
-                        throw new IllegalArgumentException("El tipo de documento es obligatorio.");
-                }
-                if (paciente.getDocumento() == null || paciente.getDocumento().isBlank()) {
-                        throw new IllegalArgumentException("El nÃºmero de documento es obligatorio.");
-                }
-                if (paciente.getFechaNacimiento() == null) {
-                        throw new IllegalArgumentException("La fecha de nacimiento es obligatoria.");
-                }
-                if (paciente.getFechaNacimiento().isAfter(LocalDate.now())) {
-                        throw new IllegalArgumentException("La fecha de nacimiento no puede ser futura.");
-                }
+        Paciente paciente = buscarPorId(id);
+
+        // Mantener fecha de nacimiento si no se envía.
+        if (datos.getFechaNacimiento() == null) {
+            datos.setFechaNacimiento(
+                    paciente.getFechaNacimiento()
+            );
         }
 
-        private String normalizar(String texto) {
-                return texto == null ? "" : texto.trim();
+        validarDatosPaciente(datos);
+        validarDatosFisicos(datos);
+
+        String documentoNuevo = normalizar(
+                datos.getDocumento()
+        );
+
+        String documentoActual = normalizar(
+                paciente.getDocumento()
+        );
+
+        if (!documentoNuevo.equals(documentoActual)
+                && pacienteRepository.existsByDocumento(
+                        documentoNuevo)) {
+
+            throw new IllegalArgumentException(
+                    "Ya existe otro paciente con ese documento."
+            );
         }
 
-        // MÃ©todo original conservado por compatibilidad. Su uso debe quedar restringido
-        // al administrador y revisarse antes de borrar pacientes con citas o
-        // historiales.
-        public void eliminarPaciente(String id) {
-                Paciente paciente = buscarPorId(id);
-                pacienteRepository.deleteById(paciente.getId());
+        // ========================================
+        // INFORMACIÓN PERSONAL
+        // ========================================
+
+        paciente.setTipoDocumento(
+                normalizar(datos.getTipoDocumento())
+        );
+
+        paciente.setDocumento(documentoNuevo);
+
+        paciente.setNombres(
+                normalizar(datos.getNombres())
+        );
+
+        paciente.setApellidos(
+                normalizar(datos.getApellidos())
+        );
+
+        paciente.setFechaNacimiento(
+                datos.getFechaNacimiento()
+        );
+
+        paciente.setSexo(datos.getSexo());
+
+        paciente.setTipoSangre(datos.getTipoSangre());
+
+        // ========================================
+        // DATOS FÍSICOS
+        // ========================================
+
+        // Si no se envía un valor, conservar el anterior.
+
+        if (datos.getPeso() != null) {
+            paciente.setPeso(datos.getPeso());
         }
 
-        public long contarPacientes() {
-                return pacienteRepository.count();
+        if (datos.getEstatura() != null) {
+            paciente.setEstatura(datos.getEstatura());
         }
+
+        // El IMC se calcula automáticamente
+        // mediante paciente.getImc().
+        // No es necesario guardarlo por separado.
+
+        // ========================================
+        // INFORMACIÓN DE CONTACTO
+        // ========================================
+
+        paciente.setEps(
+                normalizar(datos.getEps())
+        );
+
+        paciente.setTelefono(
+                normalizar(datos.getTelefono())
+        );
+
+        paciente.setCorreo(
+                normalizar(datos.getCorreo())
+        );
+
+        paciente.setDireccion(
+                normalizar(datos.getDireccion())
+        );
+
+        paciente.setContactoEmergencia(
+                normalizar(datos.getContactoEmergencia())
+        );
+
+        paciente.setTelefonoEmergencia(
+                normalizar(datos.getTelefonoEmergencia())
+        );
+
+        // ========================================
+        // ESTADO DEL PACIENTE
+        // ========================================
+
+        paciente.setActivo(datos.isActivo());
+
+        // Conserva ID y fechaRegistro originales.
+
+        return pacienteRepository.save(paciente);
+    }
+
+    // ============================================
+    // VALIDAR INFORMACIÓN PERSONAL
+    // ============================================
+
+    private void validarDatosPaciente(Paciente paciente) {
+
+        if (paciente.getNombres() == null
+                || paciente.getNombres().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "El nombre del paciente es obligatorio."
+            );
+        }
+
+        if (paciente.getApellidos() == null
+                || paciente.getApellidos().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Los apellidos del paciente son obligatorios."
+            );
+        }
+
+        if (paciente.getTipoDocumento() == null
+                || paciente.getTipoDocumento().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "El tipo de documento es obligatorio."
+            );
+        }
+
+        if (paciente.getDocumento() == null
+                || paciente.getDocumento().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "El número de documento es obligatorio."
+            );
+        }
+
+        if (paciente.getFechaNacimiento() == null) {
+            throw new IllegalArgumentException(
+                    "La fecha de nacimiento es obligatoria."
+            );
+        }
+
+        if (!paciente.getFechaNacimiento()
+                .isBefore(LocalDate.now())) {
+
+            throw new IllegalArgumentException(
+                    "La fecha de nacimiento debe ser anterior a hoy."
+            );
+        }
+    }
+
+    // ============================================
+    // VALIDAR PESO Y ESTATURA
+    // ============================================
+
+    private void validarDatosFisicos(Paciente paciente) {
+
+        BigDecimal peso = paciente.getPeso();
+        BigDecimal estatura = paciente.getEstatura();
+
+        if (peso != null) {
+
+            if (peso.compareTo(new BigDecimal("0.01")) < 0
+                    || peso.compareTo(new BigDecimal("500.00")) > 0
+                    || peso.scale() > 2) {
+
+                throw new IllegalArgumentException(
+                    "El peso debe estar entre 0.01 y 500 kg, con máximo dos decimales."
+                );
+            }
+        }
+
+        if (estatura != null) {
+
+            if (estatura.compareTo(new BigDecimal("0.01")) < 0
+                    || estatura.compareTo(new BigDecimal("300.00")) > 0
+                    || estatura.scale() > 2) {
+
+                throw new IllegalArgumentException(
+                    "La estatura debe estar entre 0.01 y 300 cm, con máximo dos decimales."
+                );
+            }
+        }
+    }
+
+    // ============================================
+    // NORMALIZAR TEXTO
+    // ============================================
+
+    private String normalizar(String texto) {
+        return texto == null ? "" : texto.trim();
+    }
+
+    // ============================================
+    // ELIMINAR PACIENTE
+    // ============================================
+
+    public void eliminarPaciente(String id) {
+
+        Paciente paciente = buscarPorId(id);
+
+        pacienteRepository.deleteById(
+                paciente.getId()
+        );
+    }
+
+    // ============================================
+    // CONTAR PACIENTES
+    // ============================================
+
+    public long contarPacientes() {
+        return pacienteRepository.count();
+    }
 }

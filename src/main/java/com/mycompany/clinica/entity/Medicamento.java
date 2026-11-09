@@ -29,47 +29,118 @@ public class Medicamento {
     private Double dosisMaximaMgKg;
     private String descripcion;
 
-    public Medicamento() {}
+    public Medicamento() {
+    }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getPrincipioActivo() { return principioActivo; }
-    public void setPrincipioActivo(String principioActivo) { this.principioActivo = principioActivo; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getPresentacion() { return presentacion; }
-    public void setPresentacion(String presentacion) { this.presentacion = presentacion; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public Double getCantidadMedicamento() { return cantidadMedicamento; }
-    public void setCantidadMedicamento(Double cantidadMedicamento) { this.cantidadMedicamento = cantidadMedicamento; }
+    public String getPrincipioActivo() {
+        return principioActivo;
+    }
 
-    public String getUnidadMedicamento() { return unidadMedicamento; }
-    public void setUnidadMedicamento(String unidadMedicamento) { this.unidadMedicamento = unidadMedicamento; }
+    public void setPrincipioActivo(String principioActivo) {
+        this.principioActivo = principioActivo;
+    }
 
-    public Double getCantidadVehiculo() { return cantidadVehiculo; }
-    public void setCantidadVehiculo(Double cantidadVehiculo) { this.cantidadVehiculo = cantidadVehiculo; }
+    public String getPresentacion() {
+        return presentacion;
+    }
 
-    public String getUnidadVehiculo() { return unidadVehiculo; }
-    public void setUnidadVehiculo(String unidadVehiculo) { this.unidadVehiculo = unidadVehiculo; }
+    public void setPresentacion(String presentacion) {
+        this.presentacion = presentacion;
+    }
 
-    public String getViaAdministracion() { return viaAdministracion; }
-    public void setViaAdministracion(String viaAdministracion) { this.viaAdministracion = viaAdministracion; }
+    public Double getCantidadMedicamento() {
+        return cantidadMedicamento;
+    }
 
-    public Integer getStock() { return stock; }
-    public void setStock(Integer stock) { this.stock = stock; }
+    public void setCantidadMedicamento(Double cantidadMedicamento) {
+        this.cantidadMedicamento = cantidadMedicamento;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public String getUnidadMedicamento() {
+        return unidadMedicamento;
+    }
 
-    public Double getDosisMinimaMgKg() { return dosisMinimaMgKg; }
-    public void setDosisMinimaMgKg(Double dosisMinimaMgKg) { this.dosisMinimaMgKg = dosisMinimaMgKg; }
+    public void setUnidadMedicamento(String unidadMedicamento) {
+        this.unidadMedicamento = unidadMedicamento;
+    }
 
-    public Double getDosisMaximaMgKg() { return dosisMaximaMgKg; }
-    public void setDosisMaximaMgKg(Double dosisMaximaMgKg) { this.dosisMaximaMgKg = dosisMaximaMgKg; }
+    public Double getCantidadVehiculo() {
+        return cantidadVehiculo;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setCantidadVehiculo(Double cantidadVehiculo) {
+        this.cantidadVehiculo = cantidadVehiculo;
+    }
+
+    public String getUnidadVehiculo() {
+        return unidadVehiculo;
+    }
+
+    public void setUnidadVehiculo(String unidadVehiculo) {
+        this.unidadVehiculo = unidadVehiculo;
+    }
+
+    public String getViaAdministracion() {
+        return viaAdministracion;
+    }
+
+    public void setViaAdministracion(String viaAdministracion) {
+        this.viaAdministracion = viaAdministracion;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public Double getDosisMinimaMgKg() {
+        return dosisMinimaMgKg;
+    }
+
+    public void setDosisMinimaMgKg(Double dosisMinimaMgKg) {
+        this.dosisMinimaMgKg = dosisMinimaMgKg;
+    }
+
+    public Double getDosisMaximaMgKg() {
+        return dosisMaximaMgKg;
+    }
+
+    public void setDosisMaximaMgKg(Double dosisMaximaMgKg) {
+        this.dosisMaximaMgKg = dosisMaximaMgKg;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 }

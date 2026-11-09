@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.util.Comparator;
 import com.mycompany.clinica.entity.Paciente;
 import com.mycompany.clinica.repository.PacienteRepository;
+import com.mycompany.clinica.repository.UsuarioRepository;
+import com.mycompany.clinica.entity.Usuario;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,14 +39,17 @@ public class HistorialController {
 
     private final HistorialService historialService;
     private final PacienteRepository pacienteRepository;
+    private final UsuarioRepository usuarioRepository;
 
 
     public HistorialController(
             HistorialService historialService,
-            PacienteRepository pacienteRepository) {
+            PacienteRepository pacienteRepository,
+            UsuarioRepository usuarioRepository) {
 
         this.historialService = historialService;
         this.pacienteRepository = pacienteRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
 
@@ -107,7 +112,9 @@ public class HistorialController {
             int hasta = Math.min(desde + size, propios.size());
             paginaHistorial = new PageImpl<>(propios.subList(desde, hasta), pageable, propios.size());
         } else {
-            paginaHistorial = historialService.buscarPorUsuario(username, pageable);
+            // Sin una vinculacion administrada, no se muestran historiales.
+            String pacienteId = pacienteIdDelUsuario(authentication);
+            paginaHistorial = historialService.buscarPorPacienteId(pacienteId, pageable);
         }
 
         model.addAttribute(
@@ -135,7 +142,7 @@ public class HistorialController {
                 paginaHistorial.getSize()
         );
 
-        cargarNombresPacientes(model);
+        cargarNombresPacientes(model, authentication, paginaHistorial.getContent());
         return "historial";
     }
 
@@ -190,7 +197,7 @@ public class HistorialController {
         model.addAttribute("esEnfermero", esEnfermero);
         model.addAttribute("esUsuario", false);
         model.addAttribute("pacienteSeleccionado", paciente);
-        cargarNombresPacientes(model);
+        cargarNombresPacientes(model, authentication, encontrados);
         return "historial";
     }
 
@@ -397,21 +404,6 @@ public class HistorialController {
             return "redirect:/error/403";
         }
 
-        if (tieneRol(
-                authentication,
-                "ROLE_USUARIO")) {
-
-            if (historial.getUsuarioUsername() == null
-                    ||
-                    !historial
-                            .getUsuarioUsername()
-                            .equals(authentication.getName())) {
-
-                return "redirect:/error/403";
-            }
-        }
-
-
         if (!puedeVerHistorial(authentication, historial)) {
             return "redirect:/error/403";
         }
@@ -529,8 +521,8 @@ public class HistorialController {
             return "redirect:/error/403";
         }
 
-        if (tieneRol(authentication, "ROLE_MEDICO")
-                && !java.util.Objects.equals(historial.getPacienteId(), actualizado.getPacienteId())) {
+        // Prohibir el cambio de paciente en historiales existentes para todos los roles.
+        if (!java.util.Objects.equals(historial.getPacienteId(), actualizado.getPacienteId())) {
             redirectAttributes.addFlashAttribute("error", "No puedes cambiar el paciente de un historial existente.");
             return "redirect:/historial/editar/" + id;
         }
@@ -651,12 +643,48 @@ public class HistorialController {
     }
 
 
-    private void cargarNombresPacientes(Model model) {
-        Map<String, String> nombres = pacienteRepository.findAll().stream()
-            .collect(Collectors.toMap(Paciente::getId,
-                p -> String.valueOf(p.getNombres()) + " " + String.valueOf(p.getApellidos()),
-                (a, b) -> a));
+    // Un usuario solo recibe los nombres de pacientes de los historiales
+    // que efectivamente puede consultar. Personal autorizado conserva listado.
+    private void cargarNombresPacientes(Model model, Authentication authentication,
+                                       List<Historial> visibles) {
+        Map<String, String> nombres;
+        if (tieneRol(authentication, "ROLE_USUARIO")) {
+            String pacienteId = pacienteIdDelUsuario(authentication);
+            nombres = (pacienteId == null ? java.util.stream.Stream.<Paciente>empty()
+                    : pacienteRepository.findById(pacienteId).stream())
+                    .collect(Collectors.toMap(Paciente::getId,
+                            Paciente::getNombreCompleto, (a, b) -> a));
+        } else if (tieneRol(authentication, "ROLE_MEDICO")) {
+            Set<String> idsVisibles = visibles.stream()
+                    .filter(h -> puedeVerHistorial(authentication, h))
+                    .map(Historial::getPacienteId)
+                    .filter(java.util.Objects::nonNull)
+                    .collect(Collectors.toSet());
+            nombres = pacienteRepository.findAll().stream()
+                    .filter(p -> idsVisibles.contains(p.getId()))
+                    .collect(Collectors.toMap(Paciente::getId,
+                            Paciente::getNombreCompleto, (a, b) -> a));
+        } else {
+            // Politica vigente: administracion y enfermeria pueden consultar todos.
+            nombres = pacienteRepository.findAll().stream()
+                    .collect(Collectors.toMap(Paciente::getId,
+                            Paciente::getNombreCompleto, (a, b) -> a));
+        }
         model.addAttribute("nombresPacientes", nombres);
+    }
+
+    private String pacienteIdDelUsuario(Authentication authentication) {
+        if (!estaAutenticado(authentication)) return null;
+        Optional<Usuario> usuario = usuarioRepository.findByUsername(authentication.getName());
+        if (usuario.isEmpty()) {
+            usuario = usuarioRepository.findByNombreUsuario(authentication.getName());
+        }
+        if (usuario.isEmpty() || usuario.get().getRol() != com.mycompany.clinica.entity.Rol.USUARIO) {
+            return null;
+        }
+        String id = usuario.get().getPacienteId();
+        if (id == null || id.isBlank() || !pacienteRepository.existsById(id)) return null;
+        return id;
     }
 
     // Acceso por registro. Admin: todos. Enfermeria: lectura segun politica actual.
@@ -670,7 +698,8 @@ public class HistorialController {
             return authentication.getName().equals(historial.getMedicoUsername());
         }
         return tieneRol(authentication, "ROLE_USUARIO")
-                && authentication.getName().equals(historial.getUsuarioUsername());
+                && java.util.Objects.equals(pacienteIdDelUsuario(authentication), historial.getPacienteId())
+                && pacienteIdDelUsuario(authentication) != null;
     }
 
     private boolean puedeModificarHistorial(Authentication authentication, Historial historial) {

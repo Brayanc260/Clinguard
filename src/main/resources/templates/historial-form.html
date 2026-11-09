@@ -59,12 +59,12 @@
 
             <!-- DASHBOARD -->
 
-            <a class="nb" th:href="@{/dashboard}">
+            
 
-                <i class="bx bx-grid-alt"></i>
+                
 
                 <span>
-                    Dashboard
+                    Panel Administrativo
                 </span>
 
             </a>
@@ -179,6 +179,12 @@
                     Panel Admin
                 </span>
 
+            </a>
+
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
             </a>
 
 

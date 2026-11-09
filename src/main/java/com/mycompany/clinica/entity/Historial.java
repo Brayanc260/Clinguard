@@ -146,4 +146,3 @@ public class Historial {
         motivoAnulacion = x;
     }
 }
-

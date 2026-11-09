@@ -1,4 +1,3 @@
-
 package com.mycompany.clinica.controller;
 
 import java.security.Principal;
@@ -7,6 +6,13 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.List;
+
+import com.mycompany.clinica.entity.Paciente;
 import java.util.Objects;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -63,7 +69,7 @@ public class DashboardController {
     }
 
     // =====================================================
-    // DASHBOARD SEGÃšN EL ROL
+    // DASHBOARD SEGÚN EL ROL
     // =====================================================
 
     @GetMapping("/dashboard")
@@ -72,10 +78,6 @@ public class DashboardController {
             Principal principal,
             Model model) {
 
-        // =============================================
-        // VALIDAR AUTENTICACIÃ“N
-        // =============================================
-
         if (authentication == null
                 || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) {
@@ -83,34 +85,17 @@ public class DashboardController {
             return "redirect:/login";
         }
 
-        // =============================================
-        // USUARIO ACTUAL
-        // =============================================
-
         String username = principal != null
                 ? principal.getName()
                 : authentication.getName();
 
         model.addAttribute("username", username);
 
-        // =============================================
-        // IDENTIFICAR ROLES
-        // =============================================
-
         boolean esAdmin = tieneRol(authentication, "ADMIN");
-
         boolean esMedico = tieneRol(authentication, "MEDICO");
-
         boolean esEnfermero = tieneRol(authentication, "ENFERMERO");
-
-        boolean esRecepcionista =
-                tieneRol(authentication, "RECEPCIONISTA");
-
+        boolean esRecepcionista = tieneRol(authentication, "RECEPCIONISTA");
         boolean esUsuario = tieneRol(authentication, "USUARIO");
-
-        // =============================================
-        // ENVIAR ROLES AL MODELO
-        // =============================================
 
         model.addAttribute("esAdmin", esAdmin);
         model.addAttribute("esMedico", esMedico);
@@ -121,147 +106,69 @@ public class DashboardController {
         // =============================================
         // DASHBOARD ADMINISTRADOR
         // =============================================
-
         if (esAdmin) {
             cargarEstadisticasAdmin(model);
-            return "admin-dashboard";
+            // CORRECCIÓN AQUÍ: Redirigimos a /admin en lugar de "admin-dashboard"
+            return "redirect:/admin"; 
         }
-
-        // =============================================
-        // DASHBOARD MÃ‰DICO
-        // =============================================
 
         if (esMedico) {
             cargarEstadisticasMedico(model, username);
             return "medico-dashboard";
         }
 
-        // =============================================
-        // DASHBOARD ENFERMERO
-        // =============================================
-
         if (esEnfermero) {
+            cargarEstadisticasEnfermero(model, username);
             return "enfermero-dashboard";
         }
-
-        // =============================================
-        // DASHBOARD RECEPCIONISTA
-        // =============================================
 
         if (esRecepcionista) {
             return "redirect:/recepcionista/dashboard";
         }
 
-        // =============================================
-        // DASHBOARD USUARIO
-        // =============================================
-
         if (esUsuario) {
-
-            // Consultar Ãºnicamente los registros
-            // del usuario autenticado.
-
-            var citas = citaService.buscarPorUsuario(
-                    authentication.getName()
-            );
-
-            var historiales = historialService.buscarPorUsuario(
-                    authentication.getName()
-            );
-
-            // Fecha y hora de Colombia.
-
+            var citas = citaService.buscarPorUsuario(authentication.getName());
+            var historiales = historialService.buscarPorUsuario(authentication.getName());
             ZoneId zona = ZoneId.of("America/Bogota");
-
             LocalDate hoy = LocalDate.now(zona);
             LocalTime horaActual = LocalTime.now(zona);
 
-            // Ordenar prÃ³ximas citas por fecha y hora.
-
             var proximasCitas = citas
                     .stream()
-                    .filter(cita ->
-                            esProximaCita(cita, hoy, horaActual)
-                    )
-                    .sorted(
-                            Comparator
-                                    .comparing(Cita::getFecha)
-                                    .thenComparing(
-                                            Cita::getHora,
-                                            Comparator.nullsLast(
-                                                    Comparator.naturalOrder()
-                                            )
-                                    )
-                    )
+                    .filter(cita -> esProximaCita(cita, hoy, horaActual))
+                    .sorted(Comparator.comparing(Cita::getFecha)
+                            .thenComparing(Cita::getHora, Comparator.nullsLast(Comparator.naturalOrder())))
                     .toList();
 
-            // Datos disponibles para el dashboard.
-
-            model.addAttribute(
-                    "totalCitas",
-                    citas.size()
-            );
-
-            model.addAttribute(
-                    "totalHistoriales",
-                    historiales.size()
-            );
-
-            model.addAttribute(
-                    "totalProximas",
-                    proximasCitas.size()
-            );
-
-            model.addAttribute(
-                    "proximasCitas",
-                    proximasCitas
-                            .stream()
-                            .limit(3)
-                            .toList()
-            );
+            model.addAttribute("totalCitas", citas.size());
+            model.addAttribute("totalHistoriales", historiales.size());
+            model.addAttribute("totalProximas", proximasCitas.size());
+            model.addAttribute("proximasCitas", proximasCitas.stream().limit(3).toList());
 
             return "usuario-dashboard";
         }
 
-        // =============================================
-        // ROL NO RECONOCIDO
-        // =============================================
-
         return "redirect:/error/403";
     }
 
-    // =====================================================
-    // PANEL MÃ‰DICO: DATOS DEL MÃ‰DICO AUTENTICADO
-    // =====================================================
     private void cargarEstadisticasMedico(Model model, String medicoUsername) {
         ZoneId zona = ZoneId.of("America/Bogota");
         LocalDate hoy = LocalDate.now(zona);
         LocalTime horaActual = LocalTime.now(zona);
 
-        // Filtrado por mÃ©dico desde los mÃ©todos ya existentes.
         var citasMedico = citaRepository.findByMedicoUsername(medicoUsername);
         var historialesMedico = historialRepository.findByMedicoUsername(medicoUsername);
 
-        long citasHoy = citasMedico.stream()
-                .filter(c -> hoy.toString().equals(c.getFecha()))
-                .count();
-        long citasPendientes = citasMedico.stream()
-                .filter(c -> "PENDIENTE".equalsIgnoreCase(c.getEstado())
-                        || "PROGRAMADA".equalsIgnoreCase(c.getEstado()))
-                .count();
-        long citasConfirmadas = citasMedico.stream()
-                .filter(c -> "CONFIRMADA".equalsIgnoreCase(c.getEstado()))
-                .count();
+        long citasHoy = citasMedico.stream().filter(c -> hoy.toString().equals(c.getFecha())).count();
+        long citasPendientes = citasMedico.stream().filter(c -> "PENDIENTE".equalsIgnoreCase(c.getEstado()) || "PROGRAMADA".equalsIgnoreCase(c.getEstado())).count();
+        long citasConfirmadas = citasMedico.stream().filter(c -> "CONFIRMADA".equalsIgnoreCase(c.getEstado())).count();
 
         var proximasCitas = citasMedico.stream()
                 .filter(c -> esProximaCita(c, hoy, horaActual))
-                .sorted(Comparator.comparing(Cita::getFecha)
-                        .thenComparing(Cita::getHora,
-                                Comparator.nullsLast(Comparator.naturalOrder())))
+                .sorted(Comparator.comparing(Cita::getFecha).thenComparing(Cita::getHora, Comparator.nullsLast(Comparator.naturalOrder())))
                 .limit(5)
                 .toList();
 
-        // Pacientes Ãºnicos con historia registrada por este mÃ©dico.
         long pacientesConHistorial = historialesMedico.stream()
                 .map(h -> h.getPacienteId())
                 .filter(Objects::nonNull)
@@ -280,88 +187,76 @@ public class DashboardController {
         model.addAttribute("totalProximas", proximasCitas.size());
     }
 
-    // =====================================================
-    // VERIFICAR ROL
-    // =====================================================
+    private void cargarEstadisticasEnfermero(Model model, String enfermeroUsername) {
+        ZoneId zona = ZoneId.of("America/Bogota");
+        LocalDate hoy = LocalDate.now(zona);
+        LocalTime ahora = LocalTime.now(zona);
 
-    private boolean tieneRol(
-            Authentication authentication,
-            String rol) {
+        List<Cita> citas = citaService.buscarPorEnfermero(enfermeroUsername);
+        long citasHoy = citas.stream().filter(c -> hoy.toString().equals(c.getFecha())).count();
+        long citasPendientes = citas.stream().filter(c -> "PROGRAMADA".equalsIgnoreCase(c.getEstado()) || "PENDIENTE".equalsIgnoreCase(c.getEstado())).count();
+        long citasAtendidas = citas.stream().filter(c -> "ATENDIDA".equalsIgnoreCase(c.getEstado())).count();
 
-        return authentication
-                .getAuthorities()
-                .stream()
-                .anyMatch(authority ->
-                        authority.getAuthority().equals(
-                                "ROLE_" + rol
-                        )
-                );
+        List<Cita> proximas = citas.stream()
+                .filter(c -> esProximaCita(c, hoy, ahora))
+                .sorted(Comparator.comparing(Cita::getFecha).thenComparing(Cita::getHora, Comparator.nullsLast(Comparator.naturalOrder())))
+                .limit(5)
+                .toList();
+
+        Map<String, Paciente> porReferencia = new HashMap<>();
+        Set<String> ambiguas = new HashSet<>();
+        for (Paciente paciente : pacienteRepository.findAll()) {
+            String id = paciente.getId();
+            if (id != null && !id.isBlank()) registrarReferencia(porReferencia, ambiguas, id.trim(), paciente);
+            String documento = paciente.getDocumento();
+            if (documento != null && !documento.isBlank()) registrarReferencia(porReferencia, ambiguas, documento.trim(), paciente);
+        }
+
+        Map<String, String> nombres = new HashMap<>();
+        for (Cita cita : proximas) {
+            if (cita.getId() == null) continue;
+            String referencia = cita.getPacienteId();
+            if (referencia == null || referencia.isBlank()) referencia = cita.getUsuarioUsername();
+            if (referencia == null || referencia.isBlank()) continue;
+            referencia = referencia.trim();
+            if (ambiguas.contains(referencia)) continue;
+            Paciente paciente = porReferencia.get(referencia);
+            if (paciente == null) continue;
+            String nombre = ((paciente.getNombres() == null ? "" : paciente.getNombres()) + " " + (paciente.getApellidos() == null ? "" : paciente.getApellidos())).trim();
+            if (!nombre.isBlank()) nombres.put(cita.getId(), nombre);
+        }
+
+        model.addAttribute("citasHoy", citasHoy);
+        model.addAttribute("citasPendientes", citasPendientes);
+        model.addAttribute("citasAtendidas", citasAtendidas);
+        model.addAttribute("totalCitas", citas.size());
+        model.addAttribute("proximasCitas", proximas);
+        model.addAttribute("nombresPacientesPorCita", nombres);
     }
 
-    // =====================================================
-    // COMPROBAR SI UNA CITA ESTÃ PRÃ“XIMA
-    // =====================================================
+    private void registrarReferencia(Map<String, Paciente> mapa, Set<String> ambiguas, String clave, Paciente paciente) {
+        Paciente anterior = mapa.putIfAbsent(clave, paciente);
+        if (anterior != null && !Objects.equals(anterior.getId(), paciente.getId())) ambiguas.add(clave);
+    }
 
-    private boolean esProximaCita(
-            Cita cita,
-            LocalDate hoy,
-            LocalTime horaActual) {
+    private boolean tieneRol(Authentication authentication, String rol) {
+        return authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_" + rol));
+    }
 
-        boolean programada =
-                "PROGRAMADA".equalsIgnoreCase(
-                        cita.getEstado()
-                );
-
-        boolean confirmada =
-                "CONFIRMADA".equalsIgnoreCase(
-                        cita.getEstado()
-                );
-
-        if (!programada && !confirmada) {
-            return false;
-        }
-
-        if (cita.getFecha() == null
-                || cita.getFecha().isBlank()) {
-
-            return false;
-        }
+    private boolean esProximaCita(Cita cita, LocalDate hoy, LocalTime horaActual) {
+        boolean programada = "PROGRAMADA".equalsIgnoreCase(cita.getEstado());
+        boolean confirmada = "CONFIRMADA".equalsIgnoreCase(cita.getEstado());
+        if (!programada && !confirmada) return false;
+        if (cita.getFecha() == null || cita.getFecha().isBlank()) return false;
 
         try {
-            LocalDate fecha = LocalDate.parse(
-                    cita.getFecha()
-            );
-
-            // Cita en un dÃ­a posterior.
-
-            if (fecha.isAfter(hoy)) {
-                return true;
-            }
-
-            // Excluir dÃ­as anteriores.
-
-            if (!fecha.equals(hoy)) {
-                return false;
-            }
-
-            // Mostrar citas de hoy sin hora registrada.
-
-            if (cita.getHora() == null
-                    || cita.getHora().isBlank()) {
-
-                return true;
-            }
-
-            // Mostrar citas de hoy cuya hora no ha pasado.
-
-            LocalTime hora = LocalTime.parse(
-                    cita.getHora()
-            );
-
+            LocalDate fecha = LocalDate.parse(cita.getFecha());
+            if (fecha.isAfter(hoy)) return true;
+            if (!fecha.equals(hoy)) return false;
+            if (cita.getHora() == null || cita.getHora().isBlank()) return true;
+            LocalTime hora = LocalTime.parse(cita.getHora());
             return !hora.isBefore(horaActual);
-
         } catch (DateTimeParseException ex) {
-
             return false;
         }
     }
@@ -369,7 +264,6 @@ public class DashboardController {
     // =====================================================
     // PANEL ADMINISTRADOR
     // =====================================================
-
     @GetMapping("/admin")
     public String admin(Authentication authentication, Model model) {
         if (authentication == null || !authentication.isAuthenticated()
@@ -378,8 +272,7 @@ public class DashboardController {
             return "redirect:/error/403";
         }
         cargarEstadisticasAdmin(model);
-
-        return "admin";
+        return "admin"; // <-- Carga el archivo admin.html
     }
 
     private void cargarEstadisticasAdmin(Model model) {
@@ -402,23 +295,10 @@ public class DashboardController {
         model.addAttribute("totalEnfermeros", totalEnfermeros);
         model.addAttribute("totalRecepcionistas", totalRecepcionistas);
         model.addAttribute("totalUsuariosRol", totalUsuariosRol);
-
-        log.info("CLINGUARD ADMIN DASHBOARD: usuarios={}, medicos={}, enfermeros={}, pacientes={}, citas={}, historiales={}",
-                totalUsuarios, totalMedicos, totalEnfermeros, totalPacientes, totalCitas, totalHistoriales);
     }
 
-    // =====================================================
-    // RUTAS ANTIGUAS
-    // =====================================================
-
-    @GetMapping({
-            "/medico",
-            "/enfermero",
-            "/usuario",
-            "/recepcionista"
-    })
+    @GetMapping({"/medico", "/enfermero", "/usuario", "/recepcionista"})
     public String dashboardPorRol() {
         return "redirect:/dashboard";
     }
 }
-

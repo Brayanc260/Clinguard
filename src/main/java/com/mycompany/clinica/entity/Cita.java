@@ -120,4 +120,3 @@ public class Cita {
         this.observaciones = observaciones;
     }
 }
-

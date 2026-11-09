@@ -171,9 +171,9 @@
 
         <nav class="sb-nav" aria-label="Navegación principal">
 
-            <a class="nb" th:href="@{/dashboard}">
-                <i class="bx bx-grid-alt"></i>
-                <span>Dashboard</span>
+            
+                
+                
             </a>
 
             <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
@@ -224,6 +224,12 @@
             <a class="nb" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">
                 <i class="bx bx-shield-quarter"></i>
                 <span>Panel Admin</span>
+            </a>
+
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
             </a>
 
 

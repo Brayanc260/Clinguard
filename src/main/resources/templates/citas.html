@@ -47,20 +47,6 @@
         <nav class="sb-nav" aria-label="Navegación principal">
 
 
-            <!-- DASHBOARD -->
-
-            <a class="nb" th:href="@{/dashboard}">
-
-                <i class="bx bx-grid-alt"></i>
-
-                <span>
-                    Dashboard
-                </span>
-
-            </a>
-
-
-
             <!-- ANÁLISIS -->
 
             <a class="nb" th:href="@{/analisis}" sec:authorize="hasAnyRole('ADMIN','MEDICO')">
@@ -197,6 +183,12 @@
                     Panel Admin
                 </span>
 
+            </a>
+
+            <!-- REGISTRAR USUARIO: visible únicamente para ADMIN -->
+            <a class="nb" th:href="@{/admin/usuarios/nuevo}" sec:authorize="hasRole('ADMIN')">
+                <i class="bx bx-user-plus"></i>
+                <span>Registrar usuario</span>
             </a>
 
 
