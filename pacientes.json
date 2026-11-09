@@ -1,0 +1,852 @@
+[
+  {
+    "_id": "pac_1",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1846506365",
+    "nombres": "Valentina",
+    "apellidos": "Ríos Fernández",
+    "fechaNacimiento": "1973-09-14",
+    "sexo": "Masculino",
+    "tipoSangre": "B+",
+    "eps": "SURA",
+    "peso": "64.2",
+    "estatura": 167,
+    "fechaRegistro": {
+      "$date": "2026-06-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_2",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1233232528",
+    "nombres": "Jorge",
+    "apellidos": "Ortiz Pérez",
+    "fechaNacimiento": "1966-03-18",
+    "sexo": "Femenino",
+    "tipoSangre": "AB-",
+    "eps": "Compensar",
+    "peso": "82.2",
+    "estatura": 178,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_3",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1258583241",
+    "nombres": "Ricardo",
+    "apellidos": "López Cárdenas",
+    "fechaNacimiento": "1980-02-15",
+    "sexo": "Femenino",
+    "tipoSangre": "A+",
+    "eps": "Coomeva",
+    "peso": "83.7",
+    "estatura": 157,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_4",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1299680409",
+    "nombres": "Gabriela",
+    "apellidos": "Rodríguez Gómez",
+    "fechaNacimiento": "1983-04-16",
+    "sexo": "Masculino",
+    "tipoSangre": "B+",
+    "eps": "Coomeva",
+    "peso": "71.9",
+    "estatura": 170,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_5",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1513810849",
+    "nombres": "Luis",
+    "apellidos": "López Silva",
+    "fechaNacimiento": "2015-03-17",
+    "sexo": "Femenino",
+    "tipoSangre": "B+",
+    "eps": "Compensar",
+    "peso": "27.6",
+    "estatura": 117,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_6",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1313315227",
+    "nombres": "Gabriela",
+    "apellidos": "Cárdenas Mendoza",
+    "fechaNacimiento": "1963-01-10",
+    "sexo": "Femenino",
+    "tipoSangre": "O+",
+    "eps": "SURA",
+    "peso": "65.7",
+    "estatura": 159,
+    "fechaRegistro": {
+      "$date": "2026-10-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_7",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1064519872",
+    "nombres": "Pedro",
+    "apellidos": "Rodríguez Rodríguez",
+    "fechaNacimiento": "1960-03-14",
+    "sexo": "Masculino",
+    "tipoSangre": "B-",
+    "eps": "Sanitas",
+    "peso": "64.5",
+    "estatura": 156,
+    "fechaRegistro": {
+      "$date": "2026-09-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_8",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1296448846",
+    "nombres": "Ricardo",
+    "apellidos": "Martínez Flores",
+    "fechaNacimiento": "2015-05-18",
+    "sexo": "Masculino",
+    "tipoSangre": "O-",
+    "eps": "Compensar",
+    "peso": "15.1",
+    "estatura": 101,
+    "fechaRegistro": {
+      "$date": "2026-10-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_9",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1743601990",
+    "nombres": "Carlos",
+    "apellidos": "Cruz Torres",
+    "fechaNacimiento": "2015-08-18",
+    "sexo": "Masculino",
+    "tipoSangre": "AB+",
+    "eps": "Compensar",
+    "peso": "29.9",
+    "estatura": 107,
+    "fechaRegistro": {
+      "$date": "2026-08-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_10",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1715635544",
+    "nombres": "Pedro",
+    "apellidos": "López Torres",
+    "fechaNacimiento": "1966-07-14",
+    "sexo": "Masculino",
+    "tipoSangre": "O-",
+    "eps": "Coomeva",
+    "peso": "52.3",
+    "estatura": 173,
+    "fechaRegistro": {
+      "$date": "2026-06-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_11",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1420538671",
+    "nombres": "Ana",
+    "apellidos": "Mendoza Ortiz",
+    "fechaNacimiento": "1962-07-16",
+    "sexo": "Masculino",
+    "tipoSangre": "AB+",
+    "eps": "Famisanar",
+    "peso": "52.3",
+    "estatura": 155,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_12",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1264414498",
+    "nombres": "Sofía",
+    "apellidos": "Silva Vargas",
+    "fechaNacimiento": "1961-06-18",
+    "sexo": "Masculino",
+    "tipoSangre": "AB-",
+    "eps": "Famisanar",
+    "peso": "60.2",
+    "estatura": 160,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_13",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1254927598",
+    "nombres": "Isabella",
+    "apellidos": "Rojas Rojas",
+    "fechaNacimiento": "1977-04-16",
+    "sexo": "Femenino",
+    "tipoSangre": "B-",
+    "eps": "Coomeva",
+    "peso": "75.3",
+    "estatura": 168,
+    "fechaRegistro": {
+      "$date": "2026-08-09T05:17:29.088Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_14",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1430439482",
+    "nombres": "Luis",
+    "apellidos": "Mendoza Silva",
+    "fechaNacimiento": "1960-09-15",
+    "sexo": "Masculino",
+    "tipoSangre": "O+",
+    "eps": "Famisanar",
+    "peso": "77.1",
+    "estatura": 156,
+    "fechaRegistro": {
+      "$date": "2026-06-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_15",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1105416860",
+    "nombres": "Sofía",
+    "apellidos": "Rodríguez Herrera",
+    "fechaNacimiento": "1981-07-14",
+    "sexo": "Masculino",
+    "tipoSangre": "A+",
+    "eps": "SURA",
+    "peso": "55.3",
+    "estatura": 154,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_16",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1365855673",
+    "nombres": "Isabella",
+    "apellidos": "Ríos Cruz",
+    "fechaNacimiento": "1985-01-14",
+    "sexo": "Masculino",
+    "tipoSangre": "B-",
+    "eps": "Nueva EPS",
+    "peso": "51.7",
+    "estatura": 172,
+    "fechaRegistro": {
+      "$date": "2026-08-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_17",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1154129253",
+    "nombres": "Javier",
+    "apellidos": "Fernández Vargas",
+    "fechaNacimiento": "2015-02-12",
+    "sexo": "Masculino",
+    "tipoSangre": "A+",
+    "eps": "SURA",
+    "peso": "27.1",
+    "estatura": 118,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_18",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1785496270",
+    "nombres": "Felipe",
+    "apellidos": "Gómez Sánchez",
+    "fechaNacimiento": "1969-08-16",
+    "sexo": "Masculino",
+    "tipoSangre": "O-",
+    "eps": "SURA",
+    "peso": "78.9",
+    "estatura": 156,
+    "fechaRegistro": {
+      "$date": "2026-06-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_19",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1439645057",
+    "nombres": "Mariana",
+    "apellidos": "Silva Pérez",
+    "fechaNacimiento": "1967-02-13",
+    "sexo": "Masculino",
+    "tipoSangre": "A+",
+    "eps": "Famisanar",
+    "peso": "73.0",
+    "estatura": 161,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_20",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1106571696",
+    "nombres": "Camila",
+    "apellidos": "Ramírez Flores",
+    "fechaNacimiento": "1961-07-17",
+    "sexo": "Femenino",
+    "tipoSangre": "B-",
+    "eps": "Coomeva",
+    "peso": "57.5",
+    "estatura": 159,
+    "fechaRegistro": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_21",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1254836750",
+    "nombres": "Carlos",
+    "apellidos": "Gómez Sánchez",
+    "fechaNacimiento": "1964-04-18",
+    "sexo": "Femenino",
+    "tipoSangre": "O+",
+    "eps": "Famisanar",
+    "peso": "56.8",
+    "estatura": 176,
+    "fechaRegistro": {
+      "$date": "2026-10-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_22",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1755038912",
+    "nombres": "Ana",
+    "apellidos": "Pérez López",
+    "fechaNacimiento": "2015-09-12",
+    "sexo": "Masculino",
+    "tipoSangre": "A+",
+    "eps": "Famisanar",
+    "peso": "25.7",
+    "estatura": 120,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_23",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1836907082",
+    "nombres": "Sofía",
+    "apellidos": "Rodríguez Martínez",
+    "fechaNacimiento": "1974-08-15",
+    "sexo": "Femenino",
+    "tipoSangre": "A-",
+    "eps": "Nueva EPS",
+    "peso": "52.0",
+    "estatura": 156,
+    "fechaRegistro": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_24",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1408735411",
+    "nombres": "Ana",
+    "apellidos": "Gómez Sánchez",
+    "fechaNacimiento": "1965-01-16",
+    "sexo": "Masculino",
+    "tipoSangre": "B-",
+    "eps": "Coomeva",
+    "peso": "53.3",
+    "estatura": 172,
+    "fechaRegistro": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_25",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1088277702",
+    "nombres": "Juan",
+    "apellidos": "Castro Martínez",
+    "fechaNacimiento": "1987-08-18",
+    "sexo": "Femenino",
+    "tipoSangre": "O-",
+    "eps": "SURA",
+    "peso": "80.2",
+    "estatura": 160,
+    "fechaRegistro": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_26",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1280943755",
+    "nombres": "Diego",
+    "apellidos": "Ríos Ríos",
+    "fechaNacimiento": "2015-04-14",
+    "sexo": "Masculino",
+    "tipoSangre": "A+",
+    "eps": "Sanitas",
+    "peso": "30.5",
+    "estatura": 118,
+    "fechaRegistro": {
+      "$date": "2026-06-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_27",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1561749952",
+    "nombres": "Sofía",
+    "apellidos": "Vargas Ríos",
+    "fechaNacimiento": "1985-09-12",
+    "sexo": "Femenino",
+    "tipoSangre": "A-",
+    "eps": "Nueva EPS",
+    "peso": "64.6",
+    "estatura": 173,
+    "fechaRegistro": {
+      "$date": "2026-10-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_28",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1027393939",
+    "nombres": "Diego",
+    "apellidos": "Silva López",
+    "fechaNacimiento": "1973-02-16",
+    "sexo": "Femenino",
+    "tipoSangre": "O+",
+    "eps": "Compensar",
+    "peso": "73.0",
+    "estatura": 156,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_29",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1859880213",
+    "nombres": "Daniela",
+    "apellidos": "Ramírez Pérez",
+    "fechaNacimiento": "1974-09-17",
+    "sexo": "Masculino",
+    "tipoSangre": "O-",
+    "eps": "Compensar",
+    "peso": "88.1",
+    "estatura": 154,
+    "fechaRegistro": {
+      "$date": "2026-08-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_30",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1794292715",
+    "nombres": "Daniela",
+    "apellidos": "Flores Gómez",
+    "fechaNacimiento": "1975-02-15",
+    "sexo": "Femenino",
+    "tipoSangre": "O-",
+    "eps": "Coomeva",
+    "peso": "50.9",
+    "estatura": 157,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_31",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1029055996",
+    "nombres": "Juan",
+    "apellidos": "Mendoza Mendoza",
+    "fechaNacimiento": "1960-04-10",
+    "sexo": "Femenino",
+    "tipoSangre": "O+",
+    "eps": "Famisanar",
+    "peso": "52.6",
+    "estatura": 161,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_32",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1205043260",
+    "nombres": "Sofía",
+    "apellidos": "Pérez Cruz",
+    "fechaNacimiento": "1972-07-11",
+    "sexo": "Femenino",
+    "tipoSangre": "O+",
+    "eps": "Coomeva",
+    "peso": "77.1",
+    "estatura": 163,
+    "fechaRegistro": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_33",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1653641812",
+    "nombres": "Mariana",
+    "apellidos": "López Castro",
+    "fechaNacimiento": "1989-03-13",
+    "sexo": "Masculino",
+    "tipoSangre": "O-",
+    "eps": "Coomeva",
+    "peso": "85.9",
+    "estatura": 161,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_34",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1037086161",
+    "nombres": "Felipe",
+    "apellidos": "Cárdenas Rojas",
+    "fechaNacimiento": "1989-02-14",
+    "sexo": "Femenino",
+    "tipoSangre": "O-",
+    "eps": "SURA",
+    "peso": "63.6",
+    "estatura": 156,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_35",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1539351557",
+    "nombres": "Valentina",
+    "apellidos": "Ríos Vargas",
+    "fechaNacimiento": "1987-08-17",
+    "sexo": "Masculino",
+    "tipoSangre": "AB+",
+    "eps": "Famisanar",
+    "peso": "59.4",
+    "estatura": 168,
+    "fechaRegistro": {
+      "$date": "2026-08-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_36",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1213803101",
+    "nombres": "Gabriela",
+    "apellidos": "Cruz Ortiz",
+    "fechaNacimiento": "1977-05-10",
+    "sexo": "Femenino",
+    "tipoSangre": "B-",
+    "eps": "Sanitas",
+    "peso": "79.6",
+    "estatura": 154,
+    "fechaRegistro": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_37",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1444833063",
+    "nombres": "Carlos",
+    "apellidos": "Gómez Ríos",
+    "fechaNacimiento": "1985-08-12",
+    "sexo": "Femenino",
+    "tipoSangre": "O-",
+    "eps": "Sanitas",
+    "peso": "87.7",
+    "estatura": 176,
+    "fechaRegistro": {
+      "$date": "2026-08-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_38",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1049840086",
+    "nombres": "Jorge",
+    "apellidos": "Ortiz Mendoza",
+    "fechaNacimiento": "1972-08-14",
+    "sexo": "Femenino",
+    "tipoSangre": "AB+",
+    "eps": "SURA",
+    "peso": "50.2",
+    "estatura": 178,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_39",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1634634787",
+    "nombres": "Isabella",
+    "apellidos": "Ramírez Rodríguez",
+    "fechaNacimiento": "1989-04-14",
+    "sexo": "Masculino",
+    "tipoSangre": "A-",
+    "eps": "Compensar",
+    "peso": "57.6",
+    "estatura": 151,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_40",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1642417005",
+    "nombres": "Daniela",
+    "apellidos": "Ríos Rodríguez",
+    "fechaNacimiento": "2015-04-11",
+    "sexo": "Femenino",
+    "tipoSangre": "O+",
+    "eps": "SURA",
+    "peso": "16.4",
+    "estatura": 136,
+    "fechaRegistro": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_41",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1131901021",
+    "nombres": "Camila",
+    "apellidos": "Herrera Ortiz",
+    "fechaNacimiento": "1960-06-12",
+    "sexo": "Masculino",
+    "tipoSangre": "B+",
+    "eps": "Sanitas",
+    "peso": "79.8",
+    "estatura": 157,
+    "fechaRegistro": {
+      "$date": "2026-06-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_42",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1175454503",
+    "nombres": "Andrés",
+    "apellidos": "Cárdenas Sánchez",
+    "fechaNacimiento": "1984-04-17",
+    "sexo": "Femenino",
+    "tipoSangre": "AB+",
+    "eps": "SURA",
+    "peso": "68.5",
+    "estatura": 169,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_43",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1436203175",
+    "nombres": "María",
+    "apellidos": "Cruz Ramírez",
+    "fechaNacimiento": "2015-08-12",
+    "sexo": "Femenino",
+    "tipoSangre": "AB+",
+    "eps": "Famisanar",
+    "peso": "17.4",
+    "estatura": 126,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_44",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1592197654",
+    "nombres": "Luis",
+    "apellidos": "Ramírez Mendoza",
+    "fechaNacimiento": "1964-07-14",
+    "sexo": "Femenino",
+    "tipoSangre": "B-",
+    "eps": "Nueva EPS",
+    "peso": "85.5",
+    "estatura": 159,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_45",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1767558104",
+    "nombres": "Ana",
+    "apellidos": "Rojas Ramírez",
+    "fechaNacimiento": "1983-06-10",
+    "sexo": "Masculino",
+    "tipoSangre": "A-",
+    "eps": "Famisanar",
+    "peso": "88.8",
+    "estatura": 175,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_46",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1443436179",
+    "nombres": "Felipe",
+    "apellidos": "Flores Silva",
+    "fechaNacimiento": "1981-03-12",
+    "sexo": "Femenino",
+    "tipoSangre": "B+",
+    "eps": "Coomeva",
+    "peso": "82.1",
+    "estatura": 157,
+    "fechaRegistro": {
+      "$date": "2026-10-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_47",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1221688115",
+    "nombres": "Ricardo",
+    "apellidos": "Rojas Vargas",
+    "fechaNacimiento": "1965-02-16",
+    "sexo": "Femenino",
+    "tipoSangre": "A+",
+    "eps": "Coomeva",
+    "peso": "84.7",
+    "estatura": 158,
+    "fechaRegistro": {
+      "$date": "2026-06-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_48",
+    "tipoDocumento": "CC",
+    "numeroDocumento": "1663805870",
+    "nombres": "Jorge",
+    "apellidos": "Sánchez Flores",
+    "fechaNacimiento": "2015-04-15",
+    "sexo": "Femenino",
+    "tipoSangre": "B-",
+    "eps": "Famisanar",
+    "peso": "25.9",
+    "estatura": 127,
+    "fechaRegistro": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_49",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1518019970",
+    "nombres": "Gabriela",
+    "apellidos": "Fernández Mendoza",
+    "fechaNacimiento": "1967-02-11",
+    "sexo": "Femenino",
+    "tipoSangre": "AB+",
+    "eps": "Coomeva",
+    "peso": "79.4",
+    "estatura": 179,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  },
+  {
+    "_id": "pac_50",
+    "tipoDocumento": "TI",
+    "numeroDocumento": "1267494529",
+    "nombres": "Ricardo",
+    "apellidos": "Cruz Gómez",
+    "fechaNacimiento": "1982-07-10",
+    "sexo": "Masculino",
+    "tipoSangre": "AB+",
+    "eps": "Nueva EPS",
+    "peso": "68.6",
+    "estatura": 179,
+    "fechaRegistro": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "activo": true
+  }
+]

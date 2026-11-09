@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.time.Instant;
 import java.util.Comparator;
+
 import com.mycompany.clinica.entity.Paciente;
 import com.mycompany.clinica.repository.PacienteRepository;
 import com.mycompany.clinica.repository.UsuarioRepository;
@@ -31,63 +32,43 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.mycompany.clinica.entity.Historial;
 import com.mycompany.clinica.service.HistorialService;
 
-
 @Controller
 @RequestMapping("/historial")
 public class HistorialController {
-
 
     private final HistorialService historialService;
     private final PacienteRepository pacienteRepository;
     private final UsuarioRepository usuarioRepository;
 
-
     public HistorialController(
             HistorialService historialService,
             PacienteRepository pacienteRepository,
             UsuarioRepository usuarioRepository) {
-
         this.historialService = historialService;
         this.pacienteRepository = pacienteRepository;
         this.usuarioRepository = usuarioRepository;
     }
 
-
-    // =====================================================
-    // LISTA DE HISTORIALES
-    // GET /historial
-    // =====================================================
-
     @GetMapping({"", "/"})
     public String mostrarHistorial(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
             Authentication authentication,
             Model model) {
 
-        if (!estaAutenticado(authentication)) {
-            return "redirect:/login";
-        }
-
-        if (page < 0) {
-            page = 0;
-        }
-
-        if (size <= 0) {
-            size = 10;
-        }
+        if (!estaAutenticado(authentication)) return "redirect:/login";
+        if (page < 0) page = 0;
+        if (size <= 0) size = 10;
         size = Math.min(size, 100);
 
         String username = authentication.getName();
-
         boolean esAdmin = tieneRol(authentication, "ROLE_ADMIN");
         boolean esMedico = tieneRol(authentication, "ROLE_MEDICO");
         boolean esEnfermero = tieneRol(authentication, "ROLE_ENFERMERO");
         boolean esUsuario = tieneRol(authentication, "ROLE_USUARIO");
 
-        if (!esAdmin && !esMedico && !esEnfermero && !esUsuario) {
-            return "redirect:/error/403";
-        }
+        if (!esAdmin && !esMedico && !esEnfermero && !esUsuario) return "redirect:/error/403";
+
         model.addAttribute("username", username);
         model.addAttribute("esAdmin", esAdmin);
         model.addAttribute("esMedico", esMedico);
@@ -95,64 +76,37 @@ public class HistorialController {
         model.addAttribute("esUsuario", esUsuario);
 
         Pageable pageable = PageRequest.of(page, size);
-
         Page<Historial> paginaHistorial;
 
         if (esAdmin || esEnfermero) {
             paginaHistorial = historialService.listarTodos(pageable);
         } else if (esMedico) {
-            // Solo historiales creados/asignados a este medico.
-            // La consulta paginada deberia trasladarse al repositorio si crece el volumen.
             List<Historial> propios = historialService.listarTodos().stream()
                     .filter(h -> username.equals(h.getMedicoUsername()))
-                    .sorted(Comparator.comparing(Historial::getFecha,
-                            Comparator.nullsLast(Comparator.reverseOrder())))
+                    .sorted(Comparator.comparing(Historial::getFecha, Comparator.nullsLast(Comparator.reverseOrder())))
                     .toList();
             int desde = (int) Math.min((long) page * size, propios.size());
             int hasta = Math.min(desde + size, propios.size());
             paginaHistorial = new PageImpl<>(propios.subList(desde, hasta), pageable, propios.size());
         } else {
-            // Sin una vinculacion administrada, no se muestran historiales.
             String pacienteId = pacienteIdDelUsuario(authentication);
             paginaHistorial = historialService.buscarPorPacienteId(pacienteId, pageable);
         }
 
-        model.addAttribute(
-                "historiales",
-                paginaHistorial.getContent()
-        );
-
-        model.addAttribute(
-                "totalHistoriales",
-                paginaHistorial.getTotalElements()
-        );
-
-        model.addAttribute(
-                "paginaActual",
-                paginaHistorial.getNumber()
-        );
-
-        model.addAttribute(
-                "totalPaginas",
-                paginaHistorial.getTotalPages()
-        );
-
-        model.addAttribute(
-                "size",
-                paginaHistorial.getSize()
-        );
+        model.addAttribute("historiales", paginaHistorial.getContent());
+        model.addAttribute("totalHistoriales", paginaHistorial.getTotalElements());
+        model.addAttribute("paginaActual", paginaHistorial.getNumber());
+        model.addAttribute("totalPaginas", paginaHistorial.getTotalPages());
+        model.addAttribute("size", paginaHistorial.getSize());
 
         cargarNombresPacientes(model, authentication, paginaHistorial.getContent());
         return "historial";
     }
 
-
-    // Historial de un paciente seleccionado desde la lista de Pacientes.
-    // Solo se consideran coincidencias exactas de ID o documento.
     @GetMapping("/paciente/{id}")
     public String historialPorPaciente(
-            @PathVariable String id,
-            @RequestParam(defaultValue = "0") int page,
+            @PathVariable(name = "id") String id,
+            @RequestParam(name = "page", defaultValue = "0") int page,
             Authentication authentication,
             Model model,
             RedirectAttributes redirectAttributes) {
@@ -180,6 +134,7 @@ public class HistorialController {
                         || (h.getUsuarioUsername() != null && referencias.contains(h.getUsuarioUsername().trim())))
                 .filter(h -> puedeVerHistorial(authentication, h))
                 .toList();
+
         int size = 10;
         int totalPaginas = (encontrados.size() + size - 1) / size;
         int pagina = Math.min(Math.max(page, 0), Math.max(0, totalPaginas - 1));
@@ -197,43 +152,25 @@ public class HistorialController {
         model.addAttribute("esEnfermero", esEnfermero);
         model.addAttribute("esUsuario", false);
         model.addAttribute("pacienteSeleccionado", paciente);
+
         cargarNombresPacientes(model, authentication, encontrados);
         return "historial";
     }
 
-
-    // =====================================================
-    // NUEVO HISTORIAL
-    // =====================================================
-
     @GetMapping("/nuevo")
     public String nuevoHistorial(
-            @RequestParam(required = false) String pacienteId,
+            @RequestParam(name = "pacienteId", required = false) String pacienteId,
             Authentication authentication,
             Model model) {
 
-        if (!estaAutenticado(authentication)) {
-            return "redirect:/login";
-        }
+        if (!estaAutenticado(authentication)) return "redirect:/login";
+        if (!puedeCrearEditar(authentication)) return "redirect:/error/403";
 
-        if (!puedeCrearEditar(authentication)) {
-            return "redirect:/error/403";
-        }
+        Historial historial = new Historial();
+        historial.setFecha(LocalDate.now().toString());
 
-        Historial historial =
-                new Historial();
-
-        historial.setFecha(
-                LocalDate.now().toString()
-        );
-
-        if (tieneRol(
-                authentication,
-                "ROLE_MEDICO")) {
-
-            historial.setMedicoUsername(
-                    authentication.getName()
-            );
+        if (tieneRol(authentication, "ROLE_MEDICO")) {
+            historial.setMedicoUsername(authentication.getName());
         }
 
         if (pacienteId != null && !pacienteId.isBlank()) {
@@ -245,100 +182,44 @@ public class HistorialController {
         }
         model.addAttribute("pacientes", pacienteRepository.findAll());
         model.addAttribute("historial", historial);
-
-        model.addAttribute(
-                "modoEdicion",
-                false
-        );
+        model.addAttribute("modoEdicion", false);
 
         return "historial-form";
     }
 
-
-    // =====================================================
-    // GUARDAR
-    // =====================================================
-
     @PostMapping("/guardar")
     public String guardarHistorial(
-            @ModelAttribute("historial")
-            Historial historial,
-
+            @ModelAttribute("historial") Historial historial,
             Authentication authentication,
-
             RedirectAttributes redirectAttributes) {
 
+        if (!estaAutenticado(authentication)) return "redirect:/login";
+        if (!puedeCrearEditar(authentication)) return "redirect:/error/403";
 
-        if (!estaAutenticado(authentication)) {
-            return "redirect:/login";
-        }
-
-
-        if (!puedeCrearEditar(authentication)) {
-            return "redirect:/error/403";
-        }
-
-
-        if (historial.getPacienteId() == null
-                ||
-                historial.getPacienteId().isBlank()
+        if (historial.getPacienteId() == null || historial.getPacienteId().isBlank()
                 || !pacienteRepository.existsById(historial.getPacienteId())) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Debes seleccionar un paciente registrado."
-            );
-
+            redirectAttributes.addFlashAttribute("error", "Debes seleccionar un paciente registrado.");
             return "redirect:/historial/nuevo";
         }
 
-
-        if (historial.getMotivoConsulta() == null
-                ||
-                historial.getMotivoConsulta().isBlank()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "Debes indicar el motivo de consulta."
-            );
-
+        if (historial.getMotivoConsulta() == null || historial.getMotivoConsulta().isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Debes indicar el motivo de consulta.");
             return "redirect:/historial/nuevo";
         }
 
-
-        if (historial.getFecha() == null
-                ||
-                historial.getFecha().isBlank()) {
-
-            historial.setFecha(
-                    LocalDate.now().toString()
-            );
+        if (historial.getFecha() == null || historial.getFecha().isBlank()) {
+            historial.setFecha(LocalDate.now().toString());
         }
 
-
-        if (tieneRol(
-                authentication,
-                "ROLE_MEDICO")) {
-
-            historial.setMedicoUsername(
-                    authentication.getName()
-            );
+        if (tieneRol(authentication, "ROLE_MEDICO")) {
+            historial.setMedicoUsername(authentication.getName());
         }
 
-
-        if (historial.getMedicoUsername() == null
-                ||
-                historial.getMedicoUsername().isBlank()) {
-
-            historial.setMedicoUsername(
-                    authentication.getName()
-            );
+        if (historial.getMedicoUsername() == null || historial.getMedicoUsername().isBlank()) {
+            historial.setMedicoUsername(authentication.getName());
         }
-
 
         historial.setId(null);
-        // No inventar el username de un usuario: pacienteId es un ID de MongoDB.
-        // La vinculacion real cuenta-paciente requiere revisar Paciente y Usuario.
         historial.setUsuarioUsername(null);
         historial.setCreadoPor(authentication.getName());
         historial.setFechaCreacion(Instant.now());
@@ -347,60 +228,30 @@ public class HistorialController {
         historial.setAnulado(false);
         historial.setMotivoAnulacion(null);
 
-        historialService.guardar(
-                historial
-        );
+        historialService.guardar(historial);
 
-
-        redirectAttributes.addFlashAttribute(
-                "exito",
-                "Historial mÃ©dico guardado correctamente."
-        );
-
-
+        redirectAttributes.addFlashAttribute("exito", "Historial médico guardado correctamente.");
         return "redirect:/historial";
     }
 
-
-    // =====================================================
-    // VER
-    // =====================================================
-
     @GetMapping("/ver/{id}")
     public String verHistorial(
-            @PathVariable String id,
+            @PathVariable(name = "id") String id,
             Authentication authentication,
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        if (!estaAutenticado(authentication)) return "redirect:/login";
 
-        if (!estaAutenticado(authentication)) {
-            return "redirect:/login";
-        }
-
-
-        Optional<Historial> historialOptional =
-                historialService.buscarPorId(id);
-
-
+        Optional<Historial> historialOptional = historialService.buscarPorId(id);
         if (historialOptional.isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "El historial solicitado no existe."
-            );
-
+            redirectAttributes.addFlashAttribute("error", "El historial solicitado no existe.");
             return "redirect:/historial";
         }
 
-
-        Historial historial =
-                historialOptional.get();
-
-        if (!tieneRol(authentication, "ROLE_ADMIN")
-                && !tieneRol(authentication, "ROLE_MEDICO")
-                && !tieneRol(authentication, "ROLE_ENFERMERO")
-                && !tieneRol(authentication, "ROLE_USUARIO")) {
+        Historial historial = historialOptional.get();
+        if (!tieneRol(authentication, "ROLE_ADMIN") && !tieneRol(authentication, "ROLE_MEDICO")
+                && !tieneRol(authentication, "ROLE_ENFERMERO") && !tieneRol(authentication, "ROLE_USUARIO")) {
             return "redirect:/error/403";
         }
 
@@ -408,252 +259,116 @@ public class HistorialController {
             return "redirect:/error/403";
         }
 
-        model.addAttribute(
-                "historial",
-                historial
-        );
-
-
+        model.addAttribute("historial", historial);
         return "historial-detalle";
     }
 
-
-    // =====================================================
-    // EDITAR
-    // =====================================================
-
     @GetMapping("/editar/{id}")
     public String editarHistorial(
-            @PathVariable String id,
+            @PathVariable(name = "id") String id,
             Authentication authentication,
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        if (!estaAutenticado(authentication)) return "redirect:/login";
+        if (!puedeCrearEditar(authentication)) return "redirect:/error/403";
 
-        if (!estaAutenticado(authentication)) {
-            return "redirect:/login";
-        }
-
-
-        if (!puedeCrearEditar(authentication)) {
-            return "redirect:/error/403";
-        }
-
-
-        Optional<Historial> historialOptional =
-                historialService.buscarPorId(id);
-
-
+        Optional<Historial> historialOptional = historialService.buscarPorId(id);
         if (historialOptional.isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "No se encontrÃ³ el historial."
-            );
-
+            redirectAttributes.addFlashAttribute("error", "No se encontró el historial.");
             return "redirect:/historial";
         }
 
+        if (!puedeModificarHistorial(authentication, historialOptional.get())) return "redirect:/error/403";
 
-        if (!puedeModificarHistorial(authentication, historialOptional.get())) {
-            return "redirect:/error/403";
-        }
-
-        model.addAttribute(
-                "historial",
-                historialOptional.get()
-        );
-
-
+        model.addAttribute("historial", historialOptional.get());
         model.addAttribute("pacientes", pacienteRepository.findAll());
         model.addAttribute("modoEdicion", true);
-
 
         return "historial-form";
     }
 
-
-    // =====================================================
-    // ACTUALIZAR
-    // =====================================================
-
     @PostMapping("/actualizar/{id}")
     public String actualizarHistorial(
-            @PathVariable String id,
-
-            @ModelAttribute("historial")
-            Historial actualizado,
-
+            @PathVariable(name = "id") String id,
+            @ModelAttribute("historial") Historial actualizado,
             Authentication authentication,
-
             RedirectAttributes redirectAttributes) {
 
+        if (!estaAutenticado(authentication)) return "redirect:/login";
+        if (!puedeCrearEditar(authentication)) return "redirect:/error/403";
 
-        if (!estaAutenticado(authentication)) {
-            return "redirect:/login";
-        }
-
-
-        if (!puedeCrearEditar(authentication)) {
-            return "redirect:/error/403";
-        }
-
-
-        Optional<Historial> historialOptional =
-                historialService.buscarPorId(id);
-
-
+        Optional<Historial> historialOptional = historialService.buscarPorId(id);
         if (historialOptional.isEmpty()) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "No se encontrÃ³ el historial."
-            );
-
+            redirectAttributes.addFlashAttribute("error", "No se encontró el historial.");
             return "redirect:/historial";
         }
 
+        Historial historial = historialOptional.get();
+        if (!puedeModificarHistorial(authentication, historial)) return "redirect:/error/403";
 
-        Historial historial =
-                historialOptional.get();
-
-        if (!puedeModificarHistorial(authentication, historial)) {
-            return "redirect:/error/403";
-        }
-
-        // Prohibir el cambio de paciente en historiales existentes para todos los roles.
         if (!java.util.Objects.equals(historial.getPacienteId(), actualizado.getPacienteId())) {
             redirectAttributes.addFlashAttribute("error", "No puedes cambiar el paciente de un historial existente.");
             return "redirect:/historial/editar/" + id;
         }
 
-        if (actualizado.getPacienteId() == null ||
-                !pacienteRepository.existsById(actualizado.getPacienteId())) {
+        if (actualizado.getPacienteId() == null || !pacienteRepository.existsById(actualizado.getPacienteId())) {
             redirectAttributes.addFlashAttribute("error", "Debes seleccionar un paciente registrado.");
             return "redirect:/historial/editar/" + id;
         }
         historial.setPacienteId(actualizado.getPacienteId());
-        // Conservar la asociacion de cuenta existente; no sustituir por el ID del paciente.
+        historial.setFecha(actualizado.getFecha());
+        historial.setMotivoConsulta(actualizado.getMotivoConsulta());
+        historial.setDiagnostico(actualizado.getDiagnostico());
+        historial.setTratamiento(actualizado.getTratamiento());
+        historial.setObservaciones(actualizado.getObservaciones());
 
-        historial.setFecha(
-                actualizado.getFecha()
-        );
-
-        historial.setMotivoConsulta(
-                actualizado.getMotivoConsulta()
-        );
-
-        historial.setDiagnostico(
-                actualizado.getDiagnostico()
-        );
-
-        historial.setTratamiento(
-                actualizado.getTratamiento()
-        );
-
-        historial.setObservaciones(
-                actualizado.getObservaciones()
-        );
-
-
-        if (tieneRol(
-                authentication,
-                "ROLE_ADMIN")) {
-
-            if (actualizado.getMedicoUsername() != null
-                    &&
-                    !actualizado
-                            .getMedicoUsername()
-                            .isBlank()) {
-
-                historial.setMedicoUsername(
-                        actualizado.getMedicoUsername()
-                );
+        if (tieneRol(authentication, "ROLE_ADMIN")) {
+            if (actualizado.getMedicoUsername() != null && !actualizado.getMedicoUsername().isBlank()) {
+                historial.setMedicoUsername(actualizado.getMedicoUsername());
             }
         }
 
-
-        // La identidad del medico asignado no se sobrescribe durante la edicion.
-
         historial.setModificadoPor(authentication.getName());
         historial.setFechaModificacion(Instant.now());
         historialService.actualizar(historial);
 
-
-        redirectAttributes.addFlashAttribute(
-                "exito",
-                "Historial mÃ©dico actualizado correctamente."
-        );
-
-
+        redirectAttributes.addFlashAttribute("exito", "Historial médico actualizado correctamente.");
         return "redirect:/historial";
     }
-
-
-    // =====================================================
-    // ELIMINAR
-    // =====================================================
 
     @PostMapping("/eliminar/{id}")
     public String eliminarHistorial(
-            @PathVariable String id,
+            @PathVariable(name = "id") String id,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
-
-        if (!estaAutenticado(authentication)) {
-            return "redirect:/login";
-        }
-
-
-        if (!tieneRol(
-                authentication,
-                "ROLE_ADMIN")) {
-
-            return "redirect:/error/403";
-        }
-
+        if (!estaAutenticado(authentication)) return "redirect:/login";
+        if (!tieneRol(authentication, "ROLE_ADMIN")) return "redirect:/error/403";
 
         if (!historialService.existePorId(id)) {
-
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "El historial no existe."
-            );
-
+            redirectAttributes.addFlashAttribute("error", "El historial no existe.");
             return "redirect:/historial";
         }
 
-
         Historial historial = historialService.buscarPorId(id).orElseThrow();
         historial.setAnulado(true);
-        historial.setMotivoAnulacion("Anulado por administraciÃ³n. Pendiente de registrar justificaciÃ³n detallada.");
+        historial.setMotivoAnulacion("Anulado por administración. Pendiente de registrar justificación detallada.");
         historial.setModificadoPor(authentication.getName());
         historial.setFechaModificacion(Instant.now());
         historialService.actualizar(historial);
 
-
-        redirectAttributes.addFlashAttribute(
-                "exito",
-                "Historial mÃ©dico marcado como anulado."
-        );
-
-
+        redirectAttributes.addFlashAttribute("exito", "Historial médico marcado como anulado.");
         return "redirect:/historial";
     }
 
-
-    // Un usuario solo recibe los nombres de pacientes de los historiales
-    // que efectivamente puede consultar. Personal autorizado conserva listado.
-    private void cargarNombresPacientes(Model model, Authentication authentication,
-                                       List<Historial> visibles) {
+    private void cargarNombresPacientes(Model model, Authentication authentication, List<Historial> visibles) {
         Map<String, String> nombres;
         if (tieneRol(authentication, "ROLE_USUARIO")) {
             String pacienteId = pacienteIdDelUsuario(authentication);
             nombres = (pacienteId == null ? java.util.stream.Stream.<Paciente>empty()
                     : pacienteRepository.findById(pacienteId).stream())
-                    .collect(Collectors.toMap(Paciente::getId,
-                            Paciente::getNombreCompleto, (a, b) -> a));
+                    .collect(Collectors.toMap(Paciente::getId, Paciente::getNombreCompleto, (a, b) -> a));
         } else if (tieneRol(authentication, "ROLE_MEDICO")) {
             Set<String> idsVisibles = visibles.stream()
                     .filter(h -> puedeVerHistorial(authentication, h))
@@ -662,38 +377,26 @@ public class HistorialController {
                     .collect(Collectors.toSet());
             nombres = pacienteRepository.findAll().stream()
                     .filter(p -> idsVisibles.contains(p.getId()))
-                    .collect(Collectors.toMap(Paciente::getId,
-                            Paciente::getNombreCompleto, (a, b) -> a));
+                    .collect(Collectors.toMap(Paciente::getId, Paciente::getNombreCompleto, (a, b) -> a));
         } else {
-            // Politica vigente: administracion y enfermeria pueden consultar todos.
             nombres = pacienteRepository.findAll().stream()
-                    .collect(Collectors.toMap(Paciente::getId,
-                            Paciente::getNombreCompleto, (a, b) -> a));
+                    .collect(Collectors.toMap(Paciente::getId, Paciente::getNombreCompleto, (a, b) -> a));
         }
         model.addAttribute("nombresPacientes", nombres);
     }
 
     private String pacienteIdDelUsuario(Authentication authentication) {
         if (!estaAutenticado(authentication)) return null;
-        Optional<Usuario> usuario = usuarioRepository.findByUsername(authentication.getName());
-        if (usuario.isEmpty()) {
-            usuario = usuarioRepository.findByNombreUsuario(authentication.getName());
-        }
-        if (usuario.isEmpty() || usuario.get().getRol() != com.mycompany.clinica.entity.Rol.USUARIO) {
-            return null;
-        }
+        Optional<Usuario> usuario = usuarioRepository.findByNombreUsuario(authentication.getName());
+        if (usuario.isEmpty() || usuario.get().getRol() != com.mycompany.clinica.entity.Rol.USUARIO) return null;
         String id = usuario.get().getPacienteId();
         if (id == null || id.isBlank() || !pacienteRepository.existsById(id)) return null;
         return id;
     }
 
-    // Acceso por registro. Admin: todos. Enfermeria: lectura segun politica actual.
-    // Medico: solo historiales cuyo medicoUsername coincide con la sesion.
-    // Usuario: solo historiales explicitamente asociados a su username.
     private boolean puedeVerHistorial(Authentication authentication, Historial historial) {
         if (!estaAutenticado(authentication) || historial == null) return false;
-        if (tieneRol(authentication, "ROLE_ADMIN")) return true;
-        if (tieneRol(authentication, "ROLE_ENFERMERO")) return true;
+        if (tieneRol(authentication, "ROLE_ADMIN") || tieneRol(authentication, "ROLE_ENFERMERO")) return true;
         if (tieneRol(authentication, "ROLE_MEDICO")) {
             return authentication.getName().equals(historial.getMedicoUsername());
         }
@@ -703,69 +406,21 @@ public class HistorialController {
     }
 
     private boolean puedeModificarHistorial(Authentication authentication, Historial historial) {
-        if (!puedeCrearEditar(authentication) || historial == null) {
-            return false;
-        }
+        if (!puedeCrearEditar(authentication) || historial == null) return false;
         return tieneRol(authentication, "ROLE_ADMIN")
-                || (tieneRol(authentication, "ROLE_MEDICO")
-                    && authentication.getName().equals(historial.getMedicoUsername()));
+                || (tieneRol(authentication, "ROLE_MEDICO") && authentication.getName().equals(historial.getMedicoUsername()));
     }
 
-    // =====================================================
-    // VALIDAR AUTENTICACIÃ“N
-    // =====================================================
-
-    private boolean estaAutenticado(
-            Authentication authentication) {
-
-        return authentication != null
-                &&
-                authentication.isAuthenticated();
+    private boolean estaAutenticado(Authentication authentication) {
+        return authentication != null && authentication.isAuthenticated();
     }
 
-
-    // =====================================================
-    // ADMIN / MÃ‰DICO
-    // =====================================================
-
-    private boolean puedeCrearEditar(
-            Authentication authentication) {
-
-        return tieneRol(
-                authentication,
-                "ROLE_ADMIN"
-        )
-                ||
-                tieneRol(
-                        authentication,
-                        "ROLE_MEDICO"
-                );
+    private boolean puedeCrearEditar(Authentication authentication) {
+        return tieneRol(authentication, "ROLE_ADMIN") || tieneRol(authentication, "ROLE_MEDICO");
     }
 
-
-    // =====================================================
-    // VALIDAR ROL
-    // =====================================================
-
-    private boolean tieneRol(
-            Authentication authentication,
-            String rol) {
-
-
-        if (authentication == null) {
-            return false;
-        }
-
-
-        return authentication
-                .getAuthorities()
-                .stream()
-                .anyMatch(
-                        authority ->
-                                authority
-                                        .getAuthority()
-                                        .equals(rol)
-                );
+    private boolean tieneRol(Authentication authentication, String rol) {
+        if (authentication == null) return false;
+        return authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals(rol));
     }
-
 }
