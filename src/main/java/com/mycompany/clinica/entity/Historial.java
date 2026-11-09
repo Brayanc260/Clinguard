@@ -1,16 +1,17 @@
 package com.mycompany.clinica.entity;
 
-import java.time.Instant;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.time.Instant;
 
 @Document(collection = "historiales")
 public class Historial {
+
     @Id
     private String id;
     private String pacienteId;
-    private String usuarioUsername;
     private String medicoUsername;
+    private String usuarioUsername;
     private String fecha;
     private String motivoConsulta;
     private String diagnostico;
@@ -26,123 +27,48 @@ public class Historial {
     public Historial() {
     }
 
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public void setId(String x) {
-        id = x;
-    }
+    public String getPacienteId() { return pacienteId; }
+    public void setPacienteId(String pacienteId) { this.pacienteId = pacienteId; }
 
-    public String getPacienteId() {
-        return pacienteId;
-    }
+    public String getMedicoUsername() { return medicoUsername; }
+    public void setMedicoUsername(String medicoUsername) { this.medicoUsername = medicoUsername; }
 
-    public void setPacienteId(String x) {
-        pacienteId = x;
-    }
+    public String getUsuarioUsername() { return usuarioUsername; }
+    public void setUsuarioUsername(String usuarioUsername) { this.usuarioUsername = usuarioUsername; }
 
-    public String getUsuarioUsername() {
-        return usuarioUsername;
-    }
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) { this.fecha = fecha; }
 
-    public void setUsuarioUsername(String x) {
-        usuarioUsername = x;
-    }
+    public String getMotivoConsulta() { return motivoConsulta; }
+    public void setMotivoConsulta(String motivoConsulta) { this.motivoConsulta = motivoConsulta; }
 
-    public String getMedicoUsername() {
-        return medicoUsername;
-    }
+    public String getDiagnostico() { return diagnostico; }
+    public void setDiagnostico(String diagnostico) { this.diagnostico = diagnostico; }
 
-    public void setMedicoUsername(String x) {
-        medicoUsername = x;
-    }
+    public String getTratamiento() { return tratamiento; }
+    public void setTratamiento(String tratamiento) { this.tratamiento = tratamiento; }
 
-    public String getFecha() {
-        return fecha;
-    }
+    public String getObservaciones() { return observaciones; }
+    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
 
-    public void setFecha(String x) {
-        fecha = x;
-    }
+    public String getCreadoPor() { return creadoPor; }
+    public void setCreadoPor(String creadoPor) { this.creadoPor = creadoPor; }
 
-    public String getMotivoConsulta() {
-        return motivoConsulta;
-    }
+    public Instant getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(Instant fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 
-    public void setMotivoConsulta(String x) {
-        motivoConsulta = x;
-    }
+    public String getModificadoPor() { return modificadoPor; }
+    public void setModificadoPor(String modificadoPor) { this.modificadoPor = modificadoPor; }
 
-    public String getDiagnostico() {
-        return diagnostico;
-    }
+    public Instant getFechaModificacion() { return fechaModificacion; }
+    public void setFechaModificacion(Instant fechaModificacion) { this.fechaModificacion = fechaModificacion; }
 
-    public void setDiagnostico(String x) {
-        diagnostico = x;
-    }
+    public boolean isAnulado() { return anulado; }
+    public void setAnulado(boolean anulado) { this.anulado = anulado; }
 
-    public String getTratamiento() {
-        return tratamiento;
-    }
-
-    public void setTratamiento(String x) {
-        tratamiento = x;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String x) {
-        observaciones = x;
-    }
-
-    public String getCreadoPor() {
-        return creadoPor;
-    }
-
-    public void setCreadoPor(String x) {
-        creadoPor = x;
-    }
-
-    public Instant getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(Instant x) {
-        fechaCreacion = x;
-    }
-
-    public String getModificadoPor() {
-        return modificadoPor;
-    }
-
-    public void setModificadoPor(String x) {
-        modificadoPor = x;
-    }
-
-    public Instant getFechaModificacion() {
-        return fechaModificacion;
-    }
-
-    public void setFechaModificacion(Instant x) {
-        fechaModificacion = x;
-    }
-
-    public boolean isAnulado() {
-        return anulado;
-    }
-
-    public void setAnulado(boolean x) {
-        anulado = x;
-    }
-
-    public String getMotivoAnulacion() {
-        return motivoAnulacion;
-    }
-
-    public void setMotivoAnulacion(String x) {
-        motivoAnulacion = x;
-    }
+    public String getMotivoAnulacion() { return motivoAnulacion; }
+    public void setMotivoAnulacion(String motivoAnulacion) { this.motivoAnulacion = motivoAnulacion; }
 }

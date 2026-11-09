@@ -1,4 +1,3 @@
-
 package com.mycompany.clinica.entity;
 
 import jakarta.validation.constraints.Email;
@@ -205,7 +204,9 @@ public class Paciente {
     // CÁLCULO AUTOMÁTICO DEL IMC
     // ============================================
 
-    public BigDecimal getImc() {
+    // NOTA: Cambiamos 'getImc' por 'calcularImc' para que Spring Data
+    // no intente buscar un campo inexistente en MongoDB.
+    public BigDecimal calcularImc() {
 
         if (peso == null || estatura == null ||
                 peso.signum() <= 0 || estatura.signum() <= 0) {

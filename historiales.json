@@ -1,0 +1,552 @@
+[
+  {
+    "pacienteId": "pac_2",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_2",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_10",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_6",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_18",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_1",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_6",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_19",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_48",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_3",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_48",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_15",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_20",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_22",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_49",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_31",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_38",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_47",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_35",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_25",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_9",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_48",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_37",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_30",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_36",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_49",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_25",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_28",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_4",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_10",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_3",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_1",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_48",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_3",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_15",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_15",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_19",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_37",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_21",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_45",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_28",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_21",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_23",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_42",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_15",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_28",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_25",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_41",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_26",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  },
+  {
+    "pacienteId": "pac_48",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "motivoConsulta": "Control de rutina",
+    "diagnostico": "Paciente estable",
+    "tratamiento": "Ninguno",
+    "observaciones": "Sin novedades"
+  }
+]

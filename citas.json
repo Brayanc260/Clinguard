@@ -1,0 +1,452 @@
+[
+  {
+    "pacienteId": "pac_23",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.089Z"
+    },
+    "hora": "016:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_31",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.089Z"
+    },
+    "hora": "09:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_24",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.089Z"
+    },
+    "hora": "08:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_12",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.089Z"
+    },
+    "hora": "016:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_45",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "hora": "012:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_6",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "hora": "016:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_50",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "hora": "011:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_5",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.089Z"
+    },
+    "hora": "013:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_23",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "hora": "014:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_18",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "hora": "011:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_29",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.089Z"
+    },
+    "hora": "014:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_37",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "hora": "010:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_50",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.089Z"
+    },
+    "hora": "016:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_14",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.089Z"
+    },
+    "hora": "014:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_24",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.089Z"
+    },
+    "hora": "016:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_41",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "hora": "010:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_17",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.089Z"
+    },
+    "hora": "010:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_17",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "hora": "016:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_12",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "hora": "013:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_3",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.089Z"
+    },
+    "hora": "08:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_23",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "hora": "09:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_38",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "hora": "08:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_37",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "hora": "013:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_24",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "hora": "09:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_15",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "hora": "015:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_49",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "hora": "015:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_46",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "hora": "015:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_39",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "hora": "013:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_30",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "hora": "010:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_42",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "hora": "015:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_28",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "hora": "013:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_39",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "hora": "015:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_39",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "hora": "010:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_28",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "hora": "012:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_14",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "hora": "016:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_5",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "hora": "08:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_10",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "hora": "013:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_18",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "hora": "014:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_44",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "hora": "013:00",
+    "estado": "CANCELADA"
+  },
+  {
+    "pacienteId": "pac_37",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "hora": "09:00",
+    "estado": "CONFIRMADA"
+  },
+  {
+    "pacienteId": "pac_36",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-08-09T05:17:29.090Z"
+    },
+    "hora": "09:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_30",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "hora": "013:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_27",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-11-09T05:17:29.090Z"
+    },
+    "hora": "015:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_35",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "hora": "015:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_48",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "hora": "014:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_23",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "hora": "010:00",
+    "estado": "PROGRAMADA"
+  },
+  {
+    "pacienteId": "pac_37",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-07-09T05:17:29.090Z"
+    },
+    "hora": "013:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_21",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-06-09T05:17:29.090Z"
+    },
+    "hora": "08:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_33",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-10-09T05:17:29.090Z"
+    },
+    "hora": "09:00",
+    "estado": "ATENDIDA"
+  },
+  {
+    "pacienteId": "pac_5",
+    "medicoUsername": "medico",
+    "fecha": {
+      "$date": "2026-09-09T05:17:29.090Z"
+    },
+    "hora": "011:00",
+    "estado": "CANCELADA"
+  }
+]

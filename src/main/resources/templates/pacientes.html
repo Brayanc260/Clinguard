@@ -778,7 +778,7 @@
                                     <!-- DATOS FÍSICOS DEL PACIENTE -->
                                     <td th:text="${paciente.peso != null ? paciente.peso : '—'}">—</td>
                                     <td th:text="${paciente.estatura != null ? paciente.estatura : '—'}">—</td>
-                                    <td th:text="${paciente.imc != null ? paciente.imc : '—'}">—</td>
+                                    <td th:text="${paciente.calcularImc() != null ? paciente.calcularImc() : '—'}">—</td>
 
                                     <!-- ACCIONES -->
 
