@@ -1,52 +1,54 @@
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
 
-// Reemplaza con tu URI de conexión (la misma de application.properties)
-const uri = "mongodb+srv://Admin_Clinguard:Brcamilo052606@brcamilo.k9ovmwy.mongodb.net/clinica_db?retryWrites=true&w=majority";
+// La URI se lee de la variable de entorno MONGO_URI (no va escrita en el código)
+const uri = process.env.MONGO_URI;
+if (!uri) {
+    console.error("Falta la variable de entorno MONGO_URI");
+    process.exit(1);
+}
+
+// Convierte "YYYY-MM-DD" a fecha; devuelve null si no es válida.
+// Se usa mediodía UTC para que la fecha no cambie de día por la zona horaria.
+function aFecha(valor) {
+    const f = new Date(valor + "T12:00:00Z");
+    return isNaN(f) ? null : f;
+}
 
 async function importar() {
     const client = new MongoClient(uri);
     try {
         await client.connect();
-        console.log("✅ Conectado a MongoDB Atlas");
+        console.log("Conectado a MongoDB Atlas");
         const db = client.db('clinica_db');
 
-        // --- Importar Pacientes ---
+        // --- Pacientes ---
+        // fechaNacimiento (LocalDate) y fechaRegistro (Instant) van como fecha
         let pacientes = JSON.parse(fs.readFileSync('pacientes.json', 'utf8'));
         pacientes.forEach(p => {
-            // Convertir fechaRegistro de string a Date
-            if (p.fechaRegistro && typeof p.fechaRegistro === 'string') {
-                p.fechaRegistro = new Date(p.fechaRegistro);
-            }
+            if (typeof p.fechaNacimiento === 'string') p.fechaNacimiento = aFecha(p.fechaNacimiento);
+            if (typeof p.fechaRegistro === 'string') p.fechaRegistro = aFecha(p.fechaRegistro);
         });
         await db.collection('pacientes').drop().catch(() => {});
         await db.collection('pacientes').insertMany(pacientes);
-        console.log(`✅ ${pacientes.length} pacientes importados`);
+        console.log(`${pacientes.length} pacientes importados`);
 
-        // --- Importar Citas ---
+        // --- Citas ---
+        // fecha y hora son texto en la entidad Cita, se dejan como vienen
         let citas = JSON.parse(fs.readFileSync('citas.json', 'utf8'));
-        citas.forEach(c => {
-            if (c.fecha && typeof c.fecha === 'string') {
-                c.fecha = new Date(c.fecha);
-            }
-        });
         await db.collection('citas').drop().catch(() => {});
         await db.collection('citas').insertMany(citas);
-        console.log(`✅ ${citas.length} citas importadas`);
+        console.log(`${citas.length} citas importadas`);
 
-        // --- Importar Historiales ---
+        // --- Historiales ---
+        // fecha es texto en la entidad Historial, se deja como viene
         let historiales = JSON.parse(fs.readFileSync('historiales.json', 'utf8'));
-        historiales.forEach(h => {
-            if (h.fecha && typeof h.fecha === 'string') {
-                h.fecha = new Date(h.fecha);
-            }
-        });
         await db.collection('historiales').drop().catch(() => {});
         await db.collection('historiales').insertMany(historiales);
-        console.log(`✅ ${historiales.length} historiales importados`);
+        console.log(`${historiales.length} historiales importados`);
 
     } catch (error) {
-        console.error("❌ Error:", error);
+        console.error("Error:", error);
     } finally {
         await client.close();
     }
