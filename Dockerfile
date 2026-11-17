@@ -9,22 +9,19 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
-# Copiar el código fuente y compilar
+# Copiar el código fuente y compilar (Forzando los nombres de parámetros)
 COPY src ./src
-RUN mvn package -DskipTests -B
+RUN mvn clean package -DskipTests -B -Dmaven.compiler.parameters=true
 
 # ==========================================
-# ETAPA 2: EJECUCIÓN (Imagen ligera para correr el JAR)
+# ETAPA 2: EJECUCIÓN (Imagen ligera)
 # ==========================================
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Copiar el JAR generado en la etapa anterior
 COPY --from=builder /app/target/*.jar app.jar
 
-# Exponer el puerto de la aplicación
 EXPOSE 8080
 
-# Comando de inicio con la bandera --add-opens para solucionar el error de java.time.Instant
 ENTRYPOINT ["java", "--add-opens", "java.base/java.time=ALL-UNNAMED", "-jar", "app.jar"]

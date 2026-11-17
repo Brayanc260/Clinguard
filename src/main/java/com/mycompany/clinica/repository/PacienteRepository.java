@@ -1,28 +1,23 @@
-
 package com.mycompany.clinica.repository;
 
 import com.mycompany.clinica.entity.Paciente;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PacienteRepository
-        extends MongoRepository<Paciente, String> {
+public interface PacienteRepository extends MongoRepository<Paciente, String> {
 
-    // BUSCAR PACIENTE POR DOCUMENTO
+    @Query("{ 'documento': ?0 }")
     Optional<Paciente> findByDocumento(String documento);
 
-    // VERIFICAR SI EXISTE UN DOCUMENTO
+    @Query(value = "{ 'documento': ?0 }", exists = true)
     boolean existsByDocumento(String documento);
 
-    // PACIENTES ACTIVOS
     List<Paciente> findByActivoTrue();
     long countByActivoTrue();
-
-    // PACIENTES INACTIVOS
     List<Paciente> findByActivoFalse();
     long countByActivoFalse();
 }

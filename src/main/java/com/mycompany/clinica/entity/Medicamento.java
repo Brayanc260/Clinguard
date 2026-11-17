@@ -1,6 +1,7 @@
 package com.mycompany.clinica.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "medicamentos")
@@ -8,30 +9,31 @@ public class Medicamento {
 
     @Id
     private String id;
-
+    
     private String nombre;
     private String principioActivo;
     private String presentacion;
-
     private Double cantidadMedicamento;
     private String unidadMedicamento;
-
     private Double cantidadVehiculo;
     private String unidadVehiculo;
-
     private String viaAdministracion;
-
     private Integer stock;
-
     private String estado;
-
     private Double dosisMinimaMgKg;
     private Double dosisMaximaMgKg;
     private String descripcion;
 
+    // ============================================
+    // CONSTRUCTOR (CON LA ANOTACIÓN MÁGICA)
+    // ============================================
+    @PersistenceCreator
     public Medicamento() {
     }
 
+    // ============================================
+    // GETTERS Y SETTERS
+    // ============================================
     public String getId() {
         return id;
     }

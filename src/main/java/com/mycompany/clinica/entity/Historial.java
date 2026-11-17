@@ -1,6 +1,7 @@
 package com.mycompany.clinica.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 
@@ -9,6 +10,7 @@ public class Historial {
 
     @Id
     private String id;
+    
     private String pacienteId;
     private String medicoUsername;
     private String usuarioUsername;
@@ -24,51 +26,133 @@ public class Historial {
     private boolean anulado;
     private String motivoAnulacion;
 
+    // ============================================
+    // CONSTRUCTOR (CON LA ANOTACIÓN MÁGICA)
+    // ============================================
+    @PersistenceCreator
     public Historial() {
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    // ============================================
+    // GETTERS Y SETTERS
+    // ============================================
+    public String getId() {
+        return id;
+    }
 
-    public String getPacienteId() { return pacienteId; }
-    public void setPacienteId(String pacienteId) { this.pacienteId = pacienteId; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getMedicoUsername() { return medicoUsername; }
-    public void setMedicoUsername(String medicoUsername) { this.medicoUsername = medicoUsername; }
+    public String getPacienteId() {
+        return pacienteId;
+    }
 
-    public String getUsuarioUsername() { return usuarioUsername; }
-    public void setUsuarioUsername(String usuarioUsername) { this.usuarioUsername = usuarioUsername; }
+    public void setPacienteId(String pacienteId) {
+        this.pacienteId = pacienteId;
+    }
 
-    public String getFecha() { return fecha; }
-    public void setFecha(String fecha) { this.fecha = fecha; }
+    public String getMedicoUsername() {
+        return medicoUsername;
+    }
 
-    public String getMotivoConsulta() { return motivoConsulta; }
-    public void setMotivoConsulta(String motivoConsulta) { this.motivoConsulta = motivoConsulta; }
+    public void setMedicoUsername(String medicoUsername) {
+        this.medicoUsername = medicoUsername;
+    }
 
-    public String getDiagnostico() { return diagnostico; }
-    public void setDiagnostico(String diagnostico) { this.diagnostico = diagnostico; }
+    public String getUsuarioUsername() {
+        return usuarioUsername;
+    }
 
-    public String getTratamiento() { return tratamiento; }
-    public void setTratamiento(String tratamiento) { this.tratamiento = tratamiento; }
+    public void setUsuarioUsername(String usuarioUsername) {
+        this.usuarioUsername = usuarioUsername;
+    }
 
-    public String getObservaciones() { return observaciones; }
-    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
+    public String getFecha() {
+        return fecha;
+    }
 
-    public String getCreadoPor() { return creadoPor; }
-    public void setCreadoPor(String creadoPor) { this.creadoPor = creadoPor; }
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
 
-    public Instant getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(Instant fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public String getMotivoConsulta() {
+        return motivoConsulta;
+    }
 
-    public String getModificadoPor() { return modificadoPor; }
-    public void setModificadoPor(String modificadoPor) { this.modificadoPor = modificadoPor; }
+    public void setMotivoConsulta(String motivoConsulta) {
+        this.motivoConsulta = motivoConsulta;
+    }
 
-    public Instant getFechaModificacion() { return fechaModificacion; }
-    public void setFechaModificacion(Instant fechaModificacion) { this.fechaModificacion = fechaModificacion; }
+    public String getDiagnostico() {
+        return diagnostico;
+    }
 
-    public boolean isAnulado() { return anulado; }
-    public void setAnulado(boolean anulado) { this.anulado = anulado; }
+    public void setDiagnostico(String diagnostico) {
+        this.diagnostico = diagnostico;
+    }
 
-    public String getMotivoAnulacion() { return motivoAnulacion; }
-    public void setMotivoAnulacion(String motivoAnulacion) { this.motivoAnulacion = motivoAnulacion; }
+    public String getTratamiento() {
+        return tratamiento;
+    }
+
+    public void setTratamiento(String tratamiento) {
+        this.tratamiento = tratamiento;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public String getCreadoPor() {
+        return creadoPor;
+    }
+
+    public void setCreadoPor(String creadoPor) {
+        this.creadoPor = creadoPor;
+    }
+
+    public Instant getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(Instant fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getModificadoPor() {
+        return modificadoPor;
+    }
+
+    public void setModificadoPor(String modificadoPor) {
+        this.modificadoPor = modificadoPor;
+    }
+
+    public Instant getFechaModificacion() {
+        return fechaModificacion;
+    }
+
+    public void setFechaModificacion(Instant fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+
+    public boolean isAnulado() {
+        return anulado;
+    }
+
+    public void setAnulado(boolean anulado) {
+        this.anulado = anulado;
+    }
+
+    public String getMotivoAnulacion() {
+        return motivoAnulacion;
+    }
+
+    public void setMotivoAnulacion(String motivoAnulacion) {
+        this.motivoAnulacion = motivoAnulacion;
+    }
 }

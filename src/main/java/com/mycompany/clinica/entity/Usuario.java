@@ -1,6 +1,7 @@
 package com.mycompany.clinica.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,59 +32,138 @@ public class Usuario implements UserDetails {
     private String biografia;
     private boolean activo = true;
     private String pacienteId;
-
     private Rol rol;
 
-    public Usuario() {}
+    // ============================================
+    // CONSTRUCTOR (CON LA ANOTACIÓN MÁGICA)
+    // ============================================
+    @PersistenceCreator
+    public Usuario() {
+    }
 
-    // Getters y Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    // ============================================
+    // GETTERS Y SETTERS
+    // ============================================
+    public String getId() {
+        return id;
+    }
 
-    public String getNombreUsuario() { return nombreUsuario; }
-    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    // Alias para que el código antiguo no falle
-    public String getUsername() { return this.nombreUsuario; }
-    public void setUsername(String username) { this.nombreUsuario = username; }
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getUsername() {
+        return this.nombreUsuario;
+    }
 
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
+    public void setUsername(String username) {
+        this.nombreUsuario = username;
+    }
 
-    public String getDocumento() { return documento; }
-    public void setDocumento(String documento) { this.documento = documento; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getFechaNacimiento() { return fechaNacimiento; }
-    public void setFechaNacimiento(String fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public String getDireccion() { return direccion; }
-    public void setDireccion(String direccion) { this.direccion = direccion; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getCiudad() { return ciudad; }
-    public void setCiudad(String ciudad) { this.ciudad = ciudad; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getGenero() { return genero; }
-    public void setGenero(String genero) { this.genero = genero; }
+    public String getTelefono() {
+        return telefono;
+    }
 
-    public String getBiografia() { return biografia; }
-    public void setBiografia(String biografia) { this.biografia = biografia; }
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
 
-    public boolean isActivo() { return activo; }
-    public void setActivo(boolean activo) { this.activo = activo; }
+    public String getDocumento() {
+        return documento;
+    }
 
-    public String getPacienteId() { return pacienteId; }
-    public void setPacienteId(String pacienteId) { this.pacienteId = pacienteId; }
+    public void setDocumento(String documento) {
+        this.documento = documento;
+    }
 
-    public Rol getRol() { return rol; }
-    public void setRol(Rol rol) { this.rol = rol; }
+    public String getFechaNacimiento() {
+        return fechaNacimiento;
+    }
 
-    // Spring Security
+    public void setFechaNacimiento(String fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getGenero() {
+        return genero;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public String getBiografia() {
+        return biografia;
+    }
+
+    public void setBiografia(String biografia) {
+        this.biografia = biografia;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public String getPacienteId() {
+        return pacienteId;
+    }
+
+    public void setPacienteId(String pacienteId) {
+        this.pacienteId = pacienteId;
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (rol == null) return List.of();
@@ -91,15 +171,31 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public String getPassword() { return this.password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
     @Override
-    public boolean isEnabled() { return activo; }
+    public boolean isEnabled() {
+        return activo;
+    }
 }
